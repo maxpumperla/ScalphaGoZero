@@ -13,7 +13,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.deeplearning4j</groupId>
-    <artifactId>scalphagozero_2.11</artifactId>
+    <artifactId>scalphagozero</artifactId>
 
     <name>ScalphaGoZero</name>
     <description>An independent implementation of DeepMind's AlphaGoZero in Scala, using Deeplearning4J (DL4J)
