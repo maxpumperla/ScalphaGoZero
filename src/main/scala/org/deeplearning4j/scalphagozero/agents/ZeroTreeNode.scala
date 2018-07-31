@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 class ZeroTreeNode(val gameState: GameState,
                    val value: Double,
-                   val priors: Map[Move, Double],
+                   val priors: mutable.Map[Move, Double],
                    val parent: Option[ZeroTreeNode],
                    lastMove: Move) {
 
