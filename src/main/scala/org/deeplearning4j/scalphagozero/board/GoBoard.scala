@@ -1,5 +1,7 @@
 package org.deeplearning4j.scalphagozero.board
 
+import java.util
+
 import scala.collection.mutable
 
 /**
@@ -36,16 +38,23 @@ class GoBoard(val row: Int, val col: Int) {
     }
 
   def isSelfCapture(player: Player, point: Point): Boolean = {
-    val friendlyStrings: List[GoString] = List.empty
-    // TODO
+    val friendlyStrings: util.ArrayList[GoString] = new util.ArrayList[GoString]()
+    for (neighbor <- neighborMap(point)) {
+      
+    }
     false
   }
 
-  def willCapture(player: Player, point: Point): Boolean =
-    // TODO
+  def willCapture(player: Player, point: Point): Boolean = {
+    for (neighbor <- neighborMap(point); if grid.get(neighbor).isDefined && grid(neighbor).color != player.color) {
+      val neighborString = grid(neighbor)
+      if (neighborString.numLiberties == 1)
+        return true
+    }
     false
+  }
 
-  def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
+  def isOnGrid(point: Point): Boolean =  1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
 
   def getColor(point: Point): Option[Int] = grid.get(point).map(_.color)
 
