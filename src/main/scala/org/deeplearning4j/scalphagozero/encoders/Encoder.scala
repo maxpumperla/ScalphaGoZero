@@ -1,6 +1,6 @@
 package org.deeplearning4j.scalphagozero.encoders
 
-import org.deeplearning4j.scalphagozero.board.{ GameState, Point }
+import org.deeplearning4j.scalphagozero.board.{GameState, Move, Point}
 import org.nd4j.linalg.api.ndarray.INDArray
 
 /**
@@ -25,6 +25,24 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @return Board tensor representation of the game state
     */
   def encode(gameState: GameState): INDArray
+
+  /**
+    * Encodes a given move as board index
+    *
+    * @param move Go Move instance
+    * @return board index of move
+    */
+  def encodeMove(move: Move): Int
+
+  /**
+    * Retrieves a move from a board index
+    *
+    * @param index board index of a move
+    * @return Move instance corresponding to index
+    */
+  def decodeMoveIndex(index: Int): Move
+
+
 
   /**
     * Turn a board point to an integer index.

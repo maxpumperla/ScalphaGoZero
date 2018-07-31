@@ -31,8 +31,8 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
 
     val nextPlayer: Player = gameState.nextPlayer
     nextPlayer.color match {
-      case PlayerColor.white => tensor // tensor[8] = 1
-      case PlayerColor.black => tensor // [9] = 1
+      case PlayerColor.white => tensor // TODO tensor[8] = 1
+      case PlayerColor.black => tensor // TODO [9] = 1
     }
     for (row <- 0 until this.boardHeight) {
       for (col <- 0 until this.boardWidth) {
@@ -42,13 +42,13 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
         goString match {
           case None => {
             if (gameState.doesMoveViolateKo(nextPlayer, Move.play(p)))
-              tensor // [10][r][c] = 1
+              tensor // TODO [10][r][c] = 1
           }
           case Some(string) => {
             var libertyPlane = Math.min(4, string.numLiberties) - 1
             if (string.color.equals(nextPlayer.color))
               libertyPlane += 4
-            tensor // [liberty_plane][r][c] = 1
+            tensor // TODO [liberty_plane][r][c] = 1
           }
         }
       }
@@ -56,7 +56,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     tensor
   }
 
-  def encodeMove(move: Move): Int =
+  override def encodeMove(move: Move): Int =
     if (move.isPlay)
       boardHeight * move.point.get.row + move.point.get.col
     else if (move.isPass)
@@ -64,7 +64,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     else
       throw new IllegalArgumentException("Cannot encode resign move")
 
-  def decodeMoveIndex(index: Int): Move = {
+  override def decodeMoveIndex(index: Int): Move = {
     if (index.equals(boardWidth * boardHeight))
       Move.pass()
     val row = index / boardHeight
