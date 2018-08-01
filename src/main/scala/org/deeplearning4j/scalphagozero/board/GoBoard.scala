@@ -12,7 +12,7 @@ import scala.collection.mutable
 class GoBoard(val row: Int, val col: Int) {
 
   private var grid: mutable.Map[Point, GoString] = mutable.Map.empty
-  private var hash = 0 // TODO
+  private var hash: Long = 0L
 
   if (!GoBoard.neighborTables.keySet.contains((row, col)))
     GoBoard.initNeighborTable(row, col)
@@ -58,11 +58,12 @@ class GoBoard(val row: Int, val col: Int) {
       newString = newString.mergedWith(sameColorString)
     for (newStringPoint <- newString.stones)
       grid.put(newStringPoint, newString)
-    // Remove empty-point hash code. TODO hashing
-    //  self._hash ^= zobrist.HASH_CODE[point, None]
-    // Add filled point hash code.
-    //  self._hash ^= zobrist.HASH_CODE[point, player]
+    hash ^= ZobristHashing.ZOBRIST((point, None)) // Remove empty-point hash code
+    hash ^= ZobristHashing.ZOBRIST((point, Some(player.color))) // Add filled point hash code.
 
+
+    // 3. Reduce liberties of any adjacent strings of the opposite color.
+    // 4. If any opposite color strings now have zero liberties, remove them.
     for (otherColorString: GoString <- adjacentOppositeColor){
       val replacement = otherColorString.withoutLiberty(point)
       if (replacement.numLiberties > 0)
@@ -81,10 +82,8 @@ class GoBoard(val row: Int, val col: Int) {
           this.replaceString(neighborString.get.withLiberty(point))
         grid.remove(point)
       }
-      //Remove filled point hash code. TODO
-      //  hash ^= zobrist.HASH_CODE[point, string.color]
-      //Add empty point hash code.
-      //  hash ^= zobrist.HASH_CODE[point, None]
+      hash ^= ZobristHashing.ZOBRIST((point, Some(goString.color))) //Remove filled point hash code.
+      hash ^= ZobristHashing.ZOBRIST((point, None)) //Add empty point hash code.
     }
 
 
@@ -129,10 +128,10 @@ class GoBoard(val row: Int, val col: Int) {
   def equals(other: GoBoard): Boolean =
     this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
 
-  def zobristHash: Int = hash
+  def zobristHash: Long = hash
 
   private def setBoardProperties(grid: mutable.Map[Point, GoString],
-                                 hash: Int,
+                                 hash: Long,
                                  neighborMap: mutable.Map[Point, List[Point]],
                                  cornerMap: mutable.Map[Point, List[Point]]): Unit = {
     this.hash = hash
