@@ -13,9 +13,15 @@ class GoString(val color: Int, var stones: Set[Point], var liberties: Set[Point]
 
   def numLiberties: Int = liberties.size
 
-  def removeLiberty(point: Point): Unit = liberties -= point
+  def withoutLiberty(point: Point): GoString = {
+    val newLiberties = this.liberties - point
+    GoString(this.color, this.stones, newLiberties)
+  }
 
-  def addLiberty(point: Point): Unit = liberties += point
+  def withLiberty(point: Point): GoString = {
+    val newLiberties = this.liberties + point
+    GoString(this.color, this.stones, newLiberties)
+  }
 
   def mergedWith(goString: GoString): GoString = {
     if (!color.equals(goString.color))

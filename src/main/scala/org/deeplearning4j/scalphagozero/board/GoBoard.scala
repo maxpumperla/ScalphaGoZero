@@ -19,29 +19,95 @@ class GoBoard(val row: Int, val col: Int) {
   if (!GoBoard.cornerTables.keySet.contains((row, col)))
     GoBoard.initCornerTable(row, col)
 
-  private var neighborMap = GoBoard.neighborTables.getOrElse((row, col), mutable.Map.empty)
-  private var cornerMap = GoBoard.cornerTables.getOrElse((row, col), mutable.Map.empty)
+  private var neighborMap: mutable.Map[Point, List[Point]] =
+    GoBoard.neighborTables.getOrElse((row, col), mutable.Map.empty)
+  private var cornerMap:  mutable.Map[Point, List[Point]] =
+    GoBoard.cornerTables.getOrElse((row, col), mutable.Map.empty)
 
   def neighbors(point: Point): List[Point] = neighborMap.getOrElse(point, List())
 
   def corners(point: Point): List[Point] = cornerMap.getOrElse(point, List())
 
-  def placeStone(player: Player, point: Point): Unit = {}
+  def placeStone(player: Player, point: Point): Unit = {
+    assert(isOnGrid(point))
+    if (grid.get(point).isDefined)
+      throw new IllegalStateException("Illegal play on point" + point.toString)
+    assert(grid.get(point).isEmpty)
+
+    // 1. Examine adjacent points
+    val adjacentSameColor = new util.ArrayList[GoString]()
+    val adjacentOppositeColor = new util.ArrayList[GoString]()
+    val liberties = new util.ArrayList[Point]()
+
+    for (neighbor: Point <- neighborMap(point)) {
+      val neighborString = grid.get(neighbor)
+      if (neighborString.isEmpty)
+        liberties.add(neighbor)
+      else if (neighborString.get.color == player.color) {
+        if (!adjacentSameColor.contains(neighborString.get))
+          adjacentSameColor.add(neighborString.get)
+      } else {
+        if (!adjacentOppositeColor.contains(neighborString.get))
+          adjacentOppositeColor.add(neighborString.get)
+      }
+    }
+    var newString = GoString(player.color, Set(point), liberties.toArray().toSet[Point])
+
+    // 2. Merge any adjacent strings of the same color
+    for (sameColorString <- adjacentSameColor)
+      newString = newString.mergedWith(sameColorString)
+    for (newStringPoint <- newString.stones)
+      grid.put(newStringPoint, newString)
+    // Remove empty-point hash code. TODO hashing
+    //  self._hash ^= zobrist.HASH_CODE[point, None]
+    // Add filled point hash code.
+    //  self._hash ^= zobrist.HASH_CODE[point, player]
+
+    for (otherColorString: GoString <- adjacentOppositeColor){
+      val replacement = otherColorString.withoutLiberty(point)
+      if (replacement.numLiberties > 0)
+        this.replaceString(otherColorString.withoutLiberty(point))
+      else
+        this.removeString(otherColorString)
+    }
+  }
+
+  private def removeString(goString: GoString): Unit =
+    for (point <- goString.stones) {
+      // Removing a string can create liberties for other strings.
+      for (neighbor <- neighborMap(point) if grid.get(neighbor).isDefined) {
+        val neighborString = grid.get(neighbor)
+        if (neighborString.get.equals(goString))
+          this.replaceString(neighborString.get.withLiberty(point))
+        grid.remove(point)
+      }
+      //Remove filled point hash code. TODO
+      //  hash ^= zobrist.HASH_CODE[point, string.color]
+      //Add empty point hash code.
+      //  hash ^= zobrist.HASH_CODE[point, None]
+    }
+
 
   private def replaceString(newString: GoString): Unit =
     for (point <- newString.stones)
       grid += (point -> newString)
 
-  private def removeString(goString: GoString): Unit =
-    for (point <- goString.stones) {
-      //TODO
-    }
-
   def isSelfCapture(player: Player, point: Point): Boolean = {
     val friendlyStrings: util.ArrayList[GoString] = new util.ArrayList[GoString]()
     for (neighbor <- neighborMap(point)) {
-      
+      val neighborString = grid.get(neighbor)
+      if (neighborString.isEmpty)
+        return false
+      else if (neighborString.get.color == player.color)
+        friendlyStrings.add(neighborString.get)
+      else
+        if (neighborString.get.numLiberties == 1)
+          return false
     }
+    var allNeighborsInDanger = true
+    for (neighbor: GoString <- friendlyStrings)
+      if (neighbor.numLiberties != 1) allNeighborsInDanger = false
+    if (allNeighborsInDanger) return true
     false
   }
 
