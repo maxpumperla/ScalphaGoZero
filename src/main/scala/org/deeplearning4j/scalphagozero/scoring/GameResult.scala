@@ -1,6 +1,8 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor }
+import org.deeplearning4j.scalphagozero.board.{GameState, GoBoard, PlayerColor, Point}
+
+import scala.collection.mutable
 
 class GameResult(blackPoints: Int, whitePoints: Int, komi: Int) {
 
@@ -19,7 +21,24 @@ class GameResult(blackPoints: Int, whitePoints: Int, komi: Int) {
 
 object GameResult {
 
-  def evaluateTerritory(goBoard: GoBoard): Territory = new Territory // TODO
+  def evaluateTerritory(goBoard: GoBoard): Territory = {
+    val statusMap = new mutable.HashMap[Point, String]()
+    for (row <- 1 to goBoard.row) {
+      for (col <- 1 to goBoard.col) {
+        val point = Point(row, col)
+        if (!statusMap.contains(point)) {
+          val stoneColor: Option[Int] = goBoard.getColor(point)
+          if (stoneColor.isDefined) {
+            val color = stoneColor.get
+            val status = if (color == PlayerColor.black) "black" else "white"
+            statusMap.put(point, status)
+          } else {
+            //TODO
+          }
+        }
+      }
+    }
+  }
 
   //private def collectRegion(startPos, board, visited=None) TODO
 

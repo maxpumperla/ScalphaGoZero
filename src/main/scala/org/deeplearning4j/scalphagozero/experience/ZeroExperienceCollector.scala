@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @author Max Pumperla
   */
-class ZeroExperienceCollector {
+class ZeroExperienceCollector { // TODO: fix me, needs to be all ND4J arrays
 
   var states: ListBuffer[GameState] = ListBuffer()
   var visitCounts: ListBuffer[Int] = ListBuffer()

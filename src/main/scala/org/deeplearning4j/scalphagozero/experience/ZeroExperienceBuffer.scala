@@ -7,8 +7,8 @@ class ZeroExperienceBuffer {}
 object ZeroExperienceBuffer {
 
   def combineExperience(buffers: List[ZeroExperienceBuffer]): ZeroExperienceBuffer =
-    new ZeroExperienceBuffer()
+    new ZeroExperienceBuffer() // TODO
 
   def loadExperience(file: File): ZeroExperienceBuffer =
-    new ZeroExperienceBuffer
+    new ZeroExperienceBuffer // TODO
 }
