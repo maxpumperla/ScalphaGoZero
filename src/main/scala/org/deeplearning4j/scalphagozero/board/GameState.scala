@@ -20,8 +20,8 @@ class GameState(val board: GoBoard,
                 val previousState: Option[GameState],
                 val lastMove: Option[Move]) {
 
-  var allPreviousStates: Set[(Player, Int)] = previousState match {
-    case None => Set[(Player, Int)]()
+  var allPreviousStates: Set[(Player, Long)] = previousState match {
+    case None => Set[(Player, Long)]()
     case Some(state) =>
       state.allPreviousStates += ((nextPlayer, state.board.zobristHash))
       state.allPreviousStates

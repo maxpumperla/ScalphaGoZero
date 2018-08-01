@@ -1,7 +1,7 @@
 package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.nn.graph.ComputationGraph
-import org.deeplearning4j.scalphagozero.board.{GameState, Move}
-import org.deeplearning4j.scalphagozero.encoders.{Encoder, ZeroEncoder}
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
+import org.deeplearning4j.scalphagozero.encoders.{ Encoder, ZeroEncoder }
 import org.deeplearning4j.scalphagozero.experience.ZeroExperienceCollector
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
@@ -13,7 +13,10 @@ import scala.collection.mutable
   *
   * @author Max Pumperla
   */
-class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val roundsPerMove: Int = 1000, val c: Double = 2.0)
+class ZeroAgent(val model: ComputationGraph,
+                val encoder: ZeroEncoder,
+                val roundsPerMove: Int = 1000,
+                val c: Double = 2.0)
     extends Agent {
 
   var collector = new ZeroExperienceCollector
@@ -46,9 +49,10 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     val value = outputs(1)
 
     val movePriors: mutable.Map[Move, Double] = new mutable.HashMap[Move, Double]()
-    for (i <- 0 until priors.length()) {
+    for (i <- 0 until priors.length().toInt) {
       val move = encoder.decodeMoveIndex(i.toInt)
-      movePriors.put(move, priors.getDouble(i))
+      val prior = priors.getDouble(i.toLong)
+      movePriors.put(move, prior)
     }
 
     val newNode = new ZeroTreeNode(gameState, 0, movePriors, parent, move)

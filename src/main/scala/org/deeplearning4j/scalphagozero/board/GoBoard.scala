@@ -3,6 +3,8 @@ package org.deeplearning4j.scalphagozero.board
 import java.util
 
 import scala.collection.mutable
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 /**
   * Main Go board class, represents the board on which Go moves can be played.
@@ -21,7 +23,7 @@ class GoBoard(val row: Int, val col: Int) {
 
   private var neighborMap: mutable.Map[Point, List[Point]] =
     GoBoard.neighborTables.getOrElse((row, col), mutable.Map.empty)
-  private var cornerMap:  mutable.Map[Point, List[Point]] =
+  private var cornerMap: mutable.Map[Point, List[Point]] =
     GoBoard.cornerTables.getOrElse((row, col), mutable.Map.empty)
 
   def neighbors(point: Point): List[Point] = neighborMap.getOrElse(point, List())
@@ -37,7 +39,7 @@ class GoBoard(val row: Int, val col: Int) {
     // 1. Examine adjacent points
     val adjacentSameColor = new util.ArrayList[GoString]()
     val adjacentOppositeColor = new util.ArrayList[GoString]()
-    val liberties = new util.ArrayList[Point]()
+    val liberties: util.ArrayList[Point] = new util.ArrayList[Point]()
 
     for (neighbor: Point <- neighborMap(point)) {
       val neighborString = grid.get(neighbor)
@@ -51,20 +53,20 @@ class GoBoard(val row: Int, val col: Int) {
           adjacentOppositeColor.add(neighborString.get)
       }
     }
-    var newString = GoString(player.color, Set(point), liberties.toArray().toSet[Point])
+    val libertySet: Array[Point] = liberties.asScala.toArray[Point]
+    var newString = GoString(player.color, Set(point), Set(libertySet: _*))
 
     // 2. Merge any adjacent strings of the same color
-    for (sameColorString <- adjacentSameColor)
+    for (sameColorString: GoString <- adjacentSameColor)
       newString = newString.mergedWith(sameColorString)
-    for (newStringPoint <- newString.stones)
+    for (newStringPoint: Point <- newString.stones)
       grid.put(newStringPoint, newString)
     hash ^= ZobristHashing.ZOBRIST((point, None)) // Remove empty-point hash code
     hash ^= ZobristHashing.ZOBRIST((point, Some(player.color))) // Add filled point hash code.
 
-
     // 3. Reduce liberties of any adjacent strings of the opposite color.
     // 4. If any opposite color strings now have zero liberties, remove them.
-    for (otherColorString: GoString <- adjacentOppositeColor){
+    for (otherColorString: GoString <- adjacentOppositeColor) {
       val replacement = otherColorString.withoutLiberty(point)
       if (replacement.numLiberties > 0)
         this.replaceString(otherColorString.withoutLiberty(point))
@@ -86,7 +88,6 @@ class GoBoard(val row: Int, val col: Int) {
       hash ^= ZobristHashing.ZOBRIST((point, None)) //Add empty point hash code.
     }
 
-
   private def replaceString(newString: GoString): Unit =
     for (point <- newString.stones)
       grid += (point -> newString)
@@ -99,9 +100,8 @@ class GoBoard(val row: Int, val col: Int) {
         return false
       else if (neighborString.get.color == player.color)
         friendlyStrings.add(neighborString.get)
-      else
-        if (neighborString.get.numLiberties == 1)
-          return false
+      else if (neighborString.get.numLiberties == 1)
+        return false
     }
     var allNeighborsInDanger = true
     for (neighbor: GoString <- friendlyStrings)
@@ -119,7 +119,7 @@ class GoBoard(val row: Int, val col: Int) {
     false
   }
 
-  def isOnGrid(point: Point): Boolean =  1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
+  def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
 
   def getColor(point: Point): Option[Int] = grid.get(point).map(_.color)
 
