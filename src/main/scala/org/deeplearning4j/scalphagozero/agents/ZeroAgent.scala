@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.nn.graph.ComputationGraph
-import org.deeplearning4j.scalphagozero.board.{GameState, Move}
-import org.deeplearning4j.scalphagozero.encoders.{Encoder, ZeroEncoder}
-import org.deeplearning4j.scalphagozero.experience.{ZeroExperienceBuffer, ZeroExperienceCollector}
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
+import org.deeplearning4j.scalphagozero.encoders.{ Encoder, ZeroEncoder }
+import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 

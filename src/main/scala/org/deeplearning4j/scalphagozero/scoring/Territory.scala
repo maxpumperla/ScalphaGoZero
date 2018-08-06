@@ -25,8 +25,8 @@ class Territory(territoryMap: mutable.HashMap[Point, String]) {
   for (point <- territoryMap.keys) {
     val status = territoryMap(point)
     status match {
-      case "black" => numBlackStones += 1
-      case "white" => numWhiteStones += 1
+      case "black"       => numBlackStones += 1
+      case "white"       => numWhiteStones += 1
       case "territory_b" => numBlackTerritory += 1
       case "territory_w" => numWhiteTerritory += 1
       case "dame" =>

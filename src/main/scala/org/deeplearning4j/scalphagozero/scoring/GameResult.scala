@@ -1,6 +1,6 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-import org.deeplearning4j.scalphagozero.board.{GameState, GoBoard, PlayerColor, Point}
+import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor, Point }
 
 import scala.collection.mutable
 
@@ -39,8 +39,7 @@ object GameResult {
               val neighborColor: Option[Int] = neighbors.head
               val stoneString = if (neighborColor.get == PlayerColor.black) "b" else "w"
               fillWith = "territory" + stoneString
-            }
-            else {
+            } else {
               fillWith = "dame"
             }
             for (position <- group) {
@@ -53,8 +52,9 @@ object GameResult {
     new Territory(statusMap)
   }
 
-  private def collectRegion(startingPoint: Point, board: GoBoard, visited: Map[Point, Boolean] = Map()):
-  (List[Point], Set[Option[Int]]) = {
+  private def collectRegion(startingPoint: Point,
+                            board: GoBoard,
+                            visited: Map[Point, Boolean] = Map()): (List[Point], Set[Option[Int]]) = {
     var visitedMap = visited
     if (visited.contains(startingPoint))
       return (List(), Set())
@@ -73,7 +73,7 @@ object GameResult {
           allPoints ++= points
           allBorders ++= borders
         } else {
-          allBorders ++= neighbor
+          allBorders += neighbor
         }
       }
     }
@@ -82,9 +82,8 @@ object GameResult {
 
   def computeGameResult(gameState: GameState): GameResult = {
     val territory = evaluateTerritory(gameState.board)
-    new GameResult(
-      territory.numBlackTerritory + territory.numBlackStones,
-      territory.numWhiteStones + territory.numWhiteStones,
-      7.5)
+    new GameResult(territory.numBlackTerritory + territory.numBlackStones,
+                   territory.numWhiteStones + territory.numWhiteStones,
+                   7.5)
   }
 }
