@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.nn.graph.ComputationGraph
-import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
-import org.deeplearning4j.scalphagozero.encoders.{ Encoder, ZeroEncoder }
-import org.deeplearning4j.scalphagozero.experience.ZeroExperienceCollector
+import org.deeplearning4j.scalphagozero.board.{GameState, Move}
+import org.deeplearning4j.scalphagozero.encoders.{Encoder, ZeroEncoder}
+import org.deeplearning4j.scalphagozero.experience.{ZeroExperienceBuffer, ZeroExperienceCollector}
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
@@ -61,19 +61,17 @@ class ZeroAgent(val model: ComputationGraph,
     newNode
   }
 
-  def train(experienceCollector: ZeroExperienceCollector): Unit = {
-    val numExamples = experienceCollector.states.size
+  def train(experience: ZeroExperienceBuffer): Unit = {
+    val numExamples = experience.states.rows()
 
-    // TODO: experience.states should be ND4J arrays
-    val modelInput = experienceCollector.states
+    val modelInput: INDArray = experience.states
 
-    // TODO Same for visitCounts
-    //val visitSums = Nd4j.sum(experience.visitCounts, axis=1).reshape((numExamples, 1))
+    val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
 
-    // val actionTarget = experience.visitCounts / visitSums    # <2>
-    // val valueTarget = experience.rewards
+    val actionTarget = experience.visitCounts.div(visitSums)
+    val valueTarget = experience.rewards
 
-    //model.fit(modelInput, List(actionTarget, valueTarget))
+    model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
 
   }
 
