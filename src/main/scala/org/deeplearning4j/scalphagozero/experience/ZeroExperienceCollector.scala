@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @author Max Pumperla
   */
-class ZeroExperienceCollector {
+class ZeroExperienceCollector extends ExperienceCollector {
 
   var states: ListBuffer[INDArray] = ListBuffer()
   var visitCounts: ListBuffer[INDArray] = ListBuffer()
@@ -23,15 +23,15 @@ class ZeroExperienceCollector {
     currentEpisodeVisitCounts = ListBuffer()
   }
 
-  def beginEpisode(): Unit =
+  override def beginEpisode(): Unit =
     clearBuffers()
 
-  def recordDecision(state: INDArray, visitCounts: List[INDArray]): Unit = {
+  override def recordDecision(state: INDArray, visitCounts: List[INDArray]): Unit = {
     currentEpisodeStates += state
     currentEpisodeVisitCounts ++= visitCounts
   }
 
-  def completeEpisode(reward: INDArray): Unit = {
+  override def completeEpisode(reward: INDArray): Unit = {
     states ++= currentEpisodeStates
     visitCounts ++= currentEpisodeVisitCounts
     for (_ <- 1 to currentEpisodeStates.size)
