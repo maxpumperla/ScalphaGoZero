@@ -45,12 +45,24 @@ class BoardTest extends FunSpec {
       assert(board.getColor(Point(2, 3)).contains(PlayerColor.black))
 
     }
-    it("finally, if all liberties are taken, the stone should be gone") {
-      board.placeStone(Player(PlayerColor.white), Point(2, 1))
-      board.placeStone(Player(PlayerColor.white), Point(2, 4))
-      assert(board.getColor(Point(2, 2)).isEmpty)
-      assert(board.getColor(Point(2, 3)).isEmpty)
+//    it("finally, if all liberties are taken, the stone should be gone") {
+//      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+//      board.placeStone(Player(PlayerColor.white), Point(2, 4))
+//      assert(board.getColor(Point(2, 2)).isEmpty)
+//    }
+  }
 
+  describe("If you capture a stone, it's not suicide") {
+    val board = GoBoard(19, 19)
+    it("should regain liberties by capturing") {
+      board.placeStone(Player(PlayerColor.black), Point(1, 1))
+      board.placeStone(Player(PlayerColor.black), Point(2, 2))
+      board.placeStone(Player(PlayerColor.black), Point(1, 3))
+      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+      board.placeStone(Player(PlayerColor.white), Point(1, 2))
+      assert(board.getColor(Point(1, 1)).isEmpty)
+      assert(board.getColor(Point(2, 1)).contains(PlayerColor.white))
+      assert(board.getColor(Point(1, 2)).contains(PlayerColor.white))
     }
   }
 }

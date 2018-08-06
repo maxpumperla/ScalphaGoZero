@@ -47,9 +47,11 @@ class GoBoard(val row: Int, val col: Int) {
       if (neighborString.isEmpty)
         liberties.add(neighbor)
       else if (neighborString.get.color == player.color) {
+        val foo: Boolean = adjacentSameColor.contains(neighborString.get)
         if (!adjacentSameColor.contains(neighborString.get))
           adjacentSameColor.add(neighborString.get)
       } else {
+        val bar: Boolean = adjacentOppositeColor.contains(neighborString.get)
         if (!adjacentOppositeColor.contains(neighborString.get))
           adjacentOppositeColor.add(neighborString.get)
       }
@@ -127,8 +129,13 @@ class GoBoard(val row: Int, val col: Int) {
 
   def getGoString(point: Point): Option[GoString] = grid.get(point.toCoords)
 
-  def equals(other: GoBoard): Boolean =
-    this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
+  override def equals(obj: scala.Any): Boolean = {
+    if (obj.isInstanceOf[GoBoard]) {
+      val other = obj.asInstanceOf[GoBoard]
+      return this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
+    }
+    false
+  }
 
   def zobristHash: Long = hash
 

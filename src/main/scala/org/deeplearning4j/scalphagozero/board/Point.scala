@@ -17,6 +17,14 @@ class Point(val row: Int, val col: Int) {
     Point(this.row, this.col + 1)
   )
 
+  override def equals(obj: scala.Any): Boolean = {
+    if (obj.isInstanceOf[Point]) {
+      val castPoint = obj.asInstanceOf[Point]
+      return this.row == castPoint.row && this.col == castPoint.col
+    }
+    false
+  }
+
   def toCoords: (Int, Int) = (this.row, this.col)
 
 }

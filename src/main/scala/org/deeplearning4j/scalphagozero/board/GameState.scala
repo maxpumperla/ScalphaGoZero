@@ -27,6 +27,16 @@ class GameState(val board: GoBoard,
       state.allPreviousStates
   }
 
+  override def equals(obj: scala.Any): Boolean = {
+    if (obj.isInstanceOf[GameState]) {
+      val other = obj.asInstanceOf[GameState]
+      return this.board == other.board && this.previousState == other.previousState &&
+      this.nextPlayer == other.nextPlayer && this.lastMove == other.lastMove &&
+      this.allPreviousStates == other.allPreviousStates
+    }
+    false
+  }
+
   def applyMove(move: Move): GameState = {
     val nextBoard: GoBoard = move.isPlay match {
       case true =>
@@ -35,7 +45,7 @@ class GameState(val board: GoBoard,
         nextBoard
       case false => this.board
     }
-    new GameState(nextBoard, nextPlayer, Some(this), Some(move))
+    new GameState(nextBoard, nextPlayer.other, Some(this), Some(move))
 
   }
 
