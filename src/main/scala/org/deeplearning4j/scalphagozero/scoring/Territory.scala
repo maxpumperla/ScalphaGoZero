@@ -4,6 +4,8 @@ import java.util
 
 import org.deeplearning4j.scalphagozero.board.Point
 
+import scala.collection.mutable
+
 /**
   * Class to track territory on the Go board
   *
@@ -11,16 +13,16 @@ import org.deeplearning4j.scalphagozero.board.Point
   *
   * @author Max Pumperla
   */
-class Territory(territoryMap: util.HashMap[Point, String]) {
+class Territory(territoryMap: mutable.HashMap[Point, String]) {
 
-  private var numBlackTerritory = 0
-  private var numWhiteTerritory = 0
-  private var numBlackStones = 0
-  private var numWhiteStones = 0
+  var numBlackTerritory = 0
+  var numWhiteTerritory = 0
+  var numBlackStones = 0
+  var numWhiteStones = 0
   private var numDame = 0
   private var damePoints: util.ArrayList[Point] = new util.ArrayList[Point]()
 
-  for (point <- territoryMap.keySet()) {
+  for (point <- territoryMap.keys) {
     val status = territoryMap(point)
     status match {
       case "black" => numBlackStones += 1

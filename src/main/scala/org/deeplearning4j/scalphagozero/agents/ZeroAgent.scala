@@ -57,7 +57,7 @@ class ZeroAgent(val model: ComputationGraph,
 
     val newNode = new ZeroTreeNode(gameState, 0, movePriors, parent, move)
     if (parent.isDefined)
-      parent.get.addChild(move, newNode) // TODO: the updated parent is never used
+      parent.get.addChild(move, newNode)
     newNode
   }
 

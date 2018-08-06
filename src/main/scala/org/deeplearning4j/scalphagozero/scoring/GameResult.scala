@@ -4,7 +4,7 @@ import org.deeplearning4j.scalphagozero.board.{GameState, GoBoard, PlayerColor, 
 
 import scala.collection.mutable
 
-class GameResult(blackPoints: Int, whitePoints: Int, komi: Int) {
+class GameResult(blackPoints: Int, whitePoints: Int, komi: Double) {
 
   def winner: Int = if (blackPoints > whitePoints + komi) PlayerColor.black else PlayerColor.white
 
@@ -33,14 +33,58 @@ object GameResult {
             val status = if (color == PlayerColor.black) "black" else "white"
             statusMap.put(point, status)
           } else {
-            //TODO
+            val (group, neighbors) = collectRegion(point, goBoard)
+            var fillWith: String = ""
+            if (neighbors.size == 1) {
+              val neighborColor: Option[Int] = neighbors.head
+              val stoneString = if (neighborColor.get == PlayerColor.black) "b" else "w"
+              fillWith = "territory" + stoneString
+            }
+            else {
+              fillWith = "dame"
+            }
+            for (position <- group) {
+              statusMap.put(position, fillWith)
+            }
           }
         }
       }
     }
+    new Territory(statusMap)
   }
 
-  //private def collectRegion(startPos, board, visited=None) TODO
+  private def collectRegion(startingPoint: Point, board: GoBoard, visited: Map[Point, Boolean] = Map()):
+  (List[Point], Set[Option[Int]]) = {
+    var visitedMap = visited
+    if (visited.contains(startingPoint))
+      return (List(), Set())
 
-  def computeGameResult(gameState: GameState): GameResult = new GameResult(0, 0, 0) // TODO
+    var allPoints = List(startingPoint)
+    var allBorders: Set[Option[Int]] = Set()
+    visitedMap += (startingPoint -> true)
+    val here: Option[Int] = board.getColor(startingPoint)
+    val deltas = List((-1, 0), (1, 0), (0, -1), (0, 1))
+    for ((row, col) <- deltas) {
+      val nextPoint = Point(startingPoint.row + row, startingPoint.col + col)
+      if (board.isOnGrid(nextPoint)) {
+        val neighbor: Option[Int] = board.getColor(nextPoint)
+        if (neighbor.equals(here)) {
+          val (points, borders) = collectRegion(nextPoint, board, visitedMap)
+          allPoints ++= points
+          allBorders ++= borders
+        } else {
+          allBorders ++= neighbor
+        }
+      }
+    }
+    (allPoints, allBorders)
+  }
+
+  def computeGameResult(gameState: GameState): GameResult = {
+    val territory = evaluateTerritory(gameState.board)
+    new GameResult(
+      territory.numBlackTerritory + territory.numBlackStones,
+      territory.numWhi teStones + territory.numWhiteStones,
+      7.5)
+  }
 }
