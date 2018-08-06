@@ -13,7 +13,7 @@ import scala.collection.JavaConverters._
   */
 class GoBoard(val row: Int, val col: Int) {
 
-  private var grid: mutable.Map[Point, GoString] = mutable.Map.empty
+  private var grid: mutable.Map[(Int, Int), GoString] = mutable.Map.empty
   private var hash: Long = 0L
 
   if (!GoBoard.neighborTables.keySet.contains((row, col)))
@@ -21,28 +21,29 @@ class GoBoard(val row: Int, val col: Int) {
   if (!GoBoard.cornerTables.keySet.contains((row, col)))
     GoBoard.initCornerTable(row, col)
 
-  private var neighborMap: mutable.Map[Point, List[Point]] =
+  private var neighborMap: mutable.Map[(Int, Int), List[Point]] =
     GoBoard.neighborTables.getOrElse((row, col), mutable.Map.empty)
-  private var cornerMap: mutable.Map[Point, List[Point]] =
+  private var cornerMap: mutable.Map[(Int, Int), List[Point]] =
     GoBoard.cornerTables.getOrElse((row, col), mutable.Map.empty)
 
-  def neighbors(point: Point): List[Point] = neighborMap.getOrElse(point, List())
+  def neighbors(point: Point): List[Point] = neighborMap.getOrElse((point.row, point.col), List())
 
-  def corners(point: Point): List[Point] = cornerMap.getOrElse(point, List())
+  def corners(point: Point): List[Point] = cornerMap.getOrElse((point.row, point.col), List())
 
   def placeStone(player: Player, point: Point): Unit = {
+
     assert(isOnGrid(point))
-    if (grid.get(point).isDefined)
+    if (grid.get(point.toCoords).isDefined)
       throw new IllegalStateException("Illegal play on point" + point.toString)
-    assert(grid.get(point).isEmpty)
+    assert(grid.get(point.toCoords).isEmpty)
 
     // 1. Examine adjacent points
     val adjacentSameColor = new util.ArrayList[GoString]()
     val adjacentOppositeColor = new util.ArrayList[GoString]()
     val liberties: util.ArrayList[Point] = new util.ArrayList[Point]()
 
-    for (neighbor: Point <- neighborMap(point)) {
-      val neighborString = grid.get(neighbor)
+    for (neighbor: Point <- neighborMap((point.row, point.col))) {
+      val neighborString = grid.get(neighbor.toCoords)
       if (neighborString.isEmpty)
         liberties.add(neighbor)
       else if (neighborString.get.color == player.color) {
@@ -60,9 +61,9 @@ class GoBoard(val row: Int, val col: Int) {
     for (sameColorString: GoString <- adjacentSameColor)
       newString = newString.mergedWith(sameColorString)
     for (newStringPoint: Point <- newString.stones)
-      grid.put(newStringPoint, newString)
-    hash ^= ZobristHashing.ZOBRIST((point, None)) // Remove empty-point hash code
-    hash ^= ZobristHashing.ZOBRIST((point, Some(player.color))) // Add filled point hash code.
+      grid.put(newStringPoint.toCoords, newString)
+    hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), None)) // Remove empty-point hash code
+    hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), Some(player.color))) // Add filled point hash code.
 
     // 3. Reduce liberties of any adjacent strings of the opposite color.
     // 4. If any opposite color strings now have zero liberties, remove them.
@@ -78,24 +79,24 @@ class GoBoard(val row: Int, val col: Int) {
   private def removeString(goString: GoString): Unit =
     for (point <- goString.stones) {
       // Removing a string can create liberties for other strings.
-      for (neighbor <- neighborMap(point) if grid.get(neighbor).isDefined) {
-        val neighborString = grid.get(neighbor)
+      for (neighbor <- neighborMap((point.row, point.col)) if grid.get(neighbor.toCoords).isDefined) {
+        val neighborString = grid.get(neighbor.toCoords)
         if (neighborString.get.equals(goString))
           this.replaceString(neighborString.get.withLiberty(point))
-        grid.remove(point)
+        grid.remove(point.toCoords)
       }
-      hash ^= ZobristHashing.ZOBRIST((point, Some(goString.color))) //Remove filled point hash code.
-      hash ^= ZobristHashing.ZOBRIST((point, None)) //Add empty point hash code.
+      hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), Some(goString.color))) //Remove filled point hash code.
+      hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), None)) //Add empty point hash code.
     }
 
   private def replaceString(newString: GoString): Unit =
     for (point <- newString.stones)
-      grid += (point -> newString)
+      grid += (point.toCoords -> newString)
 
   def isSelfCapture(player: Player, point: Point): Boolean = {
     val friendlyStrings: util.ArrayList[GoString] = new util.ArrayList[GoString]()
-    for (neighbor <- neighborMap(point)) {
-      val neighborString = grid.get(neighbor)
+    for (neighbor <- neighborMap((point.row, point.col))) {
+      val neighborString = grid.get(neighbor.toCoords)
       if (neighborString.isEmpty)
         return false
       else if (neighborString.get.color == player.color)
@@ -111,8 +112,9 @@ class GoBoard(val row: Int, val col: Int) {
   }
 
   def willCapture(player: Player, point: Point): Boolean = {
-    for (neighbor <- neighborMap(point); if grid.get(neighbor).isDefined && grid(neighbor).color != player.color) {
-      val neighborString = grid(neighbor)
+    for (neighbor <- neighborMap((point.row, point.col));
+         if grid.get(neighbor.toCoords).isDefined && grid(neighbor.toCoords).color != player.color) {
+      val neighborString = grid(neighbor.toCoords)
       if (neighborString.numLiberties == 1)
         return true
     }
@@ -121,19 +123,19 @@ class GoBoard(val row: Int, val col: Int) {
 
   def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
 
-  def getColor(point: Point): Option[Int] = grid.get(point).map(_.color)
+  def getColor(point: Point): Option[Int] = grid.get(point.toCoords).map(_.color)
 
-  def getGoString(point: Point): Option[GoString] = grid.get(point)
+  def getGoString(point: Point): Option[GoString] = grid.get(point.toCoords)
 
   def equals(other: GoBoard): Boolean =
     this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
 
   def zobristHash: Long = hash
 
-  private def setBoardProperties(grid: mutable.Map[Point, GoString],
+  private def setBoardProperties(grid: mutable.Map[(Int, Int), GoString],
                                  hash: Long,
-                                 neighborMap: mutable.Map[Point, List[Point]],
-                                 cornerMap: mutable.Map[Point, List[Point]]): Unit = {
+                                 neighborMap: mutable.Map[(Int, Int), List[Point]],
+                                 cornerMap: mutable.Map[(Int, Int), List[Point]]): Unit = {
     this.hash = hash
     this.grid = grid
     this.neighborMap = neighborMap
@@ -150,37 +152,39 @@ class GoBoard(val row: Int, val col: Int) {
 
 object GoBoard {
 
-  var neighborTables: mutable.Map[(Int, Int), mutable.Map[Point, List[Point]]] = mutable.Map.empty
-  var cornerTables: mutable.Map[(Int, Int), mutable.Map[Point, List[Point]]] = mutable.Map.empty
+  def apply(boardHeight: Int, boardWidth: Int): GoBoard = new GoBoard(boardHeight, boardWidth)
+
+  var neighborTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
+  var cornerTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
 
   def initNeighborTable(row: Int, col: Int): Unit = {
-    val neighborMap: mutable.Map[Point, List[Point]] = mutable.Map.empty
+    val neighborMap: mutable.Map[(Int, Int), List[Point]] = mutable.Map.empty
     for (r <- 1 to row) {
       for (c <- 1 to col) {
-        val point = Point(row, col)
+        val point = Point(r, c)
         val allNeighbors = point.neighbors
         val trueNeighbors =
           for (nb <- allNeighbors if 1 <= nb.row && nb.row <= row && 1 <= nb.col && nb.col <= col) yield nb
-        neighborMap += (point -> trueNeighbors)
+        neighborMap += ((r, c) -> trueNeighbors)
       }
     }
     neighborTables += ((row, col) -> neighborMap)
   }
 
   def initCornerTable(row: Int, col: Int): Unit = {
-    val cornerMap: mutable.Map[Point, List[Point]] = mutable.Map.empty
+    val cornerMap: mutable.Map[(Int, Int), List[Point]] = mutable.Map.empty
     for (r <- 1 to row) {
       for (c <- 1 to col) {
-        val point = Point(row, col)
+        val point = Point(r, c)
         val allCorners = List(
-          Point(row - 1, col - 1),
-          Point(row + 1, col + 1),
-          Point(row - 1, col + 1),
-          Point(row + 1, col - 1)
+          Point(point.row - 1, point.col - 1),
+          Point(point.row + 1, point.col + 1),
+          Point(point.row - 1, point.col + 1),
+          Point(point.row + 1, point.col - 1)
         )
         val trueCorners =
           for (nb <- allCorners if 1 <= nb.row && nb.row <= row && 1 <= nb.col && nb.col <= col) yield nb
-        cornerMap += (point -> trueCorners)
+        cornerMap += ((r, c) -> trueCorners)
       }
     }
     cornerTables += ((row, col) -> cornerMap)

@@ -17,6 +17,8 @@ class Point(val row: Int, val col: Int) {
     Point(this.row, this.col + 1)
   )
 
+  def toCoords: (Int, Int) = (this.row, this.col)
+
 }
 
 /**

@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.nn.graph.ComputationGraph
-import org.deeplearning4j.scalphagozero.board.{GameState, Move}
-import org.deeplearning4j.scalphagozero.encoders.{Encoder, ZeroEncoder}
-import org.deeplearning4j.scalphagozero.experience.{ZeroExperienceBuffer, ZeroExperienceCollector}
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
+import org.deeplearning4j.scalphagozero.encoders.{ Encoder, ZeroEncoder }
+import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
@@ -26,7 +26,7 @@ class ZeroAgent(val model: ComputationGraph,
 
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState, None, None)
-    for (i <- roundsPerMove) {
+    for (i <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
       var nextMove = selectBranch(node.get)
       while (node.get.hasChild(nextMove)) {
