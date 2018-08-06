@@ -1,8 +1,10 @@
 package org.deeplearning4j.scalphagozero.scoring
 
+
 import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor, Point }
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 class GameResult(blackPoints: Int, whitePoints: Int, komi: Double) {
 
@@ -38,7 +40,7 @@ object GameResult {
             if (neighbors.size == 1) {
               val neighborColor: Option[Int] = neighbors.head
               val stoneString = if (neighborColor.get == PlayerColor.black) "b" else "w"
-              fillWith = "territory" + stoneString
+              fillWith = "territory_" + stoneString
             } else {
               fillWith = "dame"
             }
@@ -54,14 +56,15 @@ object GameResult {
 
   private def collectRegion(startingPoint: Point,
                             board: GoBoard,
-                            visited: Map[Point, Boolean] = Map()): (List[Point], Set[Option[Int]]) = {
+                            visited: ArrayBuffer[(Int, Int)] = ArrayBuffer()): (List[Point], Set[Option[Int]]) = {
     var visitedMap = visited
-    if (visited.contains(startingPoint))
+    val bool = visited.contains(startingPoint.toCoords)
+    if (visited.contains(startingPoint.toCoords))
       return (List(), Set())
 
     var allPoints = List(startingPoint)
     var allBorders: Set[Option[Int]] = Set()
-    visitedMap += (startingPoint -> true)
+    visitedMap += startingPoint.toCoords
     val here: Option[Int] = board.getColor(startingPoint)
     val deltas = List((-1, 0), (1, 0), (0, -1), (0, 1))
     for ((row, col) <- deltas) {

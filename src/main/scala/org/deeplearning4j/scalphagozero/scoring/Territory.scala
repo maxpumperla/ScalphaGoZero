@@ -19,7 +19,7 @@ class Territory(territoryMap: mutable.HashMap[Point, String]) {
   var numWhiteTerritory = 0
   var numBlackStones = 0
   var numWhiteStones = 0
-  private var numDame = 0
+  var numDame = 0
   private var damePoints: util.ArrayList[Point] = new util.ArrayList[Point]()
 
   for (point <- territoryMap.keys) {
@@ -32,6 +32,7 @@ class Territory(territoryMap: mutable.HashMap[Point, String]) {
       case "dame" =>
         numDame += 1
         damePoints.add(point)
+      case _ => throw new IllegalArgumentException("Unsupported status type:" + status)
     }
   }
 }
