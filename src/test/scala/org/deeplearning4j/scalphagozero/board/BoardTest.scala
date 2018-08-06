@@ -45,11 +45,11 @@ class BoardTest extends FunSpec {
       assert(board.getColor(Point(2, 3)).contains(PlayerColor.black))
 
     }
-//    it("finally, if all liberties are taken, the stone should be gone") {
-//      board.placeStone(Player(PlayerColor.white), Point(2, 1))
-//      board.placeStone(Player(PlayerColor.white), Point(2, 4))
-//      assert(board.getColor(Point(2, 2)).isEmpty)
-//    }
+    it("finally, if all liberties are taken, the stone should be gone") {
+      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+      board.placeStone(Player(PlayerColor.white), Point(2, 4))
+      assert(board.getColor(Point(2, 2)).isEmpty)
+    }
   }
 
   describe("If you capture a stone, it's not suicide") {
@@ -63,6 +63,38 @@ class BoardTest extends FunSpec {
       assert(board.getColor(Point(1, 1)).isEmpty)
       assert(board.getColor(Point(2, 1)).contains(PlayerColor.white))
       assert(board.getColor(Point(1, 2)).contains(PlayerColor.white))
+    }
+  }
+
+  describe("Test removing liberties") {
+    it("foo") {
+      val board = new GoBoard(5, 5)
+      board.placeStone(Player(PlayerColor.black), Point(3, 3))
+      board.placeStone(Player(PlayerColor.white), Point(2, 2))
+      val whiteString = board.getGoString(Point(2, 2)).get
+      assert(whiteString.numLiberties == 4)
+      board.placeStone(Player(PlayerColor.black), Point(3, 2))
+      val newWhiteString = board.getGoString(Point(2, 2)).get
+      //assert(whiteString.numLiberties == 3)
+    }
+  }
+
+  describe("Empty triangle test") {
+    it("an empty triangle in the corner with one white stone should have 3 liberties") {
+      // x x
+      // x o
+      val board = new GoBoard(5, 5)
+      board.placeStone(Player(PlayerColor.black), Point(1, 1))
+      board.placeStone(Player(PlayerColor.black), Point(1, 2))
+      board.placeStone(Player(PlayerColor.black), Point(2, 2))
+      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+
+      val blackString: GoString = board.getGoString(Point(1, 1)).get
+
+      assert(blackString.numLiberties == 3)
+      assert(blackString.liberties.contains((3, 2)))
+      assert(blackString.liberties.contains((2, 3)))
+      assert(blackString.liberties.contains((1, 3)))
     }
   }
 }

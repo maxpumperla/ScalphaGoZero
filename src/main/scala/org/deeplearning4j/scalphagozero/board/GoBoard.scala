@@ -40,30 +40,28 @@ class GoBoard(val row: Int, val col: Int) {
     // 1. Examine adjacent points
     val adjacentSameColor = new util.ArrayList[GoString]()
     val adjacentOppositeColor = new util.ArrayList[GoString]()
-    val liberties: util.ArrayList[Point] = new util.ArrayList[Point]()
+    val liberties: util.ArrayList[(Int, Int)] = new util.ArrayList()
 
     for (neighbor: Point <- neighborMap((point.row, point.col))) {
       val neighborString = grid.get(neighbor.toCoords)
       if (neighborString.isEmpty)
-        liberties.add(neighbor)
+        liberties.add(neighbor.toCoords)
       else if (neighborString.get.color == player.color) {
-        val foo: Boolean = adjacentSameColor.contains(neighborString.get)
         if (!adjacentSameColor.contains(neighborString.get))
           adjacentSameColor.add(neighborString.get)
       } else {
-        val bar: Boolean = adjacentOppositeColor.contains(neighborString.get)
         if (!adjacentOppositeColor.contains(neighborString.get))
           adjacentOppositeColor.add(neighborString.get)
       }
     }
-    val libertySet: Array[Point] = liberties.asScala.toArray[Point]
-    var newString = GoString(player.color, Set(point), Set(libertySet: _*))
+    val libertySet: Array[(Int, Int)] = liberties.asScala.toArray[(Int, Int)]
+    var newString = GoString(player.color, Set(point.toCoords), Set(libertySet: _*))
 
     // 2. Merge any adjacent strings of the same color
     for (sameColorString: GoString <- adjacentSameColor)
       newString = newString.mergedWith(sameColorString)
-    for (newStringPoint: Point <- newString.stones)
-      grid.put(newStringPoint.toCoords, newString)
+    for (newStringPoint: (Int, Int) <- newString.stones)
+      grid.put(newStringPoint, newString)
     hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), None)) // Remove empty-point hash code
     hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), Some(player.color))) // Add filled point hash code.
 
@@ -81,19 +79,19 @@ class GoBoard(val row: Int, val col: Int) {
   private def removeString(goString: GoString): Unit =
     for (point <- goString.stones) {
       // Removing a string can create liberties for other strings.
-      for (neighbor <- neighborMap((point.row, point.col)) if grid.get(neighbor.toCoords).isDefined) {
+      for (neighbor <- neighborMap((point._1, point._1)) if grid.get(neighbor.toCoords).isDefined) {
         val neighborString = grid.get(neighbor.toCoords)
         if (neighborString.get.equals(goString))
-          this.replaceString(neighborString.get.withLiberty(point))
-        grid.remove(point.toCoords)
+          this.replaceString(neighborString.get.withLiberty(Point(point._1, point._2)))
+        grid.remove(point)
       }
-      hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), Some(goString.color))) //Remove filled point hash code.
-      hash ^= ZobristHashing.ZOBRIST(((point.row, point.col), None)) //Add empty point hash code.
+      hash ^= ZobristHashing.ZOBRIST(((point._1, point._2), Some(goString.color))) //Remove filled point hash code.
+      hash ^= ZobristHashing.ZOBRIST(((point._1, point._2), None)) //Add empty point hash code.
     }
 
   private def replaceString(newString: GoString): Unit =
     for (point <- newString.stones)
-      grid += (point.toCoords -> newString)
+      grid += (point -> newString)
 
   def isSelfCapture(player: Player, point: Point): Boolean = {
     val friendlyStrings: util.ArrayList[GoString] = new util.ArrayList[GoString]()

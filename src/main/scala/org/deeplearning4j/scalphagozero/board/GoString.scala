@@ -9,17 +9,17 @@ package org.deeplearning4j.scalphagozero.board
   *
   * @author Max Pumperla
   */
-class GoString(val color: Int, var stones: Set[Point], var liberties: Set[Point]) {
+class GoString(val color: Int, var stones: Set[(Int, Int)], var liberties: Set[(Int, Int)]) {
 
   def numLiberties: Int = liberties.size
 
   def withoutLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties - point
+    val newLiberties = this.liberties - point.toCoords
     GoString(this.color, this.stones, newLiberties)
   }
 
   def withLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties + point
+    val newLiberties = this.liberties + point.toCoords
     GoString(this.color, this.stones, newLiberties)
   }
 
@@ -44,6 +44,6 @@ class GoString(val color: Int, var stones: Set[Point], var liberties: Set[Point]
 
 object GoString {
 
-  def apply(color: Int, stones: Set[Point], liberties: Set[Point]): GoString =
+  def apply(color: Int, stones: Set[(Int, Int)], liberties: Set[(Int, Int)]): GoString =
     new GoString(color, stones, liberties)
 }
