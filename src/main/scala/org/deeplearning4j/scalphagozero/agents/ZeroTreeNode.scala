@@ -8,7 +8,7 @@ class ZeroTreeNode(val gameState: GameState,
                    val value: Double,
                    val priors: mutable.Map[Move, Double],
                    val parent: Option[ZeroTreeNode],
-                   lastMove: Move) {
+                   val lastMove: Move) {
 
   var totalVisitCount: Int = 1
   var branches: mutable.Map[Move, Branch] = mutable.Map()
@@ -23,6 +23,8 @@ class ZeroTreeNode(val gameState: GameState,
   def moves: List[Move] = branches.keys.toList
 
   def addChild(move: Move, childNode: ZeroTreeNode): Unit = children += (move -> childNode)
+
+  def getChild(move: Move): Option[ZeroTreeNode] = children.get(move)
 
   def hasChild(move: Move): Boolean = children.contains(move)
 

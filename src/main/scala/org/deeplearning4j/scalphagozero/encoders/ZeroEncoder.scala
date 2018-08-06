@@ -73,6 +73,8 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     Move.play(Point(row + 1, col + 1))
   }
 
+  def numMoves(): Int = boardWidth * boardHeight + 1
+
 }
 
 object ZeroEncoder {
