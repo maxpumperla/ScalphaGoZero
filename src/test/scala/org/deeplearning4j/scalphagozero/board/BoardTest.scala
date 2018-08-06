@@ -4,23 +4,53 @@ import org.scalatest.FunSpec
 
 class BoardTest extends FunSpec {
 
-  describe("A new 19x19 Board") {
+  describe("Capturing a stone on a new 19x19 Board") {
     val board = GoBoard(19, 19)
 
-    it("playing a black stone") {
+    it("should place and confirm a black stone") {
       board.placeStone(Player(PlayerColor.black), Point(2, 2))
-      board.placeStone(Player(PlayerColor.black), Point(1, 2))
+      board.placeStone(Player(PlayerColor.white), Point(1, 2))
       assert(board.getColor(Point(2, 2)).contains(PlayerColor.black))
+    }
+    it("if black's liberties go down to two, the stone should still be there") {
+      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+      assert(board.getColor(Point(2, 2)).contains(PlayerColor.black))
+    }
+    it("if black's liberties go down to one, the stone should still be there") {
+      board.placeStone(Player(PlayerColor.white), Point(2, 3))
+      assert(board.getColor(Point(2, 2)).contains(PlayerColor.black))
+    }
+    it("finally, if all liberties are taken, the stone should be gone") {
+      board.placeStone(Player(PlayerColor.white), Point(3, 2))
+      assert(board.getColor(Point(2, 2)).isEmpty)
+    }
+  }
 
-      //      board.place_stone(Player.black, Point(2, 2))
-//      board.place_stone(Player.white, Point(1, 2))
-//      self.assertEqual(Player.black, board.get(Point(2, 2)))
-//      board.place_stone(Player.white, Point(2, 1))
-//      self.assertEqual(Player.black, board.get(Point(2, 2)))
-//      board.place_stone(Player.white, Point(2, 3))
-//      self.assertEqual(Player.black, board.get(Point(2, 2)))
-//      board.place_stone(Player.white, Point(3, 2))
-//      self.assertIsNone(board.get(Point(2, 2)))
+  describe("Capturing two stones on a new 19x19 Board") {
+    val board = GoBoard(19, 19)
+
+    it("should place and confirm two black stones") {
+      board.placeStone(Player(PlayerColor.black), Point(2, 2))
+      board.placeStone(Player(PlayerColor.black), Point(2, 3))
+      board.placeStone(Player(PlayerColor.white), Point(1, 2))
+      board.placeStone(Player(PlayerColor.white), Point(1, 3))
+
+      assert(board.getColor(Point(2, 2)).contains(PlayerColor.black))
+      assert(board.getColor(Point(2, 3)).contains(PlayerColor.black))
+    }
+    it("if black's liberties go down to two, the stone should still be there") {
+      board.placeStone(Player(PlayerColor.white), Point(3, 2))
+      board.placeStone(Player(PlayerColor.white), Point(3, 3))
+      assert(board.getColor(Point(2, 2)).contains(PlayerColor.black))
+      assert(board.getColor(Point(2, 3)).contains(PlayerColor.black))
+
+    }
+    it("finally, if all liberties are taken, the stone should be gone") {
+      board.placeStone(Player(PlayerColor.white), Point(2, 1))
+      board.placeStone(Player(PlayerColor.white), Point(2, 4))
+      assert(board.getColor(Point(2, 2)).isEmpty)
+      assert(board.getColor(Point(2, 3)).isEmpty)
+
     }
   }
 }
