@@ -84,7 +84,7 @@ object GameResult {
     val territory = evaluateTerritory(gameState.board)
     new GameResult(
       territory.numBlackTerritory + territory.numBlackStones,
-      territory.numWhi teStones + territory.numWhiteStones,
+      territory.numWhiteStones + territory.numWhiteStones,
       7.5)
   }
 }
