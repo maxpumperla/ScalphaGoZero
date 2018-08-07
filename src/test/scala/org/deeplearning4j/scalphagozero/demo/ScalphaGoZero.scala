@@ -1,10 +1,10 @@
-package org.deeplearning4j.scalphagozero
+package org.deeplearning4j.scalphagozero.demo
 
-import org.deeplearning4j.nn.conf.{ ComputationGraphConfiguration, NeuralNetConfiguration }
+import org.deeplearning4j.nn.conf.{ComputationGraphConfiguration, NeuralNetConfiguration}
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
-import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
+import org.deeplearning4j.scalphagozero.experience.{ZeroExperienceBuffer, ZeroExperienceCollector}
 import org.deeplearning4j.scalphagozero.simulation.Simulator
 
 object ScalphaGoZero {
