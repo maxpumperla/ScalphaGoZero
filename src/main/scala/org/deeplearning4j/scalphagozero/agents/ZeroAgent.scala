@@ -34,7 +34,7 @@ class ZeroAgent(val model: ComputationGraph,
         nextMove = selectBranch(node.get)
       }
       val newState = node.get.gameState.applyMove(nextMove)
-      val childNode = createNode(newState, None, node)
+      val childNode = createNode(newState, Some(nextMove), node)
       var move = nextMove
       var value = -1 * childNode.value
       while (node.isDefined) {
