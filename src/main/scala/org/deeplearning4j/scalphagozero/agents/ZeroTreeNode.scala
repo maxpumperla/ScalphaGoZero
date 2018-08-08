@@ -8,7 +8,7 @@ class ZeroTreeNode(val gameState: GameState,
                    val value: Double,
                    val priors: mutable.Map[Move, Double],
                    val parent: Option[ZeroTreeNode],
-                   val lastMove: Move) {
+                   val lastMove: Option[Move]) {
 
   var totalVisitCount: Int = 1
   var branches: mutable.Map[Move, Branch] = mutable.Map()
@@ -16,7 +16,7 @@ class ZeroTreeNode(val gameState: GameState,
 
   for ((move, prior) <- priors) {
     if (gameState.isValidMove(move)) {
-      branches(move) = new Branch(prior)
+      branches.put(move, new Branch(prior))
     }
   }
 
@@ -32,7 +32,7 @@ class ZeroTreeNode(val gameState: GameState,
     totalVisitCount += 1
     val b = branches(move)
     val updatedBranch = new Branch(b.prior, b.visitCount + 1, b.totalValue + value)
-    branches(move) = updatedBranch
+    branches.put(move, updatedBranch)
   }
 
   def expectedValue(move: Move): Double = {

@@ -75,8 +75,7 @@ class GameState(val board: GoBoard,
       return false
     if (move.isPass || move.isResign)
       return true
-    this.board.getColor(move.point.get).isDefined &&
-    !this.isMoveSelfCapture(nextPlayer, move) &&
+    this.board.getColor(move.point.get).isEmpty && !this.isMoveSelfCapture(nextPlayer, move) &&
     !this.doesMoveViolateKo(nextPlayer, move)
   }
 

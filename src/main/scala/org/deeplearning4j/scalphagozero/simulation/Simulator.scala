@@ -1,7 +1,7 @@
 package org.deeplearning4j.scalphagozero.simulation
 
 import org.deeplearning4j.scalphagozero.agents.Agent
-import org.deeplearning4j.scalphagozero.board.{ GameState, PlayerColor }
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move, PlayerColor }
 import org.deeplearning4j.scalphagozero.experience.ExperienceCollector
 import org.deeplearning4j.scalphagozero.scoring.GameResult
 import org.nd4j.linalg.factory.Nd4j
@@ -23,7 +23,10 @@ object Simulator {
 
     while (!game.isOver) {
       val nextMove = agents(game.nextPlayer.color).selectMove(game)
-      game = game.applyMove(nextMove)
+      if (game.isValidMove(nextMove)) // TODO this shouldn't happen, just for testing
+        game = game.applyMove(nextMove)
+      else
+        game = game.applyMove(Move.resign())
     }
 
     val gameResult = GameResult.computeGameResult(game)

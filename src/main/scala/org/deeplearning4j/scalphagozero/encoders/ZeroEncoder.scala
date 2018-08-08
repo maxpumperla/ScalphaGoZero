@@ -16,7 +16,7 @@ import org.nd4j.linalg.indexing.NDArrayIndex
   * @author Max Pumperla
   */
 class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
-    extends Encoder(boardHeight, boardWidth, 11) {
+    extends Encoder(boardHeight, boardWidth, 10) {
 
   override def name(): String = "AlphaGoZero"
 
@@ -54,20 +54,22 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
         }
       }
     }
-    tensor
+    val shape = tensor.shape()
+    val batchTensor = tensor.reshape(1, shape(0), shape(1), shape(2))
+    batchTensor.permute(0, 2, 3, 1) // channels last on input data
   }
 
   override def encodeMove(move: Move): Int =
     if (move.isPlay)
-      boardHeight * move.point.get.row + move.point.get.col
+      boardHeight * (move.point.get.row - 1) + (move.point.get.col - 1)
     else if (move.isPass)
       boardHeight * boardWidth
     else
       throw new IllegalArgumentException("Cannot encode resign move")
 
   override def decodeMoveIndex(index: Int): Move = {
-    if (index.equals(boardWidth * boardHeight))
-      Move.pass()
+    if (index == boardWidth * boardHeight)
+      return Move.pass()
     val row = index / boardHeight
     val col = index % boardHeight
     Move.play(Point(row + 1, col + 1))

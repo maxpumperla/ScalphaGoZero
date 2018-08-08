@@ -1,6 +1,5 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-
 import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor, Point }
 
 import scala.collection.mutable

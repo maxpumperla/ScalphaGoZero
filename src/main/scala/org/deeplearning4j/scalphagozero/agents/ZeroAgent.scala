@@ -35,10 +35,10 @@ class ZeroAgent(val model: ComputationGraph,
       }
       val newState = node.get.gameState.applyMove(nextMove)
       val childNode = createNode(newState, Some(nextMove), node)
-      var move = nextMove
+      var move: Option[Move] = Some(nextMove)
       var value = -1 * childNode.value
-      while (node.isDefined) {
-        node.get.recordVisit(move, value)
+      while (node.isDefined && move.isDefined) {
+        node.get.recordVisit(move.get, value)
         move = node.get.lastMove
         value = -1 * value
       }
@@ -54,6 +54,7 @@ class ZeroAgent(val model: ComputationGraph,
       collector.get.recordDecision(rootStateTensor, visitCounts.toList)
     }
     root.moves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
+    // TODO filter by legal moves
   }
 
   def selectBranch(node: ZeroTreeNode): Move = {
@@ -77,7 +78,7 @@ class ZeroAgent(val model: ComputationGraph,
     val stateTensor: INDArray = this.encoder.encode(gameState)
     val outputs = this.model.output(stateTensor)
     val priors = outputs(0)
-    val value = outputs(1)
+    val value = outputs(1).getDouble(0L, 0L)
 
     val movePriors: mutable.Map[Move, Double] = new mutable.HashMap[Move, Double]()
     for (i <- 0 until priors.length().toInt) {
@@ -86,14 +87,14 @@ class ZeroAgent(val model: ComputationGraph,
       movePriors.put(move, prior)
     }
 
-    val newNode = new ZeroTreeNode(gameState, 0, movePriors, parent, move.get)
+    val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)
     if (parent.isDefined && move.isDefined)
       parent.get.addChild(move.get, newNode)
     newNode
   }
 
   def train(experience: ZeroExperienceBuffer): Unit = {
-    val numExamples = experience.states.rows()
+    val numExamples = experience.states.shape()(0).toInt
 
     val modelInput: INDArray = experience.states
 
