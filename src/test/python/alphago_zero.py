@@ -99,7 +99,7 @@ def residual_tower(blocks, **args):
     def f(inputs):
         x = inputs
         for i in range(blocks):
-            x = residual_block(block_num=i)(x)
+            x = residual_block(block_num=i, **args)(x)
         return x
     return f
 
@@ -107,7 +107,7 @@ def convolutional_tower(blocks, **args):
     def f(inputs):
         x = inputs
         for i in range(blocks):
-            x = conv_bn_relu_block(name=i)(x)
+            x = conv_bn_relu_block(name=i, **args)(x)
         return x
     return f
 
