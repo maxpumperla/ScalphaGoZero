@@ -15,7 +15,7 @@ object ScalphaGoZero {
     val boardSize = 19
     val encoder = ZeroEncoder(boardSize, boardSize)
 
-    val modelPath = "dual_res.json"
+    val modelPath = "dual_res.json" // TODO: generate first
     val modelResource = new ClassPathResource(modelPath, ScalphaGoZero.getClass.getClassLoader)
 
     val config: ComputationGraphConfiguration =

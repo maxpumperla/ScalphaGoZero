@@ -21,3 +21,17 @@ project/plugins/project/
 
 __pycache__/
 *.pyc
+
+dual_conv.json
+dual_res.json
+sep_conv_policy.json
+sep_conv_value.json
+sep_res_policy.json
+sep_res_value.json
+
+dual_conv.h5
+dual_res.h5
+sep_conv_policy.h5
+sep_conv_value.h5
+sep_res_policy.h5
+sep_res_value.h5
