@@ -99,12 +99,10 @@ class ZeroAgent(val model: ComputationGraph,
     val modelInput: INDArray = experience.states
 
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
+    val actionTarget = experience.visitCounts.div(visitSums) // TODO should be (5, 362), is (5,1)
+    val valueTarget = experience.rewards // this seems correct
 
-    val actionTarget = experience.visitCounts.div(visitSums)
-    val valueTarget = experience.rewards
-
-    model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
-
+    model.fit(Array[INDArray](modelInput), Array[INDArray](Nd4j.create(5, 362), valueTarget))
   }
 
 }

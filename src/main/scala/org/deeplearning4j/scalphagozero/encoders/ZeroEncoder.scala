@@ -56,7 +56,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     }
     val shape = tensor.shape()
     val batchTensor = tensor.reshape(1, shape(0), shape(1), shape(2))
-    batchTensor.permute(0, 2, 3, 1) // channels last on input data
+    batchTensor
   }
 
   override def encodeMove(move: Move): Int =
@@ -80,6 +80,8 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
 }
 
 object ZeroEncoder {
+
+  def apply(): ZeroEncoder = new ZeroEncoder(19, 19)
 
   def apply(boardHeight: Int, boardWidth: Int): ZeroEncoder =
     new ZeroEncoder(boardHeight, boardWidth)
