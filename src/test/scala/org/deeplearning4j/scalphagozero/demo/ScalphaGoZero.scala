@@ -2,33 +2,30 @@ package org.deeplearning4j.scalphagozero.demo
 
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
-import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
+import org.deeplearning4j.scalphagozero.experience.ZeroExperienceBuffer
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
-import org.deeplearning4j.scalphagozero.simulation.Simulator
+import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
 
 object ScalphaGoZero {
 
   def main(args: Array[String]): Unit = {
-    val numResidualBlocks = 20
 
+    // Define board encoder and model
     val encoder = ZeroEncoder()
-    val model = DualResnetModel(numResidualBlocks, encoder.numPlanes)
-    model.init()
+    val model = DualResnetModel(20, encoder.numPlanes)
 
-    val blackAgent = new ZeroAgent(model, encoder, roundsPerMove = 10, c = 2.0)
-    val whiteAgent = new ZeroAgent(model, encoder, roundsPerMove = 10, c = 2.0)
+    // Create two AGZ opponents
+    val blackAgent = new ZeroAgent(model, encoder)
+    val whiteAgent = new ZeroAgent(model, encoder)
 
-    val blackCollector = new ZeroExperienceCollector()
-    val whiteCollector = new ZeroExperienceCollector()
-
-    blackAgent.setCollector(blackCollector)
-    whiteAgent.setCollector(whiteCollector)
-
+    // Run 5 simulations...
     for (i <- 0 until 5)
-      Simulator.simulateGame(19, 19, blackAgent, blackCollector, whiteAgent, whiteCollector)
+      ZeroSimulator.simulateGame(blackAgent, whiteAgent)
 
-    val experience = ZeroExperienceBuffer.combineExperience(List(blackCollector, whiteCollector))
+    // ... and collect the joint experience
+    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.getCollector, whiteAgent.getCollector))
 
+    // Use experience data to train one of the agents.
     blackAgent.train(experience)
     System.out.println("Training phase done! You can use black agent to play now")
   }

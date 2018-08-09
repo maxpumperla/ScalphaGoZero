@@ -16,7 +16,10 @@ object DualResnetModel {
     val valueOut = builder.addValueHead(towerOut)
     builder.addOutputs(List(policyOut, valueOut))
 
-    new ComputationGraph(builder.buildAndReturn())
+    val model = new ComputationGraph(builder.buildAndReturn())
+    model.init()
+
+    model
   }
 
 }

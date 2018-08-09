@@ -16,13 +16,15 @@ import scala.collection.mutable.ListBuffer
   */
 class ZeroAgent(val model: ComputationGraph,
                 val encoder: ZeroEncoder,
-                val roundsPerMove: Int = 1000,
+                val roundsPerMove: Int = 10,
                 val c: Double = 2.0)
     extends Agent {
 
-  var collector: Option[ZeroExperienceCollector] = None
+  private var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
 
-  def setCollector(collector: ZeroExperienceCollector): Unit = this.collector = Some(collector)
+  def getCollector: ZeroExperienceCollector = collector
+
+  def setCollector(collector: ZeroExperienceCollector): Unit = this.collector = collector
 
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState, None, None)
@@ -43,15 +45,14 @@ class ZeroAgent(val model: ComputationGraph,
         value = -1 * value
       }
     }
-    if (collector.isDefined) {
-      val rootStateTensor = encoder.encode(gameState)
-      var visitCounts: ListBuffer[INDArray] = new ListBuffer()
-      for (index <- 0 until encoder.numMoves()) {
-        val move: Move = encoder.decodeMoveIndex(index)
-        val count: INDArray = Nd4j.scalar(root.visitCount(move))
-        visitCounts += count
-      }
-      collector.get.recordDecision(rootStateTensor, visitCounts.toList)
+    val rootStateTensor = encoder.encode(gameState)
+    var visitCounts: ListBuffer[INDArray] = new ListBuffer()
+    for (index <- 0 until encoder.numMoves()) {
+      val move: Move = encoder.decodeMoveIndex(index)
+      val count: INDArray = Nd4j.scalar(root.visitCount(move))
+      visitCounts += count
+
+    collector.recordDecision(rootStateTensor, visitCounts.toList)
     }
     root.moves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
     // TODO filter by legal moves
