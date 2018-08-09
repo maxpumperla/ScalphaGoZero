@@ -26,9 +26,9 @@ class ZeroExperienceCollector extends ExperienceCollector {
   override def beginEpisode(): Unit =
     clearBuffers()
 
-  override def recordDecision(state: INDArray, visitCounts: List[INDArray]): Unit = {
+  override def recordDecision(state: INDArray, visitCounts: INDArray): Unit = {
     currentEpisodeStates += state
-    currentEpisodeVisitCounts ++= visitCounts
+    currentEpisodeVisitCounts += visitCounts
   }
 
   override def completeEpisode(reward: INDArray): Unit = {

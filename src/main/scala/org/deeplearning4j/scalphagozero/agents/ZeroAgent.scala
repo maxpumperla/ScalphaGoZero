@@ -14,10 +14,7 @@ import scala.collection.mutable.ListBuffer
   *
   * @author Max Pumperla
   */
-class ZeroAgent(val model: ComputationGraph,
-                val encoder: ZeroEncoder,
-                val roundsPerMove: Int = 10,
-                val c: Double = 2.0)
+class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val roundsPerMove: Int = 10, val c: Double = 2.0)
     extends Agent {
 
   private var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
@@ -46,14 +43,13 @@ class ZeroAgent(val model: ComputationGraph,
       }
     }
     val rootStateTensor = encoder.encode(gameState)
-    var visitCounts: ListBuffer[INDArray] = new ListBuffer()
+    var visitCounts: INDArray = Nd4j.create(1, encoder.numMoves())
     for (index <- 0 until encoder.numMoves()) {
       val move: Move = encoder.decodeMoveIndex(index)
-      val count: INDArray = Nd4j.scalar(root.visitCount(move))
-      visitCounts += count
-
-    collector.recordDecision(rootStateTensor, visitCounts.toList)
+      visitCounts.put(1, index, Nd4j.scalar(root.visitCount(move)))
     }
+    collector.recordDecision(rootStateTensor, visitCounts)
+
     root.moves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
     // TODO filter by legal moves
   }
@@ -100,10 +96,10 @@ class ZeroAgent(val model: ComputationGraph,
     val modelInput: INDArray = experience.states
 
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
-    val actionTarget = experience.visitCounts.div(visitSums) // TODO should be (5, 362), is (5,1)
-    val valueTarget = experience.rewards // this seems correct
+    val actionTarget = experience.visitCounts.div(visitSums)
+    val valueTarget = experience.rewards
 
-    model.fit(Array[INDArray](modelInput), Array[INDArray](Nd4j.create(5, 362), valueTarget))
+    model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
   }
 
 }

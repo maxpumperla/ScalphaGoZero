@@ -1,14 +1,13 @@
 package org.deeplearning4j.scalphagozero.simulation
 
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
-import org.deeplearning4j.scalphagozero.board.{GameState, Move, PlayerColor}
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move, PlayerColor }
 import org.deeplearning4j.scalphagozero.scoring.GameResult
 import org.nd4j.linalg.factory.Nd4j
 
 object ZeroSimulator {
 
-  def simulateGame(blackAgent: ZeroAgent,
-                   whiteAgent: ZeroAgent): Unit = {
+  def simulateGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
 
     val encoder = blackAgent.encoder
     val boardHeight = encoder.boardHeight

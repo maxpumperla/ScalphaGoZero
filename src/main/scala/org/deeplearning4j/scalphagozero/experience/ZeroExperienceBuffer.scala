@@ -23,7 +23,7 @@ object ZeroExperienceBuffer {
 
     val combinedStates = Nd4j.concat(0, states: _*)
     val combinedRewards = Nd4j.concat(0, rewards: _*)
-    val combinedVisitCounts = Nd4j.concat(0, rewards: _*)
+    val combinedVisitCounts = Nd4j.concat(0, visitCounts: _*)
 
     new ZeroExperienceBuffer(combinedStates, combinedVisitCounts, combinedRewards)
 

@@ -12,7 +12,7 @@ abstract class ExperienceCollector {
 
   def beginEpisode(): Unit
 
-  def recordDecision(state: INDArray, visitCounts: List[INDArray]): Unit
+  def recordDecision(state: INDArray, visitCounts: INDArray): Unit
 
   def completeEpisode(reward: INDArray): Unit
 
