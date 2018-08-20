@@ -19,7 +19,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     extends Encoder(boardHeight, boardWidth, 10) {
 
   override def name(): String = "AlphaGoZero"
-
+  // TODO should output 11 planes
   /**
     * Encode the current game state as board tensor
     *

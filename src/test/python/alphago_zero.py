@@ -81,7 +81,7 @@ def conv_bn_relu_block(name, activation=True, filters=256, kernel_size=(3,3),
                       padding=padding,
                       kernel_initializer=init,
                       name="{}_conv_block".format(name))(inputs)
-        batch_norm = BatchNormalization(axis=1, name="{}_batch_norm".format(name))(conv)
+        batch_norm = BatchNormalization(axis=-1, name="{}_batch_norm".format(name))(conv)
         return Activation("relu", name="{}_relu".format(name))(batch_norm) if activation else batch_norm
     return f    
 
@@ -119,7 +119,7 @@ def policy_head():
                       strides=(1, 1),
                       padding="same",
                       name="policy_head_conv_block")(inputs)
-        batch_norm = BatchNormalization(axis=1, name="policy_head_batch_norm")(conv)
+        batch_norm = BatchNormalization(axis=-1, name="policy_head_batch_norm")(conv)
         activation = Activation("relu", name="policy_head_relu")(batch_norm)
         flatten = Flatten()(activation)
         return Dense(units= 19*19 +1, name="policy_head_dense")(flatten)
@@ -133,7 +133,7 @@ def value_head():
                       strides=(1, 1),
                       padding="same",
                       name="value_head_conv_block")(inputs)
-        batch_norm = BatchNormalization(axis=1, name="value_head_batch_norm")(conv)
+        batch_norm = BatchNormalization(axis=-1, name="value_head_batch_norm")(conv)
         activation = Activation("relu", name="value_head_relu")(batch_norm)
         flatten = Flatten()(activation)
         dense =  Dense(units= 256, name="value_head_dense", activation="relu")(flatten)
