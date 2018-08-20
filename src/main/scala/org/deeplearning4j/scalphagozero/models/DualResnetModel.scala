@@ -2,6 +2,12 @@ package org.deeplearning4j.scalphagozero.models
 
 import org.deeplearning4j.nn.graph.ComputationGraph
 
+/**
+  * Define and load an AlphaGo Zero dual ResNet architecture
+  * into DL4J.
+  *
+  * @author Max Pumperla
+  */
 object DualResnetModel {
 
   def apply(blocks: Int, numPlanes: Int): ComputationGraph = {

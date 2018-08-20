@@ -22,7 +22,7 @@ class DL4JAlphaGoZeroBuilder {
   val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
     .updater(new Sgd())
     .weightInit(WeightInit.LECUN_NORMAL)
-    .graphBuilder() setInputTypes InputType.convolutional(19, 19, 10)
+    .graphBuilder() setInputTypes InputType.convolutional(19, 19, 11)
 
   def addInputs(name: String): Unit =
     conf.addInputs(name)

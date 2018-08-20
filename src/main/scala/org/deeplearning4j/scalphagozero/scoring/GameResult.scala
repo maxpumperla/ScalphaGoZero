@@ -5,6 +5,15 @@ import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor,
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
+/**
+  * Compute the result of a game
+  *
+  * @param blackPoints points black scored
+  * @param whitePoints points white scored
+  * @param komi the komi that was agreed to at the beginning of the game
+  *
+  * @author Max Pumperla
+  */
 class GameResult(blackPoints: Int, whitePoints: Int, komi: Double) {
 
   def winner: Int = if (blackPoints > whitePoints + komi) PlayerColor.black else PlayerColor.white
@@ -22,6 +31,26 @@ class GameResult(blackPoints: Int, whitePoints: Int, komi: Double) {
 
 object GameResult {
 
+  /**
+    * Compute the game result from the current state.
+    *
+    * @param gameState GameState instance
+    * @return GameResult object
+    */
+  def computeGameResult(gameState: GameState): GameResult = {
+    val territory = evaluateTerritory(gameState.board)
+    new GameResult(territory.numBlackTerritory + territory.numBlackStones,
+                   territory.numWhiteStones + territory.numWhiteStones,
+                   7.5)
+  }
+
+  /**
+    * Evaluate / estimate the territory currently on
+    * the Go board
+    *
+    * @param goBoard GoBoard instance
+    * @return Territory object
+    */
   def evaluateTerritory(goBoard: GoBoard): Territory = {
     val statusMap = new mutable.HashMap[Point, String]()
     for (row <- 1 to goBoard.row) {
@@ -82,10 +111,4 @@ object GameResult {
     (allPoints, allBorders)
   }
 
-  def computeGameResult(gameState: GameState): GameResult = {
-    val territory = evaluateTerritory(gameState.board)
-    new GameResult(territory.numBlackTerritory + territory.numBlackStones,
-                   territory.numWhiteStones + territory.numWhiteStones,
-                   7.5)
-  }
 }

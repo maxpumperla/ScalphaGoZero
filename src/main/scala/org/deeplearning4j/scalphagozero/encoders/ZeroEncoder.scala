@@ -16,10 +16,10 @@ import org.nd4j.linalg.indexing.NDArrayIndex
   * @author Max Pumperla
   */
 class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
-    extends Encoder(boardHeight, boardWidth, 10) {
+    extends Encoder(boardHeight, boardWidth, 11) {
 
   override def name(): String = "AlphaGoZero"
-  // TODO should output 11 planes
+
   /**
     * Encode the current game state as board tensor
     *
@@ -33,7 +33,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
     val nextPlayer: Player = gameState.nextPlayer
     nextPlayer.color match {
       case PlayerColor.white => tensor.putSlice(8, Nd4j.ones(boardHeight, boardWidth));
-      case PlayerColor.black => tensor.putSlice(8, Nd4j.ones(boardHeight, boardWidth));
+      case PlayerColor.black => tensor.putSlice(9, Nd4j.ones(boardHeight, boardWidth));
     }
     for (row <- 0 until this.boardHeight) {
       for (col <- 0 until this.boardWidth) {

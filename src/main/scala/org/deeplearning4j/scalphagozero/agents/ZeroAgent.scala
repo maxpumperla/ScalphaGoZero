@@ -95,8 +95,9 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
 
     val modelInput: INDArray = experience.states
 
+    val countLength = experience.visitCounts.shape()(1)
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
-    val actionTarget = experience.visitCounts.div(visitSums)
+    val actionTarget = experience.visitCounts.div(visitSums.repeat(1, countLength))
     val valueTarget = experience.rewards
 
     model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
