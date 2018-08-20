@@ -10,7 +10,12 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
-  * AlphaGo Zero agent
+  * AlphaGo Zero agent, main workhorse of this project.
+  *
+  * @param model DL4J computation graph suitable for AGZ predictions
+  * @param encoder ZeroEncoder instance to feed data into the model
+  * @param roundsPerMove roll-outs per move
+  * @param c constant to multiply score with (defaults to 2.0)
   *
   * @author Max Pumperla
   */
@@ -19,8 +24,18 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
 
   private var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
 
+  /**
+    * Get the experience collector of this agent.
+    *
+    * @return ZeroExperienceCollector
+    */
   def getCollector: ZeroExperienceCollector = collector
 
+  /**
+    * Set a new experience collector
+    *
+    * @param collector ZeroExperienceCollector
+    */
   def setCollector(collector: ZeroExperienceCollector): Unit = this.collector = collector
 
   override def selectMove(gameState: GameState): Move = {
@@ -54,6 +69,12 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     // TODO filter by legal moves
   }
 
+  /**
+    * Select a move given a node.
+    *
+    * @param node ZeroTreeNode
+    * @return Move instance
+    */
   def selectBranch(node: ZeroTreeNode): Move = {
     val totalCount = node.totalVisitCount
 
@@ -71,6 +92,14 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     mv
   }
 
+  /**
+    * Create a new ZeroTreeNode from the current game state.
+    *
+    * @param gameState game state
+    * @param move optional move
+    * @param parent optional parent ZeroTreeNode
+    * @return ZeroTreeNode
+    */
   def createNode(gameState: GameState, move: Option[Move], parent: Option[ZeroTreeNode]): ZeroTreeNode = {
     val stateTensor: INDArray = this.encoder.encode(gameState)
     val outputs = this.model.output(stateTensor)
@@ -90,6 +119,11 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     newNode
   }
 
+  /**
+    * Learn from experience, after the play-out is done.
+    *
+    * @param experience ZeroExperienceBuffer
+    */
   def train(experience: ZeroExperienceBuffer): Unit = {
     val numExamples = experience.states.shape()(0).toInt
 

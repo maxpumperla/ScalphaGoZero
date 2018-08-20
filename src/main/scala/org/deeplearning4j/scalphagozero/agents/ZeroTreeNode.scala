@@ -4,6 +4,15 @@ import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 
 import scala.collection.mutable
 
+/**
+  * Tree node of an AlphaGo Zero game tree.
+  *
+  * @param gameState current game state
+  * @param value value of this node
+  * @param priors Map of moves to prior values (estimated by policy network)
+  * @param parent optional parent of this node
+  * @param lastMove optional last played move
+  */
 class ZeroTreeNode(val gameState: GameState,
                    val value: Double,
                    val priors: mutable.Map[Move, Double],
