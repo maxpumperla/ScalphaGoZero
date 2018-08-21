@@ -8,9 +8,7 @@ class ZeroEncoderTest() extends FunSpec {
   describe("An Agent") {
 
     it("should have ...") {
-      var arr = Nd4j.zeros(2, 3, 4)
-      arr = arr.put(Array(1, 1, 1), Nd4j.scalar(12))
-      System.out.print(arr)
+      assert(true)
     }
   }
 
