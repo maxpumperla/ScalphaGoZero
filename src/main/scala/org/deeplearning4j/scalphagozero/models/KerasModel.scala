@@ -25,7 +25,6 @@ import org.nd4j.linalg.io.ClassPathResource
   *
   * @author Max Pumperla
   */
-
 object KerasModel {
 
   def getDualResnet: ComputationGraph = {
@@ -63,6 +62,5 @@ object KerasModel {
 
     (policy, value)
   }
-
 
 }
