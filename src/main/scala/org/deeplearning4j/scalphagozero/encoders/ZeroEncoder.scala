@@ -46,7 +46,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
               tensor.put(Array(10, row, col), Nd4j.scalar(1))
           }
           case Some(string) => {
-            var libertyPlane = Math.min(4, string.numLiberties) - 1
+            var libertyPlane = Math.max(Math.min(4, string.numLiberties) - 1, 1)
             if (string.color.equals(nextPlayer.color))
               libertyPlane += 4
             tensor.put(Array(libertyPlane, row, col), Nd4j.scalar(1))

@@ -24,7 +24,7 @@ mvn clean install exec:java
 ```
 
 [This application](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/demo/ScalphaGoZero.scala) 
-will set up two opponents, simulate 10 games between them using the
+will set up two opponents, simulate 5 games between them using the
 AlphaGo Zero methodology and train one of the opponents with the experience data
 gained from the games. For more extensive experiments you should build out this demo.
 

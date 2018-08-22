@@ -41,7 +41,11 @@ class GameState(val board: GoBoard,
     val nextBoard: GoBoard = move.isPlay match {
       case true =>
         val nextBoard = this.board.clone()
-        nextBoard.placeStone(nextPlayer, move.point.get)
+        try {
+          nextBoard.placeStone(nextPlayer, move.point.get)
+        } catch {
+          case e: Exception => println(" Illegal move attempted at: " + move.point.get.toCoords)
+        }
         nextBoard
       case false => this.board
     }

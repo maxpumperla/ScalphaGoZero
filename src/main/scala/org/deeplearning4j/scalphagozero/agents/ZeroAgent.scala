@@ -65,8 +65,8 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     }
     collector.recordDecision(rootStateTensor, visitCounts)
 
-    root.moves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
-    // TODO filter by legal moves
+    val validMoves = root.moves.filter(m => gameState.isValidMove(m))
+    validMoves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
   }
 
   /**

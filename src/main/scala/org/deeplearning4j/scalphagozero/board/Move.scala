@@ -12,8 +12,8 @@ class Move(val point: Option[Point] = None, val isPass: Boolean = false, val isR
   def isPlay: Boolean = point.isDefined
 
   override def toString(): String = {
-    if (isPass) "pass"
-    if (isResign) "resign"
+    if (isPass) return "pass"
+    if (isResign) return "resign"
     "row: " + point.get.row + " col: " + point.get.col
   }
 

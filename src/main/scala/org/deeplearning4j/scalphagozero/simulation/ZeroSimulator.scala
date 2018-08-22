@@ -27,13 +27,16 @@ object ZeroSimulator {
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
 
+    println(">>> Starting a new game.")
     while (!game.isOver) {
       val nextMove = agents(game.nextPlayer.color).selectMove(game)
-      if (game.isValidMove(nextMove)) // TODO this shouldn't happen, just for testing
+      if (game.isValidMove(nextMove)) {
+        val color = if (game.nextPlayer.color == 1) "black" else "white"
         game = game.applyMove(nextMove)
-      else
+      } else
         game = game.applyMove(Move.resign())
     }
+    println(">>> Simulation terminated.")
 
     val gameResult = GameResult.computeGameResult(game)
     if (gameResult.winner == PlayerColor.black) {
