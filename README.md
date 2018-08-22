@@ -28,6 +28,18 @@ will set up two opponents, simulate 10 games between them using the
 AlphaGo Zero methodology and train one of the opponents with the experience data
 gained from the games. For more extensive experiments you should build out this demo.
 
+To use Keras model import you need to generate the resources first:
+
+```bash
+cd test/python
+pip install tensorflow keras
+python generate_h5_resources.py
+```
+
+The generated, serialized Keras models are put into `src/main/resources` and are picked up
+by the `KerasModel` class, as [demonstrated in our tests](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/test/scala/org/deeplearning4j/scalphagozero/models/TestKerasImport.scala).
+ 
+
 ## Core Concepts
 
 Quite a few concepts are needed to build an AlphaGoZero system, ScalphaGoZero is intended
