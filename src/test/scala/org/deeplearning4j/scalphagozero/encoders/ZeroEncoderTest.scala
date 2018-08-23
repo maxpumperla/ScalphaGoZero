@@ -6,7 +6,7 @@ class ZeroEncoderTest() extends FunSpec {
   describe("An Agent") {
 
     it("should have ...") {
-      assert(true)
+      //assert(true)
     }
   }
 

@@ -18,9 +18,10 @@ class Point(val row: Int, val col: Int) {
   )
 
   override def equals(obj: scala.Any): Boolean = {
-    if (obj.isInstanceOf[Point]) {
-      val castPoint = obj.asInstanceOf[Point]
-      return this.row == castPoint.row && this.col == castPoint.col
+    obj match {
+      case castPoint: Point =>
+        return this.row == castPoint.row && this.col == castPoint.col
+      case _ =>
     }
     false
   }

@@ -7,23 +7,23 @@ class TestKerasImport extends FunSpec {
 
   describe("Testing model import") {
     it("should load the dual resnet model") {
-      val model = KerasModel.getDualResnet
+      val model = KerasModel.getDualResidualNet
       model.summary()
     }
 
     it("should load the dual convnet model") {
-      val model = KerasModel.getDualConvnet
+      val model = KerasModel.getDualConvolutionNet
       model.summary()
     }
 
     it("should load separate convnet models") {
-      val model: (ComputationGraph, ComputationGraph) = KerasModel.getSeparateConvnets
+      val model: (ComputationGraph, ComputationGraph) = KerasModel.getSeparateConvolutionNets
       model._1.summary()
       model._2.summary()
     }
 
     it("should load separate resnet models") {
-      val model: (ComputationGraph, ComputationGraph) = KerasModel.getSeparateResnets
+      val model: (ComputationGraph, ComputationGraph) = KerasModel.getSeparateResidualNets
       model._1.summary()
       model._2.summary()
     }

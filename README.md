@@ -52,6 +52,8 @@ what a [Go board](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/m
 a [player](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/board/Player.scala),
 a [move](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/board/Move.scala) or 
 the current [game state](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/board/GameState.scala) is.
+Notably, the [Zobrist hashing technique](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/board/ZobristHashing.scala)
+is implemented in the Go board class to speed up computation. 
 - [Encoders](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/encoders/Encoder.scala): 
 Game states and moves need to be translated into something a neural network can
 use for training and predictions, namely tensors. We use [ND4J](https://deeplearning4j.org/docs/latest/nd4j-overview)
@@ -86,10 +88,10 @@ become better players over time.
 ScalphaGoZero can be improved in many ways, here are a few examples:
 
 - Experience collectors build one large ND4J array, which won't work for large experiments.
-This should be refactored into a data set iterator that only provided you with the next batch
-needed for training
+This should be refactored into an iterator that only provides you with the next batch
+needed for training.
 - Test coverage can be vastly improved. The basics are covered, but there are potentially many
-edge cases still missing
+edge cases still missing.
 - Running a larger experiment and storing the weights somewhere freely accessible to users
 would be beneficial to get started and see reasonable results from the start.
 - Building a demo with a user interface would be nice. Agents could be wrapped in an HTTP server,

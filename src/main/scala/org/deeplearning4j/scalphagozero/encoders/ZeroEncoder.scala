@@ -2,7 +2,6 @@ package org.deeplearning4j.scalphagozero.encoders
 import org.deeplearning4j.scalphagozero.board._
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
-import org.nd4j.linalg.indexing.NDArrayIndex
 
 /**
   * AlphaGo Zero Go board encoder, an eleven-plane encoder structured as follows:
@@ -41,16 +40,14 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
         val goString: Option[GoString] = gameState.board.getGoString(p)
 
         goString match {
-          case None => {
+          case None =>
             if (gameState.doesMoveViolateKo(nextPlayer, Move.play(p)))
               tensor.put(Array(10, row, col), Nd4j.scalar(1))
-          }
-          case Some(string) => {
+          case Some(string) =>
             var libertyPlane = Math.max(Math.min(4, string.numLiberties) - 1, 1)
             if (string.color.equals(nextPlayer.color))
               libertyPlane += 4
             tensor.put(Array(libertyPlane, row, col), Nd4j.scalar(1))
-          }
         }
       }
     }

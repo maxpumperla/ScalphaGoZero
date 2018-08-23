@@ -49,7 +49,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @return Index representation of the point
     */
   def pointToIndex(point: Point): Int =
-    boardWidth * (point.row) + point.col
+    boardWidth * point.row + point.col
 
   /**
     * Decodes an index back into a point representation.

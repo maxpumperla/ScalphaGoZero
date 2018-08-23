@@ -31,7 +31,6 @@ object ZeroSimulator {
     while (!game.isOver) {
       val nextMove = agents(game.nextPlayer.color).selectMove(game)
       if (game.isValidMove(nextMove)) {
-        val color = if (game.nextPlayer.color == 1) "black" else "white"
         game = game.applyMove(nextMove)
       } else
         game = game.applyMove(Move.resign())

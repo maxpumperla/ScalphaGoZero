@@ -6,6 +6,14 @@ import org.deeplearning4j.nn.graph.ComputationGraph
   * Define and load an AlphaGo Zero dual ResNet architecture
   * into DL4J.
   *
+  * The dual residual architecture is the strongest
+  * of the architectures tested by DeepMind for AlphaGo
+  * Zero. It consists of an initial convolution layer block,
+  * followed by a number (40 for the strongest, 20 as
+  * baseline) of residual blocks. The network is topped
+  * off by two "heads", one to predict policies and one
+  * for value functions.
+  *
   * @author Max Pumperla
   */
 object DualResnetModel {

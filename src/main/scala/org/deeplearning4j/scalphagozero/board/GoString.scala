@@ -32,13 +32,13 @@ class GoString(val color: Int, var stones: Set[(Int, Int)], var liberties: Set[(
   }
 
   override def equals(obj: scala.Any): Boolean = {
-    if (obj.isInstanceOf[GoString]) {
-      val castObj = obj.asInstanceOf[GoString]
-      return this.color.equals(castObj.color) && this.stones.equals(castObj.stones) && this.liberties
-        .equals(castObj.liberties)
-
+    obj match {
+      case castObj: GoString =>
+        return this.color.equals(castObj.color) && this.stones.equals(castObj.stones) && this.liberties
+          .equals(castObj.liberties)
+      case _ =>
     }
-    return false
+    false
   }
 }
 

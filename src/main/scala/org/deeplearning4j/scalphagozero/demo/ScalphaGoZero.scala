@@ -31,7 +31,7 @@ object ScalphaGoZero {
     val whiteAgent = new ZeroAgent(model, encoder)
 
     // Run some simulations...
-    for (i <- 0 until 5)
+    for (_ <- 0 until 5)
       ZeroSimulator.simulateGame(blackAgent, whiteAgent)
 
     // ... and collect the joint experience

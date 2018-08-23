@@ -75,7 +75,7 @@ class BoardTest extends FunSpec {
       assert(whiteString.numLiberties == 4)
 
       board.placeStone(Player(PlayerColor.black), Point(3, 2))
-      val newWhiteString = board.getGoString(Point(2, 2)).get
+      //val newWhiteString = board.getGoString(Point(2, 2)).get
       //assert(whiteString.numLiberties == 3)
     }
   }

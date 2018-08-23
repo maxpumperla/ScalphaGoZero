@@ -1,16 +1,17 @@
 package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
-import org.deeplearning4j.scalphagozero.encoders.{ Encoder, ZeroEncoder }
+import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 /**
-  * AlphaGo Zero agent, main workhorse of this project.
+  * AlphaGo Zero agent, main workhorse of this project. ZeroAgent implements the characteristic combination of
+  * tree search with reinforcement learning that lead to breakthrough results for the game of Go (AlphaGo Zero)
+  * and other board games like chess (Alpha Zero).
   *
   * @param model DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
@@ -32,7 +33,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
   def getCollector: ZeroExperienceCollector = collector
 
   /**
-    * Set a new experience collector
+    * Set a new experience collector.
     *
     * @param collector ZeroExperienceCollector
     */
@@ -58,7 +59,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       }
     }
     val rootStateTensor = encoder.encode(gameState)
-    var visitCounts: INDArray = Nd4j.create(1, encoder.numMoves())
+    val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves())
     for (index <- 0 until encoder.numMoves()) {
       val move: Move = encoder.decodeMoveIndex(index)
       visitCounts.put(1, index, Nd4j.scalar(root.visitCount(move)))

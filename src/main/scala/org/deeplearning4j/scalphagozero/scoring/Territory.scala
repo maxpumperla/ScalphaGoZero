@@ -20,7 +20,7 @@ class Territory(territoryMap: mutable.HashMap[Point, String]) {
   var numBlackStones = 0
   var numWhiteStones = 0
   var numDame = 0
-  private var damePoints: util.ArrayList[Point] = new util.ArrayList[Point]()
+  private val damePoints: util.ArrayList[Point] = new util.ArrayList[Point]()
 
   for (point <- territoryMap.keys) {
     val status = territoryMap(point)

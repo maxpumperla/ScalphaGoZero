@@ -75,9 +75,9 @@ class DL4JAlphaGoZeroBuilder {
     val actBlock = "relu_" + blockNumber
 
     val firstBnOut =
-      addConvBatchNormBlock(firstBlock, inName, 256, true, kernelSize, strides, convolutionMode)
+      addConvBatchNormBlock(firstBlock, inName, 256, useActivation = true, kernelSize, strides, convolutionMode)
     val secondBnOut =
-      addConvBatchNormBlock(secondBlock, firstOut, 256, false, kernelSize, strides, convolutionMode)
+      addConvBatchNormBlock(secondBlock, firstOut, 256, useActivation = false, kernelSize, strides, convolutionMode)
     conf.addVertex(mergeBlock, new ElementWiseVertex(Op.Add), firstBnOut, secondBnOut)
     conf.addLayer(actBlock, new ActivationLayer.Builder().activation(Activation.RELU).build(), mergeBlock)
     actBlock
@@ -101,7 +101,7 @@ class DL4JAlphaGoZeroBuilder {
                             convolutionMode: ConvolutionMode = ConvolutionMode.Same): Unit = {
     var name = inName
     for (i <- 0 until numBlocks)
-      name = addConvBatchNormBlock(i.toString, name, 256, true, kernelSize, strides, convolutionMode)
+      name = addConvBatchNormBlock(i.toString, name, 256, useActivation = true, kernelSize, strides, convolutionMode)
   }
 
   def addPolicyHead(inName: String,

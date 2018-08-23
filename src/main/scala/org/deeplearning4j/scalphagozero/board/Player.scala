@@ -3,7 +3,7 @@ package org.deeplearning4j.scalphagozero.board
 /**
   * Player of a game of Go (either black or white)
   *
-  * @param color
+  * @param color player color, 1 = black, 2 = white
   */
 class Player(val color: Int) {
 

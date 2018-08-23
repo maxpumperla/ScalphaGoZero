@@ -112,7 +112,7 @@ class GoBoard(val row: Int, val col: Int) {
   }
 
   def willCapture(player: Player, point: Point): Boolean = {
-    for (neighbor <- neighborMap((point.row, point.col));
+    for (neighbor <- neighborMap((point.row, point.col))
          if grid.get(neighbor.toCoords).isDefined && grid(neighbor.toCoords).color != player.color) {
       val neighborString = grid(neighbor.toCoords)
       if (neighborString.numLiberties == 1)
@@ -128,9 +128,10 @@ class GoBoard(val row: Int, val col: Int) {
   def getGoString(point: Point): Option[GoString] = grid.get(point.toCoords)
 
   override def equals(obj: scala.Any): Boolean = {
-    if (obj.isInstanceOf[GoBoard]) {
-      val other = obj.asInstanceOf[GoBoard]
-      return this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
+    obj match {
+      case other: GoBoard =>
+        return this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
+      case _ =>
     }
     false
   }

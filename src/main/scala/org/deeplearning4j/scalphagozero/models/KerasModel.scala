@@ -11,19 +11,19 @@ import org.nd4j.linalg.io.ClassPathResource
   */
 object KerasModel {
 
-  def getDualResnet: ComputationGraph = {
+  def getDualResidualNet: ComputationGraph = {
     val file = "dual_res.h5"
     val modelResource = new ClassPathResource(file, this.getClass.getClassLoader)
     KerasModelImport.importKerasModelAndWeights(modelResource.getFile.getAbsolutePath, false)
   }
 
-  def getDualConvnet: ComputationGraph = {
+  def getDualConvolutionNet: ComputationGraph = {
     val file = "dual_conv.h5"
     val modelResource = new ClassPathResource(file, this.getClass.getClassLoader)
     KerasModelImport.importKerasModelAndWeights(modelResource.getFile.getAbsolutePath, false)
   }
 
-  def getSeparateResnets: (ComputationGraph, ComputationGraph) = {
+  def getSeparateResidualNets: (ComputationGraph, ComputationGraph) = {
     val policyFile = "sep_res_policy.h5"
     val policyModelResource = new ClassPathResource(policyFile, this.getClass.getClassLoader)
     val policy = KerasModelImport.importKerasModelAndWeights(policyModelResource.getFile.getAbsolutePath, false)
@@ -35,7 +35,7 @@ object KerasModel {
     (policy, value)
   }
 
-  def getSeparateConvnets: (ComputationGraph, ComputationGraph) = {
+  def getSeparateConvolutionNets: (ComputationGraph, ComputationGraph) = {
     val policyFile = "sep_conv_policy.h5"
     val policyModelResource = new ClassPathResource(policyFile, this.getClass.getClassLoader)
     val policy = KerasModelImport.importKerasModelAndWeights(policyModelResource.getFile.getAbsolutePath)

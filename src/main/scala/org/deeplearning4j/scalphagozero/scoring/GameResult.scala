@@ -86,7 +86,6 @@ object GameResult {
                             board: GoBoard,
                             visited: ArrayBuffer[(Int, Int)] = ArrayBuffer()): (List[Point], Set[Option[Int]]) = {
     var visitedMap = visited
-    val bool = visited.contains(startingPoint.toCoords)
     if (visited.contains(startingPoint.toCoords))
       return (List(), Set())
 

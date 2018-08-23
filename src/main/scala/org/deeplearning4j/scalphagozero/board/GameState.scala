@@ -28,26 +28,27 @@ class GameState(val board: GoBoard,
   }
 
   override def equals(obj: scala.Any): Boolean = {
-    if (obj.isInstanceOf[GameState]) {
-      val other = obj.asInstanceOf[GameState]
-      return this.board == other.board && this.previousState == other.previousState &&
-      this.nextPlayer == other.nextPlayer && this.lastMove == other.lastMove &&
-      this.allPreviousStates == other.allPreviousStates
+    obj match {
+      case other: GameState =>
+        return this.board == other.board && this.previousState == other.previousState &&
+        this.nextPlayer == other.nextPlayer && this.lastMove == other.lastMove &&
+        this.allPreviousStates == other.allPreviousStates
+      case _ =>
     }
     false
   }
 
   def applyMove(move: Move): GameState = {
-    val nextBoard: GoBoard = move.isPlay match {
-      case true =>
-        val nextBoard = this.board.clone()
-        try {
-          nextBoard.placeStone(nextPlayer, move.point.get)
-        } catch {
-          case e: Exception => println(" Illegal move attempted at: " + move.point.get.toCoords)
-        }
-        nextBoard
-      case false => this.board
+    val nextBoard: GoBoard = if (move.isPlay) {
+      val nextBoard = this.board.clone()
+      try {
+        nextBoard.placeStone(nextPlayer, move.point.get)
+      } catch {
+        case _: Exception => println(" Illegal move attempted at: " + move.point.get.toCoords)
+      }
+      nextBoard
+    } else {
+      this.board
     }
     new GameState(nextBoard, nextPlayer.other, Some(this), Some(move))
 
