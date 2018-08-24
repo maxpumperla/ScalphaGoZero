@@ -18,8 +18,8 @@ object ZeroSimulator {
     val boardHeight = encoder.boardHeight
     val boardWidth = encoder.boardWidth
 
-    val blackCollector = blackAgent.getCollector
-    val whiteCollector = whiteAgent.getCollector
+    val blackCollector = blackAgent.collector
+    val whiteCollector = whiteAgent.collector
 
     var game = GameState.newGame(boardHeight, boardWidth)
     val agents = Map(PlayerColor.black -> blackAgent, PlayerColor.white -> whiteAgent)
@@ -30,10 +30,7 @@ object ZeroSimulator {
     println(">>> Starting a new game.")
     while (!game.isOver) {
       val nextMove = agents(game.nextPlayer.color).selectMove(game)
-      if (game.isValidMove(nextMove)) {
-        game = game.applyMove(nextMove)
-      } else
-        game = game.applyMove(Move.resign())
+      game = if (game.isValidMove(nextMove)) game.applyMove(nextMove) else game.applyMove(Move.Resign)
     }
     println(">>> Simulation terminated.")
 

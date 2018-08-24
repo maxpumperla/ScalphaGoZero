@@ -41,84 +41,89 @@ class GameState(
   }
 
   def applyMove(move: Move): GameState = {
-    val nextBoard: GoBoard = if (move.isPlay) {
-      val nextBoard = this.board.clone()
-      try {
-        nextBoard.placeStone(nextPlayer, move.point.get)
-      } catch {
-        case _: Exception => println(" Illegal move attempted at: " + move.point.get.toCoords)
+    val nextBoard: GoBoard =
+      move match {
+        case Move.Play(point) =>
+          val nextBoard = this.board.clone()
+          try {
+            nextBoard.placeStone(nextPlayer, point)
+          } catch {
+            case _: Exception => println(" Illegal move attempted at: " + point.toCoords)
+          }
+          nextBoard
+        case Move.Pass | Move.Resign => this.board
       }
-      nextBoard
-    } else {
-      this.board
-    }
+
     new GameState(nextBoard, nextPlayer.other, Some(this), Some(move))
-
   }
 
-  def isMoveSelfCapture(player: Player, move: Move): Boolean = {
-    if (!move.isPlay)
-      return false
-    this.board.isSelfCapture(player, move.point.get)
-  }
+  def isMoveSelfCapture(player: Player, move: Move): Boolean =
+    move match {
+      case Move.Play(point)        => this.board.isSelfCapture(player, point)
+      case Move.Pass | Move.Resign => false
+    }
 
-  def doesMoveViolateKo(player: Player, move: Move): Boolean = {
-    if (!move.isPlay)
-      return false
-    if (!this.board.willCapture(player, move.point.get))
-      return false
-
-    val nextBoard = this.board.clone()
-    nextBoard.placeStone(player, move.point.get)
-    val nextSituation = (player.other, nextBoard.zobristHash)
-    this.allPreviousStates.contains(nextSituation)
-
-  }
+  def doesMoveViolateKo(player: Player, move: Move): Boolean =
+    move match {
+      case Move.Play(point) if this.board.willCapture(player, point) =>
+        val nextBoard = this.board.clone()
+        nextBoard.placeStone(player, point)
+        val nextSituation = (player.other, nextBoard.zobristHash)
+        this.allPreviousStates.contains(nextSituation)
+      case _ => false
+    }
 
   def situation: (Player, GoBoard) = (nextPlayer, board)
 
-  def isValidMove(move: Move): Boolean = {
-    if (this.isOver)
-      return false
-    if (move.isPass || move.isResign)
-      return true
-    this.board.getColor(move.point.get).isEmpty && !this.isMoveSelfCapture(nextPlayer, move) &&
-    !this.doesMoveViolateKo(nextPlayer, move)
-  }
+  def isValidMove(move: Move): Boolean =
+    if (this.isOver) false
+    else {
+      move match {
+        case Move.Resign | Move.Pass => true
+        case Move.Play(point) =>
+          this.board.getColor(point).isEmpty &&
+          !this.isMoveSelfCapture(nextPlayer, move) &&
+          !this.doesMoveViolateKo(nextPlayer, move)
+      }
+    }
 
-  def isOver: Boolean = {
-    if (this.lastMove.isEmpty)
-      return false
-    if (this.lastMove.get.isResign)
-      return true
-    val secondLastMove = this.previousState.get.lastMove
-    if (secondLastMove.isEmpty)
-      return false
-    this.lastMove.get.isPass && secondLastMove.get.isPass
-  }
+  def isOver: Boolean =
+    this.lastMove match {
+      case None | Some(Move.Play(_)) => false
+      case Some(Move.Resign)         => true
+      case Some(Move.Pass) =>
+        val secondLastMove = this.previousState.get.lastMove
+        secondLastMove match {
+          case Some(Move.Pass)                               => true
+          case None | Some(Move.Play(_)) | Some(Move.Resign) => false
+        }
+    }
 
-  def legalMoves: List[Move] = {
-    if (this.isOver)
-      return ListBuffer().toList
-    val moves = ListBuffer[Move](Move.pass(), Move.resign())
-    for (row <- 1 to board.row) {
-      for (col <- 1 to board.col) {
-        val move = Move.play(Point(row, col))
+  def legalMoves: List[Move] =
+    if (this.isOver) ListBuffer().toList
+    else {
+      val moves = ListBuffer[Move](Move.Pass, Move.Resign)
+      for {
+        row <- 1 to board.row
+        col <- 1 to board.col
+      } {
+        val move = Move.Play(Point(row, col))
         if (this.isValidMove(move))
           moves += move
       }
+      moves.toList
     }
-    moves.toList
-  }
 
-  def winner: Option[Int] = {
-    if (this.isOver)
-      return None
-    if (this.lastMove.isDefined && this.lastMove.get.isResign)
-      return Some(this.nextPlayer.color)
-    val gameResult = GameResult.computeGameResult(this)
-    Some(gameResult.winner)
-  }
+  def winner: Option[Int] =
+    if (this.isOver) None
+    else {
+      this.lastMove match {
+        case Some(Move.Resign) => Some(this.nextPlayer.color)
+        case None | Some(Move.Play(_)) | Some(Move.Pass) =>
+          val gameResult = GameResult.computeGameResult(this)
+          Some(gameResult.winner)
+      }
+    }
 
 }
 

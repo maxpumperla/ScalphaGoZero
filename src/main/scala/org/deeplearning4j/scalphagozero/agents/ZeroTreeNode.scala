@@ -27,7 +27,7 @@ class ZeroTreeNode(
 
   for ((move, prior) <- priors) {
     if (gameState.isValidMove(move)) {
-      branches.put(move, new Branch(prior))
+      branches.put(move, Branch(prior))
     }
   }
 
@@ -42,7 +42,7 @@ class ZeroTreeNode(
   def recordVisit(move: Move, value: Double): Unit = {
     totalVisitCount += 1
     val b = branches(move)
-    val updatedBranch = new Branch(b.prior, b.visitCount + 1, b.totalValue + value)
+    val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
     branches.put(move, updatedBranch)
   }
 

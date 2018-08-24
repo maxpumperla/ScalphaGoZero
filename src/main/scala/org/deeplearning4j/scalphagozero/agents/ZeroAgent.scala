@@ -23,21 +23,7 @@ import scala.collection.mutable
 class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val roundsPerMove: Int = 10, val c: Double = 2.0)
     extends Agent {
 
-  private var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
-
-  /**
-    * Get the experience collector of this agent.
-    *
-    * @return ZeroExperienceCollector
-    */
-  def getCollector: ZeroExperienceCollector = collector
-
-  /**
-    * Set a new experience collector.
-    *
-    * @param collector ZeroExperienceCollector
-    */
-  def setCollector(collector: ZeroExperienceCollector): Unit = this.collector = collector
+  val collector: ZeroExperienceCollector = new ZeroExperienceCollector()
 
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState, None, None)

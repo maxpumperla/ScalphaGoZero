@@ -41,7 +41,7 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
 
         goString match {
           case None =>
-            if (gameState.doesMoveViolateKo(nextPlayer, Move.play(p)))
+            if (gameState.doesMoveViolateKo(nextPlayer, Move.Play(p)))
               tensor.put(Array(10, row, col), Nd4j.scalar(1))
           case Some(string) =>
             var libertyPlane = Math.max(Math.min(4, string.numLiberties) - 1, 1)
@@ -57,20 +57,20 @@ class ZeroEncoder(override val boardHeight: Int, override val boardWidth: Int)
   }
 
   override def encodeMove(move: Move): Int =
-    if (move.isPlay)
-      boardHeight * (move.point.get.row - 1) + (move.point.get.col - 1)
-    else if (move.isPass)
-      boardHeight * boardWidth
-    else
-      throw new IllegalArgumentException("Cannot encode resign move")
+    move match {
+      case Move.Play(point) => boardHeight * (point.row - 1) + (point.col - 1)
+      case Move.Pass        => boardHeight * boardWidth
+      case _                => throw new IllegalArgumentException("Cannot encode resign move")
+    }
 
-  override def decodeMoveIndex(index: Int): Move = {
-    if (index == boardWidth * boardHeight)
-      return Move.pass()
-    val row = index / boardHeight
-    val col = index % boardHeight
-    Move.play(Point(row + 1, col + 1))
-  }
+  override def decodeMoveIndex(index: Int): Move =
+    if (index == boardWidth * boardHeight) {
+      Move.Pass
+    } else {
+      val row = index / boardHeight
+      val col = index % boardHeight
+      Move.Play(Point(row + 1, col + 1))
+    }
 
   def numMoves(): Int = boardWidth * boardHeight + 1
 

@@ -35,7 +35,7 @@ object ScalphaGoZero {
       ZeroSimulator.simulateGame(blackAgent, whiteAgent)
 
     // ... and collect the joint experience
-    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.getCollector, whiteAgent.getCollector))
+    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.collector, whiteAgent.collector))
 
     // Use experience data to train one of the agents.
     blackAgent.train(experience)
