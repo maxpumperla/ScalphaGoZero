@@ -3,5 +3,4 @@ scala: dummy
 jdk: oraclejdk8
 
 script:
-  - sbt ++2.11.12 clean compile test
   - mvn -q clean package
