@@ -106,10 +106,11 @@ class DL4JAlphaGoZeroBuilder {
       kernelSize: List[Int] = List(3, 3),
       strides: List[Int] = List(1, 1),
       convolutionMode: ConvolutionMode = ConvolutionMode.Same
-  ): Unit = {
+  ): String = {
     var name = inName
     for (i <- 0 until numBlocks)
       name = addConvBatchNormBlock(i.toString, name, 256, useActivation = true, kernelSize, strides, convolutionMode)
+    name
   }
 
   def addPolicyHead(
