@@ -1,4 +1,5 @@
-# ScalphaGoZero
+# ScalphaGoZero [![Build Status](https://travis-ci.org/maxpumperla/ScalphaGoZero.svg?branch=master)](https://travis-ci.org/maxpumperla/ScalphaGoZero)
+
 
 ScalphaGoZero is an independent implementation of DeepMind's AlphaGo Zero in Scala, 
 using [Deeplearning4J (DL4J)](https://deeplearning4j.org/) to run neural networks. 
