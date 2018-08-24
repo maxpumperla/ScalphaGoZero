@@ -20,9 +20,9 @@ import scala.collection.JavaConversions._
 class DL4JAlphaGoZeroBuilder {
 
   val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
-    .updater(new Sgd())
-    .weightInit(WeightInit.LECUN_NORMAL)
-    .graphBuilder() setInputTypes InputType.convolutional(19, 19, 11)
+      .updater(new Sgd())
+      .weightInit(WeightInit.LECUN_NORMAL)
+      .graphBuilder() setInputTypes InputType.convolutional(19, 19, 11)
 
   def addInputs(name: String): Unit =
     conf.addInputs(name)
@@ -32,13 +32,15 @@ class DL4JAlphaGoZeroBuilder {
 
   def buildAndReturn(): ComputationGraphConfiguration = conf.build()
 
-  def addConvBatchNormBlock(blockName: String,
-                            inName: String,
-                            nIn: Int,
-                            useActivation: Boolean = true,
-                            kernelSize: List[Int] = List(3, 3),
-                            strides: List[Int] = List(1, 1),
-                            convolutionMode: ConvolutionMode = ConvolutionMode.Same): String = {
+  def addConvBatchNormBlock(
+      blockName: String,
+      inName: String,
+      nIn: Int,
+      useActivation: Boolean = true,
+      kernelSize: List[Int] = List(3, 3),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): String = {
     val convName = "conv_" + blockName
     val bnName = "batch_norm_" + blockName
     val actName = "relu_" + blockName
@@ -63,11 +65,13 @@ class DL4JAlphaGoZeroBuilder {
       bnName
   }
 
-  def addResidualBlock(blockNumber: Int,
-                       inName: String,
-                       kernelSize: List[Int] = List(3, 3),
-                       strides: List[Int] = List(1, 1),
-                       convolutionMode: ConvolutionMode = ConvolutionMode.Same): String = {
+  def addResidualBlock(
+      blockNumber: Int,
+      inName: String,
+      kernelSize: List[Int] = List(3, 3),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): String = {
     val firstBlock = "residual_1_" + blockNumber
     val firstOut = "relu_residual_1_" + blockNumber
     val secondBlock = "residual_2_" + blockNumber
@@ -83,32 +87,38 @@ class DL4JAlphaGoZeroBuilder {
     actBlock
   }
 
-  def addResidualTower(numBlocks: Int,
-                       inName: String,
-                       kernelSize: List[Int] = List(3, 3),
-                       strides: List[Int] = List(1, 1),
-                       convolutionMode: ConvolutionMode = ConvolutionMode.Same): String = {
+  def addResidualTower(
+      numBlocks: Int,
+      inName: String,
+      kernelSize: List[Int] = List(3, 3),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): String = {
     var name = inName
     for (i <- 0 until numBlocks)
       name = addResidualBlock(i, name, kernelSize, strides, convolutionMode)
     name
   }
 
-  def addConvolutionalTower(numBlocks: Int,
-                            inName: String,
-                            kernelSize: List[Int] = List(3, 3),
-                            strides: List[Int] = List(1, 1),
-                            convolutionMode: ConvolutionMode = ConvolutionMode.Same): Unit = {
+  def addConvolutionalTower(
+      numBlocks: Int,
+      inName: String,
+      kernelSize: List[Int] = List(3, 3),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): Unit = {
     var name = inName
     for (i <- 0 until numBlocks)
       name = addConvBatchNormBlock(i.toString, name, 256, useActivation = true, kernelSize, strides, convolutionMode)
   }
 
-  def addPolicyHead(inName: String,
-                    useActivation: Boolean = true,
-                    kernelSize: List[Int] = List(3, 3),
-                    strides: List[Int] = List(1, 1),
-                    convolutionMode: ConvolutionMode = ConvolutionMode.Same): String = {
+  def addPolicyHead(
+      inName: String,
+      useActivation: Boolean = true,
+      kernelSize: List[Int] = List(3, 3),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): String = {
     val convName = "policy_head_conv_"
     val bnName = "policy_head_batch_norm_"
     val actName = "policy_head_relu_"
@@ -133,11 +143,13 @@ class DL4JAlphaGoZeroBuilder {
     )
     denseName
   }
-  def addValueHead(inName: String,
-                   useActivation: Boolean = true,
-                   kernelSize: List[Int] = List(1, 1),
-                   strides: List[Int] = List(1, 1),
-                   convolutionMode: ConvolutionMode = ConvolutionMode.Same): String = {
+  def addValueHead(
+      inName: String,
+      useActivation: Boolean = true,
+      kernelSize: List[Int] = List(1, 1),
+      strides: List[Int] = List(1, 1),
+      convolutionMode: ConvolutionMode = ConvolutionMode.Same
+  ): String = {
     val convName = "value_head_conv_"
     val bnName = "value_head_batch_norm_"
     val actName = "value_head_relu_"
