@@ -20,7 +20,7 @@ Here's how to download the library, install it and run its main application:
 ```bash
 git clone https://github.com/maxpumperla/ScalphaGoZero
 cd ScalphaGoZero
-mvn clean install exec:java
+sbt run
 ```
 
 [This application](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/demo/ScalphaGoZero.scala) 
