@@ -1,6 +1,7 @@
 package org.deeplearning4j.scalphagozero.simulation
 
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
+import org.deeplearning4j.scalphagozero.board.PlayerColor.{ Black, White }
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move, PlayerColor }
 import org.deeplearning4j.scalphagozero.scoring.GameResult
 import org.nd4j.linalg.factory.Nd4j
@@ -22,7 +23,7 @@ object ZeroSimulator {
     val whiteCollector = whiteAgent.collector
 
     var game = GameState.newGame(boardHeight, boardWidth)
-    val agents = Map(PlayerColor.black -> blackAgent, PlayerColor.white -> whiteAgent)
+    val agents = Map(PlayerColor.Black -> blackAgent, PlayerColor.White -> whiteAgent)
 
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
@@ -35,12 +36,13 @@ object ZeroSimulator {
     println(">>> Simulation terminated.")
 
     val gameResult = GameResult.computeGameResult(game)
-    if (gameResult.winner == PlayerColor.black) {
-      blackCollector.completeEpisode(Nd4j.scalar(1))
-      whiteCollector.completeEpisode(Nd4j.scalar(-1))
-    } else {
-      blackCollector.completeEpisode(Nd4j.scalar(-1))
-      whiteCollector.completeEpisode(Nd4j.scalar(1))
+    gameResult.winner match {
+      case Black =>
+        blackCollector.completeEpisode(Nd4j.scalar(1))
+        whiteCollector.completeEpisode(Nd4j.scalar(-1))
+      case White =>
+        blackCollector.completeEpisode(Nd4j.scalar(-1))
+        whiteCollector.completeEpisode(Nd4j.scalar(1))
     }
   }
 }

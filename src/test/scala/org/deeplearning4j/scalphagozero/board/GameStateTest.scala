@@ -10,8 +10,8 @@ class GameStateTest extends FunSpec {
       val nextState = start.applyMove(Move.Play(Point(16, 16)))
 
       assert(start == nextState.previousState.get)
-      assert(nextState.board.getColor(Point(16, 16)).get == PlayerColor.black)
-      assert(nextState.nextPlayer.color == PlayerColor.white)
+      assert(nextState.board.getColor(Point(16, 16)).get == PlayerColor.Black)
+      assert(nextState.nextPlayer.color == PlayerColor.White)
     }
   }
 }
