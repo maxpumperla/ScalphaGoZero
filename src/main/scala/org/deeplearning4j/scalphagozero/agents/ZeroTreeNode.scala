@@ -13,11 +13,13 @@ import scala.collection.mutable
   * @param parent optional parent of this node
   * @param lastMove optional last played move
   */
-class ZeroTreeNode(val gameState: GameState,
-                   val value: Double,
-                   val priors: mutable.Map[Move, Double],
-                   val parent: Option[ZeroTreeNode],
-                   val lastMove: Option[Move]) {
+class ZeroTreeNode(
+    val gameState: GameState,
+    val value: Double,
+    val priors: mutable.Map[Move, Double],
+    val parent: Option[ZeroTreeNode],
+    val lastMove: Option[Move]
+) {
 
   var totalVisitCount: Int = 1
   var branches: mutable.Map[Move, Branch] = mutable.Map()

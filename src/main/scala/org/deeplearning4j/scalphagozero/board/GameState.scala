@@ -15,10 +15,12 @@ import scala.collection.mutable.ListBuffer
   *
   * @author Max Pumperla
   */
-class GameState(val board: GoBoard,
-                val nextPlayer: Player,
-                val previousState: Option[GameState],
-                val lastMove: Option[Move]) {
+class GameState(
+    val board: GoBoard,
+    val nextPlayer: Player,
+    val previousState: Option[GameState],
+    val lastMove: Option[Move]
+) {
 
   var allPreviousStates: Set[(Player, Long)] = previousState match {
     case None => Set[(Player, Long)]()

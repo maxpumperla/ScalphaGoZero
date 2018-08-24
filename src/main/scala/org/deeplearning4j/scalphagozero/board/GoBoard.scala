@@ -138,10 +138,12 @@ class GoBoard(val row: Int, val col: Int) {
 
   def zobristHash: Long = hash
 
-  private def setBoardProperties(grid: mutable.Map[(Int, Int), GoString],
-                                 hash: Long,
-                                 neighborMap: mutable.Map[(Int, Int), List[Point]],
-                                 cornerMap: mutable.Map[(Int, Int), List[Point]]): Unit = {
+  private def setBoardProperties(
+      grid: mutable.Map[(Int, Int), GoString],
+      hash: Long,
+      neighborMap: mutable.Map[(Int, Int), List[Point]],
+      cornerMap: mutable.Map[(Int, Int), List[Point]]
+  ): Unit = {
     this.hash = hash
     this.grid = grid
     this.neighborMap = neighborMap
