@@ -4,16 +4,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.deeplearning4j</groupId>
-        <artifactId>deeplearning4j</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.deeplearning4j</groupId>
     <artifactId>scalphagozero</artifactId>
+    <version>1.0.0</version>
 
     <name>ScalphaGoZero</name>
     <description>An independent implementation of DeepMind's AlphaGoZero in Scala, using Deeplearning4J (DL4J)
@@ -35,6 +30,11 @@
     </developers>
 
     <properties>
+        <scalafmt.version>1.3.0</scalafmt.version>
+        <nd4j.version>0.9.1</nd4j.version>
+        <scalatest.version>3.0.5</scalatest.version>
+        <logback.version>1.2.3</logback.version>
+        <dl4j.version>1.0.0-beta2</dl4j.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
     </properties>
