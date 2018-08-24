@@ -31,7 +31,7 @@ gained from the games. For more extensive experiments you should build out this 
 To use Keras model import you need to generate the resources first:
 
 ```bash
-cd test/python
+cd src/test/python
 pip install tensorflow keras
 python generate_h5_resources.py
 ```
