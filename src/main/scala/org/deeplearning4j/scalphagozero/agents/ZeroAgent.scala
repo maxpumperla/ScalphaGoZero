@@ -27,7 +27,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
 
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState, None, None)
-    for (i <- 0 until roundsPerMove) {
+    for (_ <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
       var nextMove = selectBranch(node.get)
       while (node.get.hasChild(nextMove)) {
@@ -45,10 +45,10 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       }
     }
     val rootStateTensor = encoder.encode(gameState)
-    val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves())
-    for (index <- 0 until encoder.numMoves()) {
+    val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
+    for (index <- 0 until encoder.numMoves) {
       val move: Move = encoder.decodeMoveIndex(index)
-      visitCounts.put(1, index, Nd4j.scalar(root.visitCount(move)))
+      visitCounts.put(1, index, Nd4j.scalar(root.visitCount(move).doubleValue()))
     }
     collector.recordDecision(rootStateTensor, visitCounts)
 
@@ -69,7 +69,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       val q = node.expectedValue(move)
       val p = node.prior(move)
       val n = node.visitCount(move)
-      q + this.c * p * Math.sqrt(totalCount) / (n + 1)
+      q + this.c * p * Math.sqrt(totalCount.doubleValue()) / (n + 1)
     }
 
     node.moves

@@ -16,7 +16,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     *
     * @return Encoder name as String
     */
-  def name(): String
+  def name: String
 
   /**
     * Encode the current game state as board tensor
@@ -48,8 +48,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @param point Board point
     * @return Index representation of the point
     */
-  def pointToIndex(point: Point): Int =
-    boardWidth * point.row + point.col
+  final def pointToIndex(point: Point): Int = boardWidth * point.row + point.col
 
   /**
     * Decodes an index back into a point representation.
@@ -57,7 +56,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @param index index of a point
     * @return Board point corresponding to index.
     */
-  def indexToPoint(index: Int): Point = {
+  final def indexToPoint(index: Int): Point = {
     val row = index / boardWidth
     val col = index % boardWidth
     new Point(row + 1, col + 1)
@@ -68,12 +67,12 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     *
     * @return Number of board points
     */
-  def numberOfPoints(): Int = boardWidth * boardHeight
+  final def numberOfPoints: Int = boardWidth * boardHeight
 
   /**
     * Shape of encoded tensors
     *
     * @return Tensor shape as array
     */
-  def shape(): Array[Int] = Array(numPlanes, boardHeight, boardWidth)
+  final def shape: Array[Int] = Array(numPlanes, boardHeight, boardWidth)
 }

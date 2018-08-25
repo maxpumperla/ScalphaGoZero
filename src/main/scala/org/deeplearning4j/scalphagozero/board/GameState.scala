@@ -1,6 +1,6 @@
 package org.deeplearning4j.scalphagozero.board
-
 import org.deeplearning4j.scalphagozero.scoring.GameResult
+
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -12,7 +12,6 @@ import scala.collection.mutable.ListBuffer
   * @param nextPlayer the Player who is next to play
   * @param previousState Previous GameState, if any
   * @param lastMove last move played in this game, if any
-  *
   * @author Max Pumperla
   */
 class GameState(
@@ -22,12 +21,23 @@ class GameState(
     val lastMove: Option[Move]
 ) {
 
-  var allPreviousStates: Set[(Player, Long)] = previousState match {
-    case None => Set[(Player, Long)]()
-    case Some(state) =>
-      state.allPreviousStates += ((nextPlayer, state.board.zobristHash))
-      state.allPreviousStates
-  }
+  private val allPreviousStates: Set[(Player, Long)] =
+    previousState match {
+      case None        => Set.empty
+      case Some(state) => state.allPreviousStates + (nextPlayer -> state.board.zobristHash)
+    }
+
+  val isOver: Boolean =
+    this.lastMove match {
+      case None | Some(Move.Play(_)) => false
+      case Some(Move.Resign)         => true
+      case Some(Move.Pass) =>
+        val secondLastMove = this.previousState.get.lastMove
+        secondLastMove match {
+          case Some(Move.Pass)                               => true
+          case None | Some(Move.Play(_)) | Some(Move.Resign) => false
+        }
+    }
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {
@@ -45,11 +55,7 @@ class GameState(
       move match {
         case Move.Play(point) =>
           val nextBoard = this.board.clone()
-          try {
-            nextBoard.placeStone(nextPlayer, point)
-          } catch {
-            case _: Exception => println(" Illegal move attempted at: " + point.toCoords)
-          }
+          nextBoard.placeStone(nextPlayer, point)
           nextBoard
         case Move.Pass | Move.Resign => this.board
       }
@@ -73,8 +79,6 @@ class GameState(
       case _ => false
     }
 
-  def situation: (Player, GoBoard) = (nextPlayer, board)
-
   def isValidMove(move: Move): Boolean =
     if (this.isOver) false
     else {
@@ -87,20 +91,8 @@ class GameState(
       }
     }
 
-  def isOver: Boolean =
-    this.lastMove match {
-      case None | Some(Move.Play(_)) => false
-      case Some(Move.Resign)         => true
-      case Some(Move.Pass) =>
-        val secondLastMove = this.previousState.get.lastMove
-        secondLastMove match {
-          case Some(Move.Pass)                               => true
-          case None | Some(Move.Play(_)) | Some(Move.Resign) => false
-        }
-    }
-
   def legalMoves: List[Move] =
-    if (this.isOver) ListBuffer().toList
+    if (this.isOver) List.empty
     else {
       val moves = ListBuffer[Move](Move.Pass, Move.Resign)
       for {
@@ -130,7 +122,7 @@ class GameState(
 object GameState {
 
   def newGame(boardHeight: Int, boardWidth: Int): GameState = {
-    val board = new GoBoard(boardHeight, boardWidth)
+    val board = GoBoard(boardHeight, boardWidth)
     new GameState(board, Player(PlayerColor.Black), None, None)
   }
 

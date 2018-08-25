@@ -1,6 +1,6 @@
 language: scala
-scala: dummy
+scala: 2.12.6
 jdk: oraclejdk8
 
 script:
-  - sbt ++2.11.12 clean compile test
+  - sbt clean test

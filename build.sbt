@@ -6,7 +6,14 @@ licenses += "Apache License, Version 2.0" -> url("http://www.apache.org/licenses
 
 scalafmtOnCompile := true
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.6"
+
+// Jules note:
+// -----------
+// I remove the `-Xfatal-warnings` from the scalac options set by the `sbt-tpolecat` plugin because it can be frustating.
+// However, If you feel confident enough, it's better to activate it.
+//
+scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings")
 
 lazy val dl4j = ((version: String) => Seq(
   "org.nd4j" % "nd4j-native-platform" % version,

@@ -12,23 +12,23 @@ import scala.collection.mutable.ListBuffer
   */
 class ZeroExperienceCollector extends ExperienceCollector {
 
-  var states: ListBuffer[INDArray] = ListBuffer()
-  var visitCounts: ListBuffer[INDArray] = ListBuffer()
-  var rewards: ListBuffer[INDArray] = ListBuffer()
-  private var currentEpisodeStates: ListBuffer[INDArray] = ListBuffer()
-  private var currentEpisodeVisitCounts: ListBuffer[INDArray] = ListBuffer()
+  val states: ListBuffer[INDArray] = ListBuffer.empty
+  val visitCounts: ListBuffer[INDArray] = ListBuffer.empty
+  val rewards: ListBuffer[INDArray] = ListBuffer.empty
+  private var currentEpisodeStates: ListBuffer[INDArray] = ListBuffer.empty
+  private var currentEpisodeVisitCounts: ListBuffer[INDArray] = ListBuffer.empty
 
   private def clearBuffers(): Unit = {
-    currentEpisodeStates = ListBuffer()
-    currentEpisodeVisitCounts = ListBuffer()
+    currentEpisodeStates = ListBuffer.empty
+    currentEpisodeVisitCounts = ListBuffer.empty
   }
 
-  override def beginEpisode(): Unit =
-    clearBuffers()
+  override def beginEpisode(): Unit = clearBuffers()
 
   override def recordDecision(state: INDArray, visitCounts: INDArray): Unit = {
     currentEpisodeStates += state
     currentEpisodeVisitCounts += visitCounts
+    ()
   }
 
   override def completeEpisode(reward: INDArray): Unit = {
@@ -36,8 +36,8 @@ class ZeroExperienceCollector extends ExperienceCollector {
     visitCounts ++= currentEpisodeVisitCounts
     for (_ <- 1 to currentEpisodeStates.size)
       rewards += reward
-    clearBuffers()
 
+    clearBuffers()
   }
 
 }
