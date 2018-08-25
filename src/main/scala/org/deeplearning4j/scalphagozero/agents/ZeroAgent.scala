@@ -72,11 +72,10 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       q + this.c * p * Math.sqrt(totalCount) / (n + 1)
     }
 
-    val mv: Move = node.moves
+    node.moves
       .map(m => (m, scoreBranch(m)))
       .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
       ._1
-    mv
   }
 
   /**
@@ -101,8 +100,9 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     }
 
     val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)
-    if (parent.isDefined && move.isDefined)
+    if (parent.isDefined && move.isDefined) {
       parent.get.addChild(move.get, newNode)
+    }
     newNode
   }
 

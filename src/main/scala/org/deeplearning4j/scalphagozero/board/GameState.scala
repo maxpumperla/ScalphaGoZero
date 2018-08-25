@@ -114,7 +114,7 @@ class GameState(
       moves.toList
     }
 
-  def winner: Option[Int] =
+  def winner: Option[PlayerColor] =
     if (this.isOver) None
     else {
       this.lastMove match {
@@ -131,7 +131,7 @@ object GameState {
 
   def newGame(boardHeight: Int, boardWidth: Int): GameState = {
     val board = new GoBoard(boardHeight, boardWidth)
-    new GameState(board, Player(PlayerColor.black), None, None)
+    new GameState(board, Player(PlayerColor.Black), None, None)
   }
 
 }

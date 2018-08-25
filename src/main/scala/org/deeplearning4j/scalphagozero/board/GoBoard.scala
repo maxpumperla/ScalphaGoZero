@@ -123,7 +123,7 @@ class GoBoard(val row: Int, val col: Int) {
 
   def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
 
-  def getColor(point: Point): Option[Int] = grid.get(point.toCoords).map(_.color)
+  def getColor(point: Point): Option[PlayerColor] = grid.get(point.toCoords).map(_.color)
 
   def getGoString(point: Point): Option[GoString] = grid.get(point.toCoords)
 

@@ -1,6 +1,7 @@
 package org.deeplearning4j.scalphagozero.board
 
-object PlayerColor extends Enumeration {
-  val black = 1
-  val white = 2
+sealed trait PlayerColor extends Product with Serializable
+object PlayerColor {
+  case object Black extends PlayerColor
+  case object White extends PlayerColor
 }

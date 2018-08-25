@@ -22,13 +22,14 @@ class ZeroTreeNode(
 ) {
 
   var totalVisitCount: Int = 1
-  var branches: mutable.Map[Move, Branch] = mutable.Map()
-  var children: mutable.Map[Move, ZeroTreeNode] = mutable.Map()
+  val branches: mutable.Map[Move, Branch] = mutable.Map()
+  val children: mutable.Map[Move, ZeroTreeNode] = mutable.Map()
 
-  for ((move, prior) <- priors) {
-    if (gameState.isValidMove(move)) {
-      branches.put(move, Branch(prior))
-    }
+  for {
+    (move, prior) <- priors
+    if gameState.isValidMove(move)
+  } {
+    branches.put(move, Branch(prior))
   }
 
   def moves: List[Move] = branches.keys.toList

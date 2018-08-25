@@ -19,6 +19,13 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
 ) ++ dl4j
 
+fork in run := true
+javaOptions in run ++= Seq(
+  "-Xms4G",
+  "-Xmx8G",
+  "-XshowSettings:vm"
+)
+
 pomExtra := (
   <url>https://github.com/maxpumperla/ScalphaGoZero</url>
     <scm>
