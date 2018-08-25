@@ -1,6 +1,6 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-import org.deeplearning4j.scalphagozero.board.{ GoBoard, Player, PlayerColor, Point }
+import org.deeplearning4j.scalphagozero.board._
 import org.scalatest.FunSpec
 
 class ScoringTest extends FunSpec {
@@ -13,25 +13,25 @@ class ScoringTest extends FunSpec {
   describe("Creating an artificial 5x5 game for scoring, the territory") {
     val board = GoBoard(5, 5)
 
-    board.placeStone(Player(PlayerColor.Black), Point(1, 2))
-    board.placeStone(Player(PlayerColor.Black), Point(1, 4))
-    board.placeStone(Player(PlayerColor.Black), Point(2, 2))
-    board.placeStone(Player(PlayerColor.Black), Point(2, 3))
-    board.placeStone(Player(PlayerColor.Black), Point(2, 4))
-    board.placeStone(Player(PlayerColor.Black), Point(2, 5))
-    board.placeStone(Player(PlayerColor.Black), Point(3, 1))
-    board.placeStone(Player(PlayerColor.Black), Point(3, 2))
-    board.placeStone(Player(PlayerColor.Black), Point(3, 3))
+    board.placeStone(BlackPlayer, Point(1, 2))
+    board.placeStone(BlackPlayer, Point(1, 4))
+    board.placeStone(BlackPlayer, Point(2, 2))
+    board.placeStone(BlackPlayer, Point(2, 3))
+    board.placeStone(BlackPlayer, Point(2, 4))
+    board.placeStone(BlackPlayer, Point(2, 5))
+    board.placeStone(BlackPlayer, Point(3, 1))
+    board.placeStone(BlackPlayer, Point(3, 2))
+    board.placeStone(BlackPlayer, Point(3, 3))
 
-    board.placeStone(Player(PlayerColor.White), Point(3, 4))
-    board.placeStone(Player(PlayerColor.White), Point(3, 5))
-    board.placeStone(Player(PlayerColor.White), Point(4, 1))
-    board.placeStone(Player(PlayerColor.White), Point(4, 2))
-    board.placeStone(Player(PlayerColor.White), Point(4, 3))
-    board.placeStone(Player(PlayerColor.White), Point(4, 4))
-    board.placeStone(Player(PlayerColor.White), Point(5, 2))
-    board.placeStone(Player(PlayerColor.White), Point(5, 4))
-    board.placeStone(Player(PlayerColor.White), Point(5, 5))
+    board.placeStone(WhitePlayer, Point(3, 4))
+    board.placeStone(WhitePlayer, Point(3, 5))
+    board.placeStone(WhitePlayer, Point(4, 1))
+    board.placeStone(WhitePlayer, Point(4, 2))
+    board.placeStone(WhitePlayer, Point(4, 3))
+    board.placeStone(WhitePlayer, Point(4, 4))
+    board.placeStone(WhitePlayer, Point(5, 2))
+    board.placeStone(WhitePlayer, Point(5, 4))
+    board.placeStone(WhitePlayer, Point(5, 5))
 
     val territory = GameResult.evaluateTerritory(board)
 

@@ -32,9 +32,9 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
     val tensor = Nd4j.zeros(this.shape: _*)
 
     val nextPlayer: Player = gameState.nextPlayer
-    nextPlayer.color match {
-      case PlayerColor.White => tensor.putSlice(8, Nd4j.ones(boardHeight, boardWidth));
-      case PlayerColor.Black => tensor.putSlice(9, Nd4j.ones(boardHeight, boardWidth));
+    nextPlayer match {
+      case WhitePlayer => tensor.putSlice(8, Nd4j.ones(boardHeight, boardWidth));
+      case BlackPlayer => tensor.putSlice(9, Nd4j.ones(boardHeight, boardWidth));
     }
     for (row <- 0 until this.boardHeight) {
       for (col <- 0 until this.boardWidth) {
@@ -47,7 +47,7 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
               tensor.put(Array(10, row, col), Nd4j.scalar(1))
           case Some(string) =>
             var libertyPlane = Math.max(Math.min(4, string.numLiberties) - 1, 1)
-            if (string.color.equals(nextPlayer.color))
+            if (string.player == nextPlayer)
               libertyPlane += 4
             tensor.put(Array(libertyPlane, row, col), Nd4j.scalar(1))
         }

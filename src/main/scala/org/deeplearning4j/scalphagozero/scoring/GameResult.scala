@@ -1,7 +1,6 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-import org.deeplearning4j.scalphagozero.board.PlayerColor.{ Black, White }
-import org.deeplearning4j.scalphagozero.board.{ GameState, GoBoard, PlayerColor, Point }
+import org.deeplearning4j.scalphagozero.board._
 
 import scala.collection.mutable
 import scala.collection.mutable.{ ArrayBuffer, ListBuffer }
@@ -17,15 +16,15 @@ import scala.collection.mutable.{ ArrayBuffer, ListBuffer }
   */
 final case class GameResult(blackPoints: Int, whitePoints: Int, komi: Double) {
 
-  val winner: PlayerColor = if (blackPoints > whitePoints + komi) PlayerColor.Black else PlayerColor.White
+  val winner: Player = if (blackPoints > whitePoints + komi) BlackPlayer else WhitePlayer
 
   val winningMargin: Double = Math.abs(blackPoints - (whitePoints + komi))
 
   override def toString: String = {
     val white = whitePoints + komi
     winner match {
-      case Black => "B+ " + (blackPoints - white)
-      case White => "W+ " + (white - blackPoints)
+      case BlackPlayer => "B+ " + (blackPoints - white)
+      case WhitePlayer => "W+ " + (white - blackPoints)
     }
   }
 }
@@ -60,17 +59,17 @@ object GameResult {
       for (col <- 1 to goBoard.col) {
         val point = Point(row, col)
         if (!statusMap.contains(point)) {
-          val stoneColor: Option[PlayerColor] = goBoard.getColor(point)
+          val stoneColor: Option[Player] = goBoard.getPlayer(point)
           if (stoneColor.isDefined) {
             val color = stoneColor.get
-            val status = if (color == PlayerColor.Black) "black" else "white"
+            val status = if (color == BlackPlayer) "black" else "white"
             statusMap.put(point, status)
           } else {
             val (group, neighbors) = collectRegion(point, goBoard)
             var fillWith: String = ""
             if (neighbors.size == 1) {
-              val neighborColor: Option[PlayerColor] = neighbors.head
-              val stoneString = if (neighborColor.get == PlayerColor.Black) "b" else "w"
+              val neighborColor: Option[Player] = neighbors.head
+              val stoneString = if (neighborColor.get == BlackPlayer) "b" else "w"
               fillWith = "territory_" + stoneString
             } else {
               fillWith = "dame"
@@ -89,19 +88,19 @@ object GameResult {
       startingPoint: Point,
       board: GoBoard,
       visited: ArrayBuffer[(Int, Int)] = ArrayBuffer()
-  ): (List[Point], Set[Option[PlayerColor]]) = {
+  ): (List[Point], Set[Option[Player]]) = {
     if (visited.contains(startingPoint.toCoords))
       return (List.empty, Set.empty)
 
     val allPoints = ListBuffer(startingPoint)
-    val allBorders: mutable.Set[Option[PlayerColor]] = mutable.Set.empty
+    val allBorders: mutable.Set[Option[Player]] = mutable.Set.empty
     visited += startingPoint.toCoords
-    val here: Option[PlayerColor] = board.getColor(startingPoint)
+    val here: Option[Player] = board.getPlayer(startingPoint)
     val deltas = List((-1, 0), (1, 0), (0, -1), (0, 1))
     for ((row, col) <- deltas) {
       val nextPoint = Point(startingPoint.row + row, startingPoint.col + col)
       if (board.isOnGrid(nextPoint)) {
-        val neighbor: Option[PlayerColor] = board.getColor(nextPoint)
+        val neighbor: Option[Player] = board.getPlayer(nextPoint)
         if (neighbor.equals(here)) {
           val (points, borders) = collectRegion(nextPoint, board, visited)
           allPoints ++= points
