@@ -32,7 +32,7 @@ class GoBoard(val row: Int, val col: Int) {
   def placeStone(player: Player, point: Point): Unit = {
     assert(isOnGrid(point))
 
-    if (grid.get(point.toCoords).isDefined) {
+    if (getGoString(point).isDefined) {
       println(" Illegal move attempted at: " + point.toCoords)
     } else {
       // 1. Examine adjacent points
@@ -41,7 +41,7 @@ class GoBoard(val row: Int, val col: Int) {
       val liberties = mutable.Set.empty[(Int, Int)]
 
       for (neighbor: Point <- neighborMap((point.row, point.col))) {
-        grid.get(neighbor.toCoords) match {
+        getGoString(neighbor) match {
           case None                                        => liberties += neighbor.toCoords
           case Some(goString) if goString.player == player => adjacentSameColor += goString
           case Some(goString)                              => adjacentOppositeColor += goString
@@ -90,7 +90,7 @@ class GoBoard(val row: Int, val col: Int) {
     val friendlyStrings: ListBuffer[GoString] = ListBuffer.empty[GoString]
 
     for (neighbor <- neighborMap((point.row, point.col))) {
-      grid.get(neighbor.toCoords) match {
+      getGoString(neighbor) match {
         case None                                                     => return false
         case Some(neighborString) if neighborString.player == player  => friendlyStrings += neighborString
         case Some(neighborString) if neighborString.numLiberties == 1 => return false
