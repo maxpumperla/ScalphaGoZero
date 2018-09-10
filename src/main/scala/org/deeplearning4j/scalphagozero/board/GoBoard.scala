@@ -68,7 +68,7 @@ class GoBoard(val row: Int, val col: Int) {
 
   private def removeString(goString: GoString): Unit =
     goString.stones.foreach { point =>
-      neighborMap((point._1, point._1)).foreach { neighbor =>
+      neighborMap((point._1, point._2)).foreach { neighbor =>
         getGoString(neighbor) match {
           case Some(neighborString) if neighborString == goString =>
             this.replaceString(neighborString.withLiberty(Point(point._1, point._2)))
