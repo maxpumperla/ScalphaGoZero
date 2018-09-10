@@ -34,7 +34,7 @@ object ZeroSimulator {
     }
     println(">>> Simulation terminated.")
 
-    val gameResult = GameResult.computeGameResult(game)
+    val gameResult = GameResult.computeGameResult(game.board)
     gameResult.winner match {
       case BlackPlayer =>
         blackCollector.completeEpisode(Nd4j.scalar(1))

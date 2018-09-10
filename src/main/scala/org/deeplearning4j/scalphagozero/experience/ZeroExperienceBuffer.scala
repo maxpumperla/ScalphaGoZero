@@ -12,7 +12,7 @@ import org.nd4j.linalg.factory.Nd4j
   *
   * @author Max Pumperla
   */
-class ZeroExperienceBuffer(val states: INDArray, val visitCounts: INDArray, val rewards: INDArray) {}
+final case class ZeroExperienceBuffer(states: INDArray, visitCounts: INDArray, rewards: INDArray)
 
 object ZeroExperienceBuffer {
 
@@ -25,7 +25,6 @@ object ZeroExperienceBuffer {
     val combinedRewards = Nd4j.concat(0, rewards: _*)
     val combinedVisitCounts = Nd4j.concat(0, visitCounts: _*)
 
-    new ZeroExperienceBuffer(combinedStates, combinedVisitCounts, combinedRewards)
-
+    ZeroExperienceBuffer(combinedStates, combinedVisitCounts, combinedRewards)
   }
 }

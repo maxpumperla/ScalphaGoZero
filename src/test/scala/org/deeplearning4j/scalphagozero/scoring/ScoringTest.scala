@@ -33,7 +33,7 @@ class ScoringTest extends FunSpec {
     board.placeStone(WhitePlayer, Point(5, 4))
     board.placeStone(WhitePlayer, Point(5, 5))
 
-    val territory = GameResult.evaluateTerritory(board)
+    val territory = GameResult.computeGameResult(board)
 
     it("should have 9 black and white stones") {
       assert(9 == territory.numBlackStones)
