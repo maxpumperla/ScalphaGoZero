@@ -15,6 +15,7 @@ class ZeroExperienceCollector extends ExperienceCollector {
   val states: ListBuffer[INDArray] = ListBuffer.empty
   val visitCounts: ListBuffer[INDArray] = ListBuffer.empty
   val rewards: ListBuffer[INDArray] = ListBuffer.empty
+
   private var currentEpisodeStates: ListBuffer[INDArray] = ListBuffer.empty
   private var currentEpisodeVisitCounts: ListBuffer[INDArray] = ListBuffer.empty
 

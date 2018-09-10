@@ -59,7 +59,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
   final def indexToPoint(index: Int): Point = {
     val row = index / boardWidth
     val col = index % boardWidth
-    new Point(row + 1, col + 1)
+    Point(row + 1, col + 1)
   }
 
   /**
@@ -67,12 +67,12 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     *
     * @return Number of board points
     */
-  final def numberOfPoints: Int = boardWidth * boardHeight
+  final val numberOfPoints: Int = boardWidth * boardHeight
 
   /**
     * Shape of encoded tensors
     *
     * @return Tensor shape as array
     */
-  final def shape: Array[Int] = Array(numPlanes, boardHeight, boardWidth)
+  final val shape: Array[Int] = Array(numPlanes, boardHeight, boardWidth)
 }

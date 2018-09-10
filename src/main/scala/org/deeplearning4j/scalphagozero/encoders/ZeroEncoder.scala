@@ -18,8 +18,7 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
 
   override val name: String = "AlphaGoZero"
 
-  val boardSize = boardWidth * boardHeight
-  val numMoves: Int = boardSize + 1
+  val numMoves: Int = numberOfPoints + 1
 
   /**
     * Encode the current game state as board tensor
@@ -61,12 +60,12 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
   override def encodeMove(move: Move): Int =
     move match {
       case Move.Play(point) => boardHeight * (point.row - 1) + (point.col - 1)
-      case Move.Pass        => boardSize
+      case Move.Pass        => numberOfPoints
       case _                => throw new IllegalArgumentException("Cannot encode resign move")
     }
 
   override def decodeMoveIndex(index: Int): Move =
-    if (index == boardSize) {
+    if (index == numberOfPoints) {
       Move.Pass
     } else {
       val row = index / boardHeight

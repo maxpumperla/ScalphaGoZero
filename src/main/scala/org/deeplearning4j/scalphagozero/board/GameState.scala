@@ -91,6 +91,7 @@ class GameState(
       }
     }
 
+  // Could be a `val`
   def legalMoves: List[Move] =
     if (this.isOver) List.empty
     else {
@@ -106,13 +107,14 @@ class GameState(
       moves.toList
     }
 
+  // Could be a `val`
   def winner: Option[Player] =
     if (this.isOver) None
     else {
       this.lastMove match {
         case Some(Move.Resign) => Some(this.nextPlayer)
         case None | Some(Move.Play(_)) | Some(Move.Pass) =>
-          val gameResult = GameResult.computeGameResult(this)
+          val gameResult = GameResult.computeGameResult(this.board)
           Some(gameResult.winner)
       }
     }
