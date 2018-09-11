@@ -3,7 +3,7 @@ package org.deeplearning4j.scalphagozero.scoring
 import org.deeplearning4j.scalphagozero.board.{ GoBoard, Point, _ }
 
 import scala.collection.mutable
-import scala.collection.mutable.{ ArrayBuffer, ListBuffer }
+import scala.collection.mutable.ListBuffer
 
 /**
   * Can we find a better name ?
@@ -108,8 +108,8 @@ object GameResult {
             val (group, neighbors) = collectRegion(point, goBoard)
             val fillWith =
               if (neighbors.size == 1) {
-                val neighborColor: Option[Player] = neighbors.head
-                if (neighborColor.get == BlackPlayer) BlackTerritory else WhiteTerritory
+                val neighborColor: Player = neighbors.head
+                if (neighborColor == BlackPlayer) BlackTerritory else WhiteTerritory
               } else {
                 Dame
               }
@@ -122,33 +122,25 @@ object GameResult {
     statusMap.toMap
   }
 
-  private def collectRegion(
-      startingPoint: Point,
-      board: GoBoard,
-      visited: ArrayBuffer[(Int, Int)] = ArrayBuffer()
-  ): (List[Point], Set[Option[Player]]) = {
-    if (visited.contains(startingPoint.toCoords))
-      return (List.empty, Set.empty)
+  private def collectRegion(startingPoint: Point, board: GoBoard): (List[Point], Set[Player]) = {
+    val initialPlayer = board.getPlayer(startingPoint)
 
-    val allPoints = ListBuffer(startingPoint)
-    val allBorders: mutable.Set[Option[Player]] = mutable.Set.empty
-    visited += startingPoint.toCoords
-    val here: Option[Player] = board.getPlayer(startingPoint)
-    val deltas = List((-1, 0), (1, 0), (0, -1), (0, 1))
-    for ((row, col) <- deltas) {
-      val nextPoint = Point(startingPoint.row + row, startingPoint.col + col)
-      if (board.isOnGrid(nextPoint)) {
-        val neighbor: Option[Player] = board.getPlayer(nextPoint)
-        if (neighbor.equals(here)) {
-          val (points, borders) = collectRegion(nextPoint, board, visited)
-          allPoints ++= points
-          allBorders ++= borders
-        } else {
-          allBorders += neighbor
-        }
+    val visitedPlayers = mutable.Set[Player]()
+    val visitedPoints = ListBuffer[Point](startingPoint)
+
+    val nextPoints = mutable.Stack[Point](startingPoint)
+    while (nextPoints.nonEmpty) {
+      val point = nextPoints.pop()
+      val player = board.getPlayer(point)
+      player.foreach(visitedPlayers += _)
+
+      if (player == initialPlayer) {
+        val nextVisits = point.neighbors.filter(board.isOnGrid).diff(visitedPoints)
+        nextPoints.pushAll(nextVisits)
+        visitedPoints += point
       }
     }
-    (allPoints.toList, allBorders.toSet)
-  }
 
+    (visitedPoints.toList, visitedPlayers.toSet)
+  }
 }
