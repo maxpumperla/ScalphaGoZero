@@ -1,6 +1,6 @@
 package org.deeplearning4j.scalphagozero.board
-import org.deeplearning4j.scalphagozero.scoring.GameResult
 
+import org.deeplearning4j.scalphagozero.scoring.GameResult
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -97,8 +97,8 @@ class GameState(
     else {
       val moves = ListBuffer[Move](Move.Pass, Move.Resign)
       for {
-        row <- 1 to board.row
-        col <- 1 to board.col
+        row <- 1 to board.size
+        col <- 1 to board.size
       } {
         val move = Move.Play(Point(row, col))
         if (this.isValidMove(move))
@@ -118,13 +118,12 @@ class GameState(
           Some(gameResult.winner)
       }
     }
-
 }
 
 object GameState {
 
-  def newGame(boardHeight: Int, boardWidth: Int): GameState = {
-    val board = GoBoard(boardHeight, boardWidth)
+  def newGame(boardSize: Int): GameState = {
+    val board = GoBoard(boardSize)
     new GameState(board, BlackPlayer, None, None)
   }
 

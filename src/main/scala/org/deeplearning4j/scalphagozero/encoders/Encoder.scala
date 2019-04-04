@@ -7,9 +7,11 @@ import org.nd4j.linalg.api.ndarray.INDArray
   * Base trait for Go board encoders. An encoder translates game state information
   * into ND4J tensors that can be fed into neural networks.
   *
+  * @param boardSize width and height of the board.
+  * @param numPlanes number of layers/planes (i.e. depth) to represent colors or empties.
   * @author Max Pumperla
   */
-abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val numPlanes: Int) {
+abstract class Encoder(val boardSize: Int = 19, val numPlanes: Int) {
 
   /**
     * Name of the encoder.
@@ -48,7 +50,7 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @param point Board point
     * @return Index representation of the point
     */
-  final def pointToIndex(point: Point): Int = boardWidth * point.row + point.col
+  final def pointToIndex(point: Point): Int = boardSize * point.row + point.col
 
   /**
     * Decodes an index back into a point representation.
@@ -57,8 +59,8 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     * @return Board point corresponding to index.
     */
   final def indexToPoint(index: Int): Point = {
-    val row = index / boardWidth
-    val col = index % boardWidth
+    val row = index / boardSize
+    val col = index % boardSize
     Point(row + 1, col + 1)
   }
 
@@ -67,12 +69,12 @@ abstract class Encoder(val boardHeight: Int = 19, val boardWidth: Int = 19, val 
     *
     * @return Number of board points
     */
-  final val numberOfPoints: Int = boardWidth * boardHeight
+  final val numberOfPoints: Int = boardSize * boardSize
 
   /**
     * Shape of encoded tensors
     *
     * @return Tensor shape as array
     */
-  final val shape: Array[Int] = Array(numPlanes, boardHeight, boardWidth)
+  final val shape: Array[Int] = Array(numPlanes, boardSize, boardSize)
 }

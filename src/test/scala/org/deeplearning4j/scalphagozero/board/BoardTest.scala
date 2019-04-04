@@ -5,7 +5,7 @@ import org.scalatest.FunSpec
 class BoardTest extends FunSpec {
 
   describe("Capturing a stone on a new 19x19 Board") {
-    val board = GoBoard(19, 19)
+    val board = GoBoard(19)
 
     it("should place and confirm a black stone") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -27,7 +27,7 @@ class BoardTest extends FunSpec {
   }
 
   describe("Capturing two stones on a new 19x19 Board") {
-    val board = GoBoard(19, 19)
+    val board = GoBoard(19)
 
     it("should place and confirm two black stones") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -53,7 +53,7 @@ class BoardTest extends FunSpec {
   }
 
   describe("If you capture a stone, it's not suicide") {
-    val board = GoBoard(19, 19)
+    val board = GoBoard(19)
     it("should regain liberties by capturing") {
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -68,7 +68,7 @@ class BoardTest extends FunSpec {
 
   describe("Test removing liberties:") {
     it("a stone with four liberties should end up with three if an opponent stone is added") {
-      val board = new GoBoard(5, 5)
+      val board = new GoBoard(5)
       board.placeStone(BlackPlayer, Point(3, 3))
       board.placeStone(WhitePlayer, Point(2, 2))
       val whiteString = board.getGoString(Point(2, 2)).get
@@ -84,7 +84,7 @@ class BoardTest extends FunSpec {
     it("an empty triangle in the corner with one white stone should have 3 liberties") {
       // x x
       // x o
-      val board = new GoBoard(5, 5)
+      val board = new GoBoard(5)
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(1, 2))
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -103,7 +103,7 @@ class BoardTest extends FunSpec {
     // o.o..
     // x.xo.
     it("black can't take it's own last liberty") {
-      val board = new GoBoard(5, 5)
+      val board = new GoBoard(5)
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(1, 3))
       board.placeStone(WhitePlayer, Point(2, 1))
@@ -117,7 +117,7 @@ class BoardTest extends FunSpec {
     // o.o..
     // x.xo.
     it("but if we remove one white stone, the move becomes legal") {
-      val board = new GoBoard(5, 5)
+      val board = new GoBoard(5)
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(1, 3))
       board.placeStone(WhitePlayer, Point(2, 1))
@@ -131,7 +131,7 @@ class BoardTest extends FunSpec {
     // oox..
     // x.o..
     it("if we capture a stone in the process, it's not self-play") {
-      val board = new GoBoard(5, 5)
+      val board = new GoBoard(5)
       board.placeStone(BlackPlayer, Point(3, 1))
       board.placeStone(BlackPlayer, Point(3, 2))
       board.placeStone(BlackPlayer, Point(2, 3))

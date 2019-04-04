@@ -15,13 +15,12 @@ object ZeroSimulator {
   def simulateGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
 
     val encoder = blackAgent.encoder
-    val boardHeight = encoder.boardHeight
-    val boardWidth = encoder.boardWidth
+    val boardSize = encoder.boardSize
 
     val blackCollector = blackAgent.collector
     val whiteCollector = whiteAgent.collector
 
-    var game = GameState.newGame(boardHeight, boardWidth)
+    var game = GameState.newGame(boardSize)
     val agents: Map[Player, ZeroAgent] = Map(BlackPlayer -> blackAgent, WhitePlayer -> whiteAgent)
 
     blackCollector.beginEpisode()

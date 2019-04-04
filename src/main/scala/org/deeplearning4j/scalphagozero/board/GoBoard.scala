@@ -2,28 +2,28 @@ package org.deeplearning4j.scalphagozero.board
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import GoBoard._
 
 /**
   * Main Go board class, represents the board on which Go moves can be played.
   *
   * @author Max Pumperla
   */
-class GoBoard(val row: Int, val col: Int) {
-
-  import GoBoard._
+class GoBoard(val size: Int) {
 
   private var grid: mutable.Map[(Int, Int), GoString] = mutable.Map.empty
   private var hash: Long = 0L
 
-  if (!neighborTables.keySet.contains((row, col)))
-    initNeighborTable(row, col)
-  if (!cornerTables.keySet.contains((row, col)))
-    initCornerTable(row, col)
+  if (!neighborTables.keySet.contains((size, size)))
+    initNeighborTable(size, size)
+  if (!cornerTables.keySet.contains((size, size)))
+    initCornerTable(size, size)
 
   private var neighborMap: mutable.Map[(Int, Int), List[Point]] =
-    neighborTables.getOrElse((row, col), mutable.Map.empty)
+    neighborTables.getOrElse((size, size), mutable.Map.empty)
+
   private var cornerMap: mutable.Map[(Int, Int), List[Point]] =
-    cornerTables.getOrElse((row, col), mutable.Map.empty)
+    cornerTables.getOrElse((size, size), mutable.Map.empty)
 
   def neighbors(point: Point): List[Point] = neighborMap.getOrElse((point.row, point.col), List.empty)
 
@@ -61,7 +61,7 @@ class GoBoard(val row: Int, val col: Int) {
       // 4. If any opposite color strings now have zero liberties, remove them.
       for (otherColorString: GoString <- adjacentOppositeColor) {
         val replacement = otherColorString.withoutLiberty(point)
-        if (replacement.numLiberties > 0) this.replaceString(replacement) else this.removeString(otherColorString)
+        if (replacement.numLiberties > 0) replaceString(replacement) else removeString(otherColorString)
       }
     }
   }
@@ -109,7 +109,7 @@ class GoBoard(val row: Int, val col: Int) {
       }
     }
 
-  def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= row && 1 <= point.col && point.col <= col
+  def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= size && 1 <= point.col && point.col <= size
 
   def getPlayer(point: Point): Option[Player] = grid.get(point.toCoords).map(_.player)
 
@@ -118,7 +118,7 @@ class GoBoard(val row: Int, val col: Int) {
   override def equals(obj: scala.Any): Boolean = {
     obj match {
       case other: GoBoard =>
-        return this.row == other.row && this.col == other.col && this.grid.equals(other.grid)
+        return this.size == other.size && this.grid.equals(other.grid)
       case _ =>
     }
     false
@@ -139,8 +139,8 @@ class GoBoard(val row: Int, val col: Int) {
   }
 
   override def clone(): GoBoard = {
-    val newBoard = new GoBoard(this.row, this.col)
-    newBoard.setBoardProperties(this.grid, this.hash, this.neighborMap, this.cornerMap)
+    val newBoard = new GoBoard(size)
+    newBoard.setBoardProperties(grid, hash, neighborMap, cornerMap)
     newBoard
   }
 
@@ -148,7 +148,7 @@ class GoBoard(val row: Int, val col: Int) {
 
 object GoBoard {
 
-  def apply(boardHeight: Int, boardWidth: Int): GoBoard = new GoBoard(boardHeight, boardWidth)
+  def apply(boardSize: Int): GoBoard = new GoBoard(boardSize)
 
   private val neighborTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
   private val cornerTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty

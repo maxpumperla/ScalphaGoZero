@@ -98,7 +98,7 @@ object GameResult {
     */
   def evaluateTerritory(goBoard: GoBoard): Map[Point, GamePointType] = {
     val statusMap = mutable.Map.empty[Point, GamePointType]
-    for (row <- 1 to goBoard.row; col <- 1 to goBoard.col) {
+    for (row <- 1 to goBoard.size; col <- 1 to goBoard.size) {
       val point = Point(row, col)
       if (!statusMap.contains(point)) {
         goBoard.getPlayer(point) match {
