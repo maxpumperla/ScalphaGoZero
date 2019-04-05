@@ -3,6 +3,7 @@ package org.deeplearning4j.scalphagozero.board
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import GoBoard._
+import ZobristHashing.ZOBRIST
 
 /**
   * Main Go board class, represents the board on which Go moves can be played.
@@ -56,8 +57,8 @@ class GoBoard(val size: Int) {
       for (newStringPoint: (Int, Int) <- newString.stones)
         grid.put(newStringPoint, newString)
 
-      hash ^= ZobristHashing.ZOBRIST((point.row, point.col, None)) // Remove empty-point hash code
-      hash ^= ZobristHashing.ZOBRIST((point.row, point.col, Some(player))) // Add filled point hash code.
+      hash ^= ZOBRIST((point, None)) // Remove empty-point hash code
+      hash ^= ZOBRIST((point, Some(player))) // Add filled point hash code.
 
       // 3. Reduce liberties of any adjacent strings of the opposite color.
       // 4. If any opposite color strings now have zero liberties, remove them.
@@ -80,8 +81,8 @@ class GoBoard(val size: Int) {
         grid.remove(point)
       }
 
-      hash ^= ZobristHashing.ZOBRIST((point._1, point._2, Some(goString.player))) //Remove filled point hash code.
-      hash ^= ZobristHashing.ZOBRIST((point._1, point._2, None)) //Add empty point hash code.
+      hash ^= ZOBRIST((new Point(point), Some(goString.player))) //Remove filled point hash code.
+      hash ^= ZOBRIST((new Point(point), None)) //Add empty point hash code.
     }
 
   private def replaceString(newString: GoString): Unit =

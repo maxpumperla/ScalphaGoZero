@@ -10,6 +10,8 @@ package org.deeplearning4j.scalphagozero.board
   */
 final case class Point(row: Int, col: Int) {
 
+  def this(tuple: (Int, Int)) = this(tuple._1, tuple._2)
+
   /** @return strongly connected neighbors */
   def neighbors: List[Point] = List(
     Point(row - 1, col),

@@ -11,19 +11,19 @@ class GoBoardSerializer(board: GoBoard) {
 
   def serialize(): String = {
 
-    var s = "-" * (board.size + 1) + "\n"
+    var s = "-" * (board.size + 2) + "\n"
 
-    s += " " + COORDS.substring(0, board.size) + "\n"
-    for (i <- 0 until board.size) {
-      s += COORDS(i)
-      for (j <- 0 until board.size) {
+    s += "  " + COORDS.substring(0, board.size) + "\n"
+    for (i <- 1 to board.size) {
+      s += COORDS(i - 1) + " "
+      for (j <- 1 to board.size) {
         val player = board.getPlayer(Point(i, j))
-        val symb = if (player.isEmpty) " " else if (player.get == BlackPlayer) "X" else "O"
+        val symb = if (player.isEmpty) "." else if (player.get == BlackPlayer) "X" else "O"
         s += symb
       }
       s += "\n"
     }
-    s + "-" * (board.size + 1)
+    s + "-" * (board.size + 2)
   }
 }
 
