@@ -5,15 +5,12 @@ import org.deeplearning4j.scalphagozero.board.{ GoBoard, Point, _ }
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-/**
-  * Can we find a better name ?
-  */
-sealed trait GamePointType extends Product with Serializable
-case object BlackStone extends GamePointType
-case object WhiteStone extends GamePointType
-case object BlackTerritory extends GamePointType
-case object WhiteTerritory extends GamePointType
-case object Dame extends GamePointType
+sealed trait VertexType extends Product with Serializable
+case object BlackStone extends VertexType
+case object WhiteStone extends VertexType
+case object BlackTerritory extends VertexType
+case object WhiteTerritory extends VertexType
+case object Dame extends VertexType
 
 /**
   * Compute the result of a game
@@ -96,8 +93,8 @@ object GameResult {
     * @param goBoard GoBoard instance
     * @return Territory object
     */
-  def evaluateTerritory(goBoard: GoBoard): Map[Point, GamePointType] = {
-    val statusMap = mutable.Map.empty[Point, GamePointType]
+  private def evaluateTerritory(goBoard: GoBoard): Map[Point, VertexType] = {
+    val statusMap = mutable.Map.empty[Point, VertexType]
     for (row <- 1 to goBoard.size; col <- 1 to goBoard.size) {
       val point = Point(row, col)
       if (!statusMap.contains(point)) {

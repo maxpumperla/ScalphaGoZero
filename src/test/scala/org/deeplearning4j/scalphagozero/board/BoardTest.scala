@@ -5,7 +5,7 @@ import org.scalatest.FunSpec
 class BoardTest extends FunSpec {
 
   describe("Capturing a stone on a new 19x19 Board") {
-    val board = GoBoard(9)
+    val board = new GoBoard(9)
 
     it("should place and confirm a black stone") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -28,7 +28,7 @@ class BoardTest extends FunSpec {
   }
 
   describe("Capturing two stones on a new 19x19 Board") {
-    val board = GoBoard(9)
+    val board = new GoBoard(9)
 
     it("should place and confirm two black stones") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -56,7 +56,7 @@ class BoardTest extends FunSpec {
   }
 
   describe("If you capture a stone, it's not suicide") {
-    val board = GoBoard(9)
+    val board = new GoBoard(9)
     it("should regain liberties by capturing") {
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(2, 2))

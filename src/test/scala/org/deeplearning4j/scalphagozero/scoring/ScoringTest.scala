@@ -11,7 +11,7 @@ class ScoringTest extends FunSpec {
   // .bbbb
   // .b.b.
   describe("Creating an artificial 5x5 game for scoring, the territory") {
-    val board = GoBoard(5)
+    val board = new GoBoard(5)
 
     board.placeStone(BlackPlayer, Point(1, 2))
     board.placeStone(BlackPlayer, Point(1, 4))

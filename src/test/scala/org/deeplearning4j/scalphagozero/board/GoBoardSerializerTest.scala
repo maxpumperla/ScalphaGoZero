@@ -6,7 +6,7 @@ import org.scalatest.FunSpec
 class GoBoardSerializerTest extends FunSpec {
 
   describe("Serialize a board") {
-    val board = GoBoard(9)
+    val board = new GoBoard(9)
     it("It should have this format") {
       board.placeStone(BlackPlayer, Point(2, 2))
       board.placeStone(WhitePlayer, Point(3, 3))
@@ -29,7 +29,7 @@ class GoBoardSerializerTest extends FunSpec {
   }
 
   describe("Serialize another board") {
-    val board = GoBoard(9)
+    val board = new GoBoard(9)
     it("It should have this format") {
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(WhitePlayer, Point(3, 3))

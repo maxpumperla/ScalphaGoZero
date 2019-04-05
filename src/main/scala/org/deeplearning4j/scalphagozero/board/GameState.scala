@@ -56,6 +56,8 @@ class GameState(
         case Move.Play(point) =>
           val nextBoard = this.board.clone()
           nextBoard.placeStone(nextPlayer, point)
+          println(nextPlayer + " playing " + point)
+          println(nextBoard)
           nextBoard
         case Move.Pass | Move.Resign => this.board
       }
@@ -123,7 +125,7 @@ class GameState(
 object GameState {
 
   def newGame(boardSize: Int): GameState = {
-    val board = GoBoard(boardSize)
+    val board = new GoBoard(boardSize)
     new GameState(board, BlackPlayer, None, None)
   }
 
