@@ -11,23 +11,25 @@ import GoBoard._
   */
 class GoBoard(val size: Int) {
 
+  /** map from board grid points to parent string (if any) */
   private var grid: mutable.Map[(Int, Int), GoString] = mutable.Map.empty
   private var hash: Long = 0L
+  private val serializer = new GoBoardSerializer(this)
 
   if (!neighborTables.keySet.contains((size, size)))
     initNeighborTable(size, size)
-  if (!cornerTables.keySet.contains((size, size)))
-    initCornerTable(size, size)
+  if (!diagonalTables.keySet.contains((size, size)))
+    initDiagonalTable(size, size)
 
   private var neighborMap: mutable.Map[(Int, Int), List[Point]] =
     neighborTables.getOrElse((size, size), mutable.Map.empty)
 
-  private var cornerMap: mutable.Map[(Int, Int), List[Point]] =
-    cornerTables.getOrElse((size, size), mutable.Map.empty)
+  private var diagonalMap: mutable.Map[(Int, Int), List[Point]] =
+    diagonalTables.getOrElse((size, size), mutable.Map.empty)
 
   def neighbors(point: Point): List[Point] = neighborMap.getOrElse((point.row, point.col), List.empty)
 
-  def corners(point: Point): List[Point] = cornerMap.getOrElse((point.row, point.col), List.empty)
+  def corners(point: Point): List[Point] = diagonalMap.getOrElse((point.row, point.col), List.empty)
 
   def placeStone(player: Player, point: Point): Unit = {
     assert(isOnGrid(point))
@@ -135,15 +137,16 @@ class GoBoard(val size: Int) {
     this.hash = hash
     this.grid = grid
     this.neighborMap = neighborMap
-    this.cornerMap = cornerMap
+    this.diagonalMap = cornerMap
   }
 
   override def clone(): GoBoard = {
     val newBoard = new GoBoard(size)
-    newBoard.setBoardProperties(grid, hash, neighborMap, cornerMap)
+    newBoard.setBoardProperties(grid, hash, neighborMap, diagonalMap)
     newBoard
   }
 
+  override def toString: String = serializer.serialize()
 }
 
 object GoBoard {
@@ -151,35 +154,32 @@ object GoBoard {
   def apply(boardSize: Int): GoBoard = new GoBoard(boardSize)
 
   private val neighborTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
-  private val cornerTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
+  private val diagonalTables: mutable.Map[(Int, Int), mutable.Map[(Int, Int), List[Point]]] = mutable.Map.empty
 
   private def initNeighborTable(row: Int, col: Int): Unit = {
     val neighborMap: mutable.Map[(Int, Int), List[Point]] = mutable.Map.empty
     for (r <- 1 to row; c <- 1 to col) {
       val point = Point(r, c)
       val allNeighbors = point.neighbors
-      val trueNeighbors =
-        for (nb <- allNeighbors if 1 <= nb.row && nb.row <= row && 1 <= nb.col && nb.col <= col) yield nb
+      val trueNeighbors = inRange(row, col, allNeighbors)
       neighborMap += ((r, c) -> trueNeighbors)
     }
     neighborTables += ((row, col) -> neighborMap)
   }
 
-  private def initCornerTable(row: Int, col: Int): Unit = {
-    val cornerMap: mutable.Map[(Int, Int), List[Point]] = mutable.Map.empty
+  /** For each point in the grid, the map has the diagonals from that point */
+  private def initDiagonalTable(row: Int, col: Int): Unit = {
+    val diagonalMap: mutable.Map[(Int, Int), List[Point]] = mutable.Map.empty
     for (r <- 1 to row; c <- 1 to col) {
       val point = Point(r, c)
-      val allCorners = List(
-        Point(point.row - 1, point.col - 1),
-        Point(point.row + 1, point.col + 1),
-        Point(point.row - 1, point.col + 1),
-        Point(point.row + 1, point.col - 1)
-      )
-      val trueCorners =
-        for (nb <- allCorners if 1 <= nb.row && nb.row <= row && 1 <= nb.col && nb.col <= col) yield nb
-      cornerMap += ((r, c) -> trueCorners)
+      val allDiagonals = point.diagonals
+      val trueDiagonals = inRange(row, col, allDiagonals)
+      diagonalMap += ((r, c) -> trueDiagonals)
     }
-    cornerTables += ((row, col) -> cornerMap)
+    diagonalTables += ((row, col) -> diagonalMap)
   }
+
+  private def inRange(row: Int, col: Int, points: List[Point]): List[Point] =
+    for (nb <- points if 1 <= nb.row && nb.row <= row && 1 <= nb.col && nb.col <= col) yield nb
 
 }

@@ -26,12 +26,7 @@ object ZeroSimulator {
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
 
-    println(">>> Starting a new game.")
-    while (!game.isOver) {
-      val nextMove = agents(game.nextPlayer).selectMove(game)
-      game = if (game.isValidMove(nextMove)) game.applyMove(nextMove) else game.applyMove(Move.Resign)
-    }
-    println(">>> Simulation terminated.")
+    game = doSimulation(game, agents)
 
     val gameResult = GameResult.computeGameResult(game.board)
     gameResult.winner match {
@@ -42,5 +37,28 @@ object ZeroSimulator {
         blackCollector.completeEpisode(Nd4j.scalar(-1))
         whiteCollector.completeEpisode(Nd4j.scalar(1))
     }
+  }
+
+  private def doSimulation(initialState: GameState, agents: Map[Player, ZeroAgent]): GameState = {
+    println(">>> Starting a new game.")
+    println("Initial board:")
+    var game = initialState
+    println(game.board)
+    while (!game.isOver) {
+      val nextMove = agents(game.nextPlayer).selectMove(game)
+
+      if (game.isValidMove(nextMove)) {
+        println("Now applying Move = " + nextMove)
+        game = game.applyMove(nextMove)
+        println(game.board)
+      } else {
+        println(game.nextPlayer + " now resigns.")
+        game = game.applyMove(Move.Resign)
+        println("The final game state is:\n" + game.board)
+      }
+    }
+    println(">>> Simulation terminated.")
+    println()
+    game
   }
 }

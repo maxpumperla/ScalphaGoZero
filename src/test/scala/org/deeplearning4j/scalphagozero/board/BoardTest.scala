@@ -5,7 +5,7 @@ import org.scalatest.FunSpec
 class BoardTest extends FunSpec {
 
   describe("Capturing a stone on a new 19x19 Board") {
-    val board = GoBoard(19)
+    val board = GoBoard(9)
 
     it("should place and confirm a black stone") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -24,10 +24,11 @@ class BoardTest extends FunSpec {
       board.placeStone(WhitePlayer, Point(3, 2))
       assert(board.getPlayer(Point(2, 2)).isEmpty)
     }
+    println(board)
   }
 
   describe("Capturing two stones on a new 19x19 Board") {
-    val board = GoBoard(19)
+    val board = GoBoard(9)
 
     it("should place and confirm two black stones") {
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -37,23 +38,25 @@ class BoardTest extends FunSpec {
 
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
+      println(board)
     }
     it("if black's liberties go down to two, the stone should still be there") {
       board.placeStone(WhitePlayer, Point(3, 2))
       board.placeStone(WhitePlayer, Point(3, 3))
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
-
+      println(board)
     }
     it("finally, if all liberties are taken, the stone should be gone") {
       board.placeStone(WhitePlayer, Point(2, 1))
       board.placeStone(WhitePlayer, Point(2, 4))
       assert(board.getPlayer(Point(2, 2)).isEmpty)
+      println(board)
     }
   }
 
   describe("If you capture a stone, it's not suicide") {
-    val board = GoBoard(19)
+    val board = GoBoard(9)
     it("should regain liberties by capturing") {
       board.placeStone(BlackPlayer, Point(1, 1))
       board.placeStone(BlackPlayer, Point(2, 2))
@@ -64,6 +67,7 @@ class BoardTest extends FunSpec {
       assert(board.getPlayer(Point(2, 1)).contains(WhitePlayer))
       assert(board.getPlayer(Point(1, 2)).contains(WhitePlayer))
     }
+    println(board)
   }
 
   describe("Test removing liberties:") {
@@ -96,6 +100,7 @@ class BoardTest extends FunSpec {
       assert(blackString.liberties.contains((3, 2)))
       assert(blackString.liberties.contains((2, 3)))
       assert(blackString.liberties.contains((1, 3)))
+      println(board)
     }
   }
 
@@ -123,7 +128,7 @@ class BoardTest extends FunSpec {
       board.placeStone(WhitePlayer, Point(2, 1))
       board.placeStone(WhitePlayer, Point(2, 3))
       board.placeStone(WhitePlayer, Point(1, 4))
-
+      println(board)
       assert(!board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
@@ -139,7 +144,7 @@ class BoardTest extends FunSpec {
       board.placeStone(WhitePlayer, Point(2, 1))
       board.placeStone(WhitePlayer, Point(2, 2))
       board.placeStone(WhitePlayer, Point(1, 3))
-
+      println(board)
       assert(!board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 

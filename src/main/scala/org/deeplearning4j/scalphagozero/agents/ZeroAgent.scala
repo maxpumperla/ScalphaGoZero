@@ -73,10 +73,16 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       q + this.c * p * Math.sqrt(totalCount.doubleValue()) / (n + 1)
     }
 
-    node.moves
-      .map(m => (m, scoreBranch(m)))
-      .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
-      ._1
+    if (node.moves.isEmpty) {
+      println("There are no moves from this position.")
+      println(node)
+      Move.Pass
+    } else {
+      node.moves
+        .map(m => (m, scoreBranch(m)))
+        .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
+        ._1
+    }
   }
 
   /**

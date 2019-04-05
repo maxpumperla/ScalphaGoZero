@@ -40,9 +40,11 @@ class ZeroTreeNode(
 
   def recordVisit(move: Move, value: Double): Unit = {
     totalVisitCount += 1
-    val b = branches(move)
-    val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
-    branches.put(move, updatedBranch)
+    if (branches.contains(move)) {
+      val b = branches(move)
+      val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
+      branches.put(move, updatedBranch)
+    }
     ()
   }
 
