@@ -6,12 +6,12 @@ import org.scalatest.FunSpec
 class GoBoardSerializerTest extends FunSpec {
 
   describe("Serialize a board") {
-    val board = new GoBoard(9)
+    var board = GoBoard(9)
     it("It should have this format") {
-      board.placeStone(BlackPlayer, Point(2, 2))
-      board.placeStone(WhitePlayer, Point(3, 3))
-      board.placeStone(BlackPlayer, Point(2, 3))
-      board.placeStone(WhitePlayer, Point(5, 4))
+      board = board.placeStone(BlackPlayer, Point(2, 2))
+      board = board.placeStone(WhitePlayer, Point(3, 3))
+      board = board.placeStone(BlackPlayer, Point(2, 3))
+      board = board.placeStone(WhitePlayer, Point(5, 4))
 
       assertResult(strip("""-----------
                      |  123456789
@@ -29,12 +29,12 @@ class GoBoardSerializerTest extends FunSpec {
   }
 
   describe("Serialize another board") {
-    val board = new GoBoard(9)
+    var board = GoBoard(9)
     it("It should have this format") {
-      board.placeStone(BlackPlayer, Point(1, 1))
-      board.placeStone(WhitePlayer, Point(3, 3))
-      board.placeStone(BlackPlayer, Point(2, 3))
-      board.placeStone(WhitePlayer, Point(5, 4))
+      board = board.placeStone(BlackPlayer, Point(1, 1))
+      board = board.placeStone(WhitePlayer, Point(3, 3))
+      board = board.placeStone(BlackPlayer, Point(2, 3))
+      board = board.placeStone(WhitePlayer, Point(5, 4))
 
       assertResult(strip("""-----------
                            |  123456789

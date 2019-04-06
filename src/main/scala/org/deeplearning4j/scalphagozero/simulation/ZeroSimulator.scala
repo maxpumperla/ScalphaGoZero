@@ -48,7 +48,7 @@ object ZeroSimulator {
       val nextMove = agents(game.nextPlayer).selectMove(game)
 
       if (game.isValidMove(nextMove)) {
-        println("Now applying Move = " + nextMove)
+        println(game.nextPlayer + " " + nextMove.toString)
         game = game.applyMove(nextMove)
         println(game.board)
       } else {
@@ -57,7 +57,7 @@ object ZeroSimulator {
         println("The final game state is:\n" + game.board)
       }
     }
-    println(">>> Simulation terminated.")
+    println(">>> Simulation finished.")
     println()
     game
   }

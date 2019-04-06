@@ -41,7 +41,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       var value = -1 * childNode.value
       while (node.isDefined && move.isDefined) {
         node.get.recordVisit(move.get, value)
-        move = node.get.lastMove
+        move = if (move == node.get.lastMove) None else node.get.lastMove
         value = -1 * value
       }
     }

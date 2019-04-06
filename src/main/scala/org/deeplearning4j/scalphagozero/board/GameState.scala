@@ -1,7 +1,6 @@
 package org.deeplearning4j.scalphagozero.board
 
 import org.deeplearning4j.scalphagozero.scoring.GameResult
-import scala.collection.mutable.ListBuffer
 
 /**
   * GameState encodes the state of a game of Go. Game states have board instances,
@@ -24,7 +23,7 @@ class GameState(
   private val allPreviousStates: Set[(Player, Long)] =
     previousState match {
       case None        => Set.empty
-      case Some(state) => state.allPreviousStates + (nextPlayer -> state.board.zobristHash)
+      case Some(state) => state.allPreviousStates + (nextPlayer -> state.board.hash)
     }
 
   val isOver: Boolean =
@@ -53,12 +52,7 @@ class GameState(
   def applyMove(move: Move): GameState = {
     val nextBoard: GoBoard =
       move match {
-        case Move.Play(point) =>
-          val nextBoard = this.board.clone()
-          nextBoard.placeStone(nextPlayer, point)
-          println(nextPlayer + " playing " + point)
-          println(nextBoard)
-          nextBoard
+        case Move.Play(point)        => this.board.placeStone(nextPlayer, point)
         case Move.Pass | Move.Resign => this.board
       }
 
@@ -71,15 +65,16 @@ class GameState(
       case Move.Pass | Move.Resign => false
     }
 
-  def doesMoveViolateKo(player: Player, move: Move): Boolean =
+  def doesMoveViolateKo(player: Player, move: Move): Boolean = {
+    var nextBoard = this.board
     move match {
       case Move.Play(point) if this.board.willCapture(player, point) =>
-        val nextBoard = this.board.clone()
-        nextBoard.placeStone(player, point)
-        val nextSituation = (player.other, nextBoard.zobristHash)
+        nextBoard = nextBoard.placeStone(player, point)
+        val nextSituation = (player.other, nextBoard.hash)
         this.allPreviousStates.contains(nextSituation)
       case _ => false
     }
+  }
 
   def isValidMove(move: Move): Boolean =
     if (this.isOver) false
@@ -93,24 +88,22 @@ class GameState(
       }
     }
 
-  // Could be a `val`
-  def legalMoves: List[Move] =
+  val legalMoves: List[Move] =
     if (this.isOver) List.empty
     else {
-      val moves = ListBuffer[Move](Move.Pass, Move.Resign)
+      var moves = List[Move](Move.Pass, Move.Resign)
       for {
         row <- 1 to board.size
         col <- 1 to board.size
       } {
         val move = Move.Play(Point(row, col))
         if (this.isValidMove(move))
-          moves += move
+          moves :+= move
       }
-      moves.toList
+      moves
     }
 
-  // Could be a `val`
-  def winner: Option[Player] =
+  val winner: Option[Player] =
     if (this.isOver) None
     else {
       this.lastMove match {
@@ -125,7 +118,7 @@ class GameState(
 object GameState {
 
   def newGame(boardSize: Int): GameState = {
-    val board = new GoBoard(boardSize)
+    val board = GoBoard(boardSize)
     new GameState(board, BlackPlayer, None, None)
   }
 

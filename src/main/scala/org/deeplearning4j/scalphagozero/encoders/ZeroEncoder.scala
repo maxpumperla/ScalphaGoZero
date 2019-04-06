@@ -75,6 +75,6 @@ final class ZeroEncoder(boardSize: Int) extends Encoder(boardSize, 11) {
 }
 
 object ZeroEncoder {
-  def apply(): ZeroEncoder = new ZeroEncoder(9)
+  def apply(): ZeroEncoder = new ZeroEncoder(19)
   def apply(boardSize: Int): ZeroEncoder = new ZeroEncoder(boardSize)
 }
