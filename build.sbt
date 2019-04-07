@@ -5,6 +5,7 @@ description := "An independent implementation of DeepMind's AlphaGoZero in Scala
 licenses += "Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")
 
 scalafmtOnCompile := true
+connectInput in run := true
 
 scalaVersion := "2.12.6"
 

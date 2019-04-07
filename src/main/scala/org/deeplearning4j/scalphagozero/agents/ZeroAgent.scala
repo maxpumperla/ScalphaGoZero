@@ -7,8 +7,6 @@ import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroE
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
-import scala.collection.mutable
-
 /**
   * AlphaGo Zero agent, main workhorse of this project. ZeroAgent implements the characteristic combination of
   * tree search with reinforcement learning that lead to breakthrough results for the game of Go (AlphaGo Zero)
@@ -99,11 +97,11 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     val priors = outputs(0)
     val value = outputs(1).getDouble(0L, 0L)
 
-    val movePriors: mutable.Map[Move, Double] = new mutable.HashMap[Move, Double]()
+    var movePriors: Map[Move, Double] = Map[Move, Double]()
     for (i <- 0 until priors.length().toInt) {
       val move = encoder.decodeMoveIndex(i.toInt)
       val prior = priors.getDouble(i.toLong)
-      movePriors.put(move, prior)
+      movePriors += (move -> prior)
     }
 
     val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)

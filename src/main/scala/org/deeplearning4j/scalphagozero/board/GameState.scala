@@ -16,8 +16,8 @@ import org.deeplearning4j.scalphagozero.scoring.GameResult
 class GameState(
     val board: GoBoard,
     val nextPlayer: Player,
-    val previousState: Option[GameState],
-    val lastMove: Option[Move]
+    val previousState: Option[GameState] = None,
+    val lastMove: Option[Move] = None
 ) {
 
   private val allPreviousStates: Set[(Player, Long)] =
@@ -119,7 +119,7 @@ object GameState {
 
   def newGame(boardSize: Int): GameState = {
     val board = GoBoard(boardSize)
-    new GameState(board, BlackPlayer, None, None)
+    new GameState(board, BlackPlayer)
   }
 
 }

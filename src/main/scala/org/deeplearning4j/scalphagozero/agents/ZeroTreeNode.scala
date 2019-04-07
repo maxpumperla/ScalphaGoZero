@@ -2,8 +2,6 @@ package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 
-import scala.collection.mutable
-
 /**
   * Tree node of an AlphaGo Zero game tree.
   *
@@ -16,18 +14,20 @@ import scala.collection.mutable
 class ZeroTreeNode(
     val gameState: GameState,
     val value: Double,
-    val priors: mutable.Map[Move, Double],
+    val priors: Map[Move, Double],
     val parent: Option[ZeroTreeNode],
     val lastMove: Option[Move]
 ) {
 
   var totalVisitCount: Int = 1
 
-  private val children: mutable.Map[Move, ZeroTreeNode] = mutable.Map.empty
-  private val branches: mutable.Map[Move, Branch] =
+  private var children: Map[Move, ZeroTreeNode] = Map()
+  private var branches: Map[Move, Branch] =
     priors
-      .foldLeft(mutable.Map.empty[Move, Branch]) {
-        case (acc, (move, prior)) => if (gameState.isValidMove(move)) acc += move -> Branch(prior) else acc
+      .foldLeft(Map[Move, Branch]()) {
+        case (acc, (move, prior)) =>
+          if (gameState.isValidMove(move)) acc + (move -> Branch(prior))
+          else acc
       }
 
   def moves: List[Move] = branches.keys.toList
@@ -43,7 +43,7 @@ class ZeroTreeNode(
     if (branches.contains(move)) {
       val b = branches(move)
       val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
-      branches.put(move, updatedBranch)
+      branches += (move -> updatedBranch)
     }
     ()
   }
