@@ -36,7 +36,8 @@ class Input {
   }
 
   private def validMove(text: String): Boolean = {
-    if (text == "R" || text == "P")
+    val txt = text.toUpperCase()
+    if (txt == "R" || txt == "P")
       return true
     if (text.contains(",")) {
       val a = text.split(',')

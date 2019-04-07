@@ -9,17 +9,17 @@ package org.deeplearning4j.scalphagozero.board
   *
   * @author Max Pumperla
   */
-final case class GoString(player: Player, stones: Set[(Int, Int)], liberties: Set[(Int, Int)]) {
+final case class GoString(player: Player, stones: Set[Point], liberties: Set[Point]) {
 
   val numLiberties: Int = liberties.size
 
   def withoutLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties - point.toCoords
+    val newLiberties = this.liberties - point
     GoString(player, stones, newLiberties)
   }
 
   def withLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties + point.toCoords
+    val newLiberties = this.liberties + point
     GoString(player, stones, newLiberties)
   }
 

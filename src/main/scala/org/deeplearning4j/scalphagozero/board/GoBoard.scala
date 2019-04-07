@@ -11,43 +11,43 @@ import ZobristHashing.ZOBRIST
   * @author Max Pumperla
   * @author Barry Becker
   */
-case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Long = 0L) {
+case class GoBoard(size: Int, grid: Map[Point, GoString] = Map(), hash: Long = 0L) {
 
   private val serializer = new GoBoardSerializer(this)
 
-  private val neighborMap: Map[(Int, Int), List[Point]] = NeighborTables.getNbrTable(size)
-  private val diagonalMap: Map[(Int, Int), List[Point]] = NeighborTables.getDiagnonalTable(size)
+  private val neighborMap: Map[Point, List[Point]] = NeighborTables.getNbrTable(size)
+  private val diagonalMap: Map[Point, List[Point]] = NeighborTables.getDiagnonalTable(size)
 
-  def neighbors(point: Point): List[Point] = neighborMap.getOrElse((point.row, point.col), List.empty)
+  def neighbors(point: Point): List[Point] = neighborMap.getOrElse(point, List.empty)
 
-  def corners(point: Point): List[Point] = diagonalMap.getOrElse((point.row, point.col), List.empty)
+  def corners(point: Point): List[Point] = diagonalMap.getOrElse(point, List.empty)
 
   def placeStone(player: Player, point: Point): GoBoard = {
     assert(isOnGrid(point))
 
     if (getGoString(point).isDefined) {
-      println(" Illegal move attempted at: " + point.toCoords + ". Already occupied: " + getGoString(point).get)
+      println(" Illegal move attempted at: " + point + ". Already occupied: " + getGoString(point).get)
       this
     } else {
       // 1. Examine adjacent points
       var adjacentSameColor = Set[GoString]()
       var adjacentOppositeColor = Set[GoString]()
-      var liberties = Set[(Int, Int)]()
+      var liberties = Set[Point]()
 
-      for (neighbor: Point <- neighborMap((point.row, point.col))) {
+      for (neighbor: Point <- neighborMap(point)) {
         getGoString(neighbor) match {
-          case None                                        => liberties += neighbor.toCoords
+          case None                                        => liberties += neighbor
           case Some(goString) if goString.player == player => adjacentSameColor += goString
           case Some(goString)                              => adjacentOppositeColor += goString
         }
       }
 
       // 2. Merge any strings of the same color adjacent to the placed stone
-      adjacentSameColor += GoString(player, Set(point.toCoords), liberties)
+      adjacentSameColor += GoString(player, Set(point), liberties)
       val newString: GoString = adjacentSameColor.reduce(_ mergedWith _)
 
       var newGrid = grid
-      for (newStringPoint: (Int, Int) <- newString.stones)
+      for (newStringPoint: Point <- newString.stones)
         newGrid += newStringPoint -> newString
 
       var newHash = hash
@@ -81,17 +81,17 @@ case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Lon
     */
   private def removeString(
       goString: GoString,
-      grid: Map[(Int, Int), GoString],
+      grid: Map[Point, GoString],
       hash: Long
-  ): (Map[(Int, Int), GoString], Long) = {
+  ): (Map[Point, GoString], Long) = {
     var newGrid = grid
     var newHash = hash
 
     // first remove the stones from the board
     goString.stones.foreach { point =>
       newGrid -= point // the point is now empty
-      newHash ^= ZOBRIST((new Point(point), Some(goString.player))) //Remove filled point hash code.
-      newHash ^= ZOBRIST((new Point(point), None)) //Add empty point hash code.
+      newHash ^= ZOBRIST((point, Some(goString.player))) //Remove filled point hash code.
+      newHash ^= ZOBRIST((point, None)) //Add empty point hash code.
     }
 
     // for each opponent neighbor string add a liberty for each adjacent removed point
@@ -99,14 +99,14 @@ case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Lon
       neighborMap(point).foreach { neighbor =>
         val oppNbrString = getGoString(neighbor, newGrid)
         if (oppNbrString.nonEmpty) {
-          newGrid = replaceString(oppNbrString.get.withLiberty(Point(point._1, point._2)), newGrid)
+          newGrid = replaceString(oppNbrString.get.withLiberty(point), newGrid)
         }
       }
     }
     (newGrid, newHash)
   }
 
-  private def replaceString(newString: GoString, grid: Map[(Int, Int), GoString]): Map[(Int, Int), GoString] = {
+  private def replaceString(newString: GoString, grid: Map[Point, GoString]): Map[Point, GoString] = {
     var newGrid = grid
     for (point <- newString.stones)
       newGrid += (point -> newString)
@@ -116,7 +116,7 @@ case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Lon
   def isSelfCapture(player: Player, point: Point): Boolean = {
     var friendlyStrings: List[GoString] = List[GoString]()
 
-    for (neighbor <- neighborMap((point.row, point.col))) {
+    for (neighbor <- neighborMap(point)) {
       getGoString(neighbor) match {
         case None                                                => return false
         case Some(friendNbrStr) if friendNbrStr.player == player => friendlyStrings :+= friendNbrStr
@@ -130,7 +130,7 @@ case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Lon
   }
 
   def willCapture(player: Player, point: Point): Boolean =
-    neighborMap((point.row, point.col)).exists {
+    neighborMap(point).exists {
       getGoString(_) match {
         case Some(neighborString) if neighborString.player != player && neighborString.numLiberties == 1 => true
         case _                                                                                           => false
@@ -139,9 +139,9 @@ case class GoBoard(size: Int, grid: Map[(Int, Int), GoString] = Map(), hash: Lon
 
   def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= size && 1 <= point.col && point.col <= size
 
-  def getPlayer(point: Point): Option[Player] = grid.get(point.toCoords).map(_.player)
+  def getPlayer(point: Point): Option[Player] = grid.get(point).map(_.player)
 
-  def getGoString(point: Point, myGrid: Map[(Int, Int), GoString] = grid): Option[GoString] = myGrid.get(point.toCoords)
+  def getGoString(point: Point, myGrid: Map[Point, GoString] = grid): Option[GoString] = myGrid.get(point)
 
   override def equals(obj: scala.Any): Boolean = {
     obj match {
