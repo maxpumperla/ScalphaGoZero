@@ -27,11 +27,11 @@ class GameState(
     }
 
   val isOver: Boolean =
-    this.lastMove match {
+    lastMove match {
       case None | Some(Move.Play(_)) => false
       case Some(Move.Resign)         => true
       case Some(Move.Pass) =>
-        val secondLastMove = this.previousState.get.lastMove
+        val secondLastMove = previousState.get.lastMove
         secondLastMove match {
           case Some(Move.Pass)                               => true
           case None | Some(Move.Play(_)) | Some(Move.Resign) => false
@@ -41,9 +41,9 @@ class GameState(
   override def equals(obj: scala.Any): Boolean = {
     obj match {
       case other: GameState =>
-        return this.board == other.board && this.previousState == other.previousState &&
-        this.nextPlayer == other.nextPlayer && this.lastMove == other.lastMove &&
-        this.allPreviousStates == other.allPreviousStates
+        return board == other.board && previousState == other.previousState &&
+        nextPlayer == other.nextPlayer && lastMove == other.lastMove &&
+        allPreviousStates == other.allPreviousStates
       case _ =>
     }
     false
@@ -52,8 +52,8 @@ class GameState(
   def applyMove(move: Move): GameState = {
     val nextBoard: GoBoard =
       move match {
-        case Move.Play(point)        => this.board.placeStone(nextPlayer, point)
-        case Move.Pass | Move.Resign => this.board
+        case Move.Play(point)        => board.placeStone(nextPlayer, point)
+        case Move.Pass | Move.Resign => board
       }
 
     new GameState(nextBoard, nextPlayer.other, Some(this), Some(move))
@@ -61,35 +61,35 @@ class GameState(
 
   def isMoveSelfCapture(player: Player, move: Move): Boolean =
     move match {
-      case Move.Play(point)        => this.board.isSelfCapture(player, point)
       case Move.Pass | Move.Resign => false
+      case Move.Play(point)        => board.isSelfCapture(player, point)
     }
 
   def doesMoveViolateKo(player: Player, move: Move): Boolean = {
-    var nextBoard = this.board
+    var nextBoard = board
     move match {
-      case Move.Play(point) if this.board.willCapture(player, point) =>
+      case Move.Play(point) if board.willCapture(player, point) =>
         nextBoard = nextBoard.placeStone(player, point)
         val nextSituation = (player.other, nextBoard.hash)
-        this.allPreviousStates.contains(nextSituation)
+        allPreviousStates.contains(nextSituation)
       case _ => false
     }
   }
 
   def isValidMove(move: Move): Boolean =
-    if (this.isOver) false
+    if (isOver) false
     else {
       move match {
         case Move.Resign | Move.Pass => true
         case Move.Play(point) =>
-          this.board.getPlayer(point).isEmpty &&
-          !this.isMoveSelfCapture(nextPlayer, move) &&
-          !this.doesMoveViolateKo(nextPlayer, move)
+          board.getPlayer(point).isEmpty &&
+          !isMoveSelfCapture(nextPlayer, move) &&
+          !doesMoveViolateKo(nextPlayer, move)
       }
     }
 
   val legalMoves: List[Move] =
-    if (this.isOver) List.empty
+    if (isOver) List.empty
     else {
       var moves = List[Move](Move.Pass, Move.Resign)
       for {
@@ -97,19 +97,19 @@ class GameState(
         col <- 1 to board.size
       } {
         val move = Move.Play(Point(row, col))
-        if (this.isValidMove(move))
+        if (isValidMove(move))
           moves :+= move
       }
       moves
     }
 
   val winner: Option[Player] =
-    if (this.isOver) None
+    if (isOver) None
     else {
-      this.lastMove match {
-        case Some(Move.Resign) => Some(this.nextPlayer)
+      lastMove match {
+        case Some(Move.Resign) => Some(nextPlayer)
         case None | Some(Move.Play(_)) | Some(Move.Pass) =>
-          val gameResult = GameResult.computeGameResult(this.board)
+          val gameResult = GameResult.computeGameResult(board)
           Some(gameResult.winner)
       }
     }

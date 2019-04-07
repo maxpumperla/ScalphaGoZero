@@ -78,7 +78,7 @@ class Input {
     try {
       num = answer.trim.toDouble
     } catch {
-      case e: NumberFormatException => println(s"bad = $num"); false
+      case e: NumberFormatException => e; println(s"Invalid number: $num"); false
       case _: Throwable             => false
     }
     num < mini || num > maxi

@@ -15,12 +15,12 @@ final case class GoString(player: Player, stones: Set[(Int, Int)], liberties: Se
 
   def withoutLiberty(point: Point): GoString = {
     val newLiberties = this.liberties - point.toCoords
-    GoString(this.player, this.stones, newLiberties)
+    GoString(player, stones, newLiberties)
   }
 
   def withLiberty(point: Point): GoString = {
     val newLiberties = this.liberties + point.toCoords
-    GoString(this.player, this.stones, newLiberties)
+    GoString(player, stones, newLiberties)
   }
 
   def mergedWith(goString: GoString): GoString = {

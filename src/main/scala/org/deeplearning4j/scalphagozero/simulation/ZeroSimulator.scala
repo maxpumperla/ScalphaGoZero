@@ -61,9 +61,7 @@ object ZeroSimulator {
         game = game.applyMove(nextMove)
         println(game.board)
       } else {
-        println(game.nextPlayer + " now resigns.")
-        game = game.applyMove(Move.Resign)
-        println("The final game state is:\n" + game.board)
+        println(game.nextPlayer + " made an invalid move: " + nextMove + ". Try again.")
       }
     }
     println(">>> Simulation finished.")
