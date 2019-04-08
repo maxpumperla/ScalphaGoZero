@@ -13,11 +13,11 @@ import org.deeplearning4j.scalphagozero.scoring.GameResult
   * @param lastMove last move played in this game, if any
   * @author Max Pumperla
   */
-class GameState(
-    val board: GoBoard,
-    val nextPlayer: Player,
-    val previousState: Option[GameState] = None,
-    val lastMove: Option[Move] = None
+case class GameState(
+    board: GoBoard,
+    nextPlayer: Player,
+    previousState: Option[GameState] = None,
+    lastMove: Option[Move] = None
 ) {
 
   private val allPreviousStates: Set[(Player, Long)] =
@@ -86,21 +86,6 @@ class GameState(
           !isMoveSelfCapture(nextPlayer, move) &&
           !doesMoveViolateKo(nextPlayer, move)
       }
-    }
-
-  val legalMoves: List[Move] =
-    if (isOver) List.empty
-    else {
-      var moves = List[Move](Move.Pass, Move.Resign)
-      for {
-        row <- 1 to board.size
-        col <- 1 to board.size
-      } {
-        val move = Move.Play(Point(row, col))
-        if (isValidMove(move))
-          moves :+= move
-      }
-      moves
     }
 
   val winner: Option[Player] =

@@ -16,10 +16,9 @@ This project is a Scala port of the AlphaGo Zero module found in
 
 ## Getting started
 
-Here's how to download the library, install it and run its main application:
+Here's how run after cloning:
 
 ```bash
-git clone https://github.com/maxpumperla/ScalphaGoZero
 cd ScalphaGoZero
 sbt run
 ```

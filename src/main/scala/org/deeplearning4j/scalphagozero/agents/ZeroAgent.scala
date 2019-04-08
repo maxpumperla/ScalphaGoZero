@@ -36,11 +36,11 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       val newState = node.get.gameState.applyMove(nextMove)
       val childNode = createNode(newState, Some(nextMove), node)
       var move: Option[Move] = Some(nextMove)
-      var value = -1 * childNode.value
+      var value = -childNode.value
       while (node.isDefined && move.isDefined) {
         node.get.recordVisit(move.get, value)
         move = if (move == node.get.lastMove) None else node.get.lastMove
-        value = -1 * value
+        value = -value
       }
     }
     val rootStateTensor = encoder.encode(gameState)
@@ -92,8 +92,8 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     * @return ZeroTreeNode
     */
   def createNode(gameState: GameState, move: Option[Move], parent: Option[ZeroTreeNode]): ZeroTreeNode = {
-    val stateTensor: INDArray = this.encoder.encode(gameState)
-    val outputs = this.model.output(stateTensor)
+    val stateTensor: INDArray = encoder.encode(gameState)
+    val outputs = model.output(stateTensor)
     val priors = outputs(0)
     val value = outputs(1).getDouble(0L, 0L)
 
