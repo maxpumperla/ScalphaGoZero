@@ -126,7 +126,6 @@ case class GoBoard(size: Int, grid: Map[Point, GoString] = Map(), hash: Long = 0
     }
 
     friendlyStrings.forall(_.numLiberties == 1)
-
   }
 
   def willCapture(player: Player, point: Point): Boolean =

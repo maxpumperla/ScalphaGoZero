@@ -98,9 +98,9 @@ class BoardTest extends FunSpec {
       val blackString: GoString = board.getGoString(Point(1, 1)).get
 
       assert(blackString.numLiberties == 3)
-      assert(blackString.liberties.contains((3, 2)))
-      assert(blackString.liberties.contains((2, 3)))
-      assert(blackString.liberties.contains((1, 3)))
+      assert(blackString.liberties.contains(Point(3, 2)))
+      assert(blackString.liberties.contains(Point(2, 3)))
+      assert(blackString.liberties.contains(Point(1, 3)))
       println(board)
     }
   }

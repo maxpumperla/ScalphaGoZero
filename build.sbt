@@ -19,7 +19,7 @@ scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings")
 lazy val dl4j = ((version: String) => Seq(
   "org.nd4j" % "nd4j-native-platform" % version,
   "org.deeplearning4j" % "deeplearning4j-core" % version
-))("1.0.0-beta2")
+))("1.0.0-beta3")
 
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
