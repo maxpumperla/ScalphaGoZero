@@ -19,13 +19,4 @@ final case class Point(row: Int, col: Int) {
     Point(row, col - 1),
     Point(row, col + 1)
   )
-
-  /** @return adjacent diagonals from this point */
-  def diagonals: List[Point] = List(
-    Point(row - 1, col - 1),
-    Point(row + 1, col + 1),
-    Point(row - 1, col + 1),
-    Point(row + 1, col - 1)
-  )
-
 }

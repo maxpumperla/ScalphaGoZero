@@ -14,7 +14,6 @@ class TerritoryCalculator(goBoard: GoBoard) {
   /**
     * Evaluate / estimate the territory currently on the Go board
     *
-
     * @return Territory object
     */
   def evaluateTerritory(): Map[Point, VertexType] = {

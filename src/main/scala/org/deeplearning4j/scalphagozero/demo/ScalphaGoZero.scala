@@ -25,7 +25,9 @@ object ScalphaGoZero {
     val input = new Input()
 
     // Define board encoder and model
-    val encoder = ZeroEncoder(9)
+    println("What size go board?[9]")
+    val size = input.getNumber(9, 5, 25).toInt
+    val encoder = ZeroEncoder(size)
     val model = DualResnetModel(5, encoder.numPlanes, encoder.boardSize)
 
     // Create two AGZ opponents

@@ -3,7 +3,8 @@ package org.deeplearning4j.scalphagozero.board
 import scala.util.Random
 
 /**
-  * Zobrist hashing for board positions
+  * Zobrist hashing for board positions.
+  * Used to help enforce the ko rule by detecting when the board state is the same as it once was.
   *
   * @author Max Pumperla
   */

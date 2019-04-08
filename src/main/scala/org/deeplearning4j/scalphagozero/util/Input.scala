@@ -27,8 +27,8 @@ class Input {
     } while (!valid)
 
     text match {
-      case "P" => Move.Pass
-      case "R" => Move.Resign
+      case "P" | "p" => Move.Pass
+      case "R" | "r" => Move.Resign
       case s: String =>
         val a = s.split(',')
         Move.Play(Point(a(0).trim.toInt, a(1).trim.toInt))
@@ -79,8 +79,8 @@ class Input {
     try {
       num = answer.trim.toDouble
     } catch {
-      case e: NumberFormatException => e; println(s"Invalid number: $num"); false
-      case _: Throwable             => false
+      case _: NumberFormatException => println(s"Invalid number: $num"); return false
+      case _: Throwable             => return false
     }
     num < mini || num > maxi
   }

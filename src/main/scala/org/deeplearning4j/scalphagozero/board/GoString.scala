@@ -32,4 +32,5 @@ final case class GoString(player: Player, stones: Set[Point], liberties: Set[Poi
     GoString(player, combinedStones, commonLiberties)
   }
 
+  def size: Int = stones.size
 }

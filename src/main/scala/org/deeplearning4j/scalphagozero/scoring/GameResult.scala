@@ -11,12 +11,14 @@ case object Dame extends VertexType
 
 /**
   * Compute the result of a game
-  *
+  * numBlackCaptures refers to the number of white stones captured by black.
   * @author Max Pumperla
   */
 final case class GameResult(
     numBlackStones: Int,
     numWhiteStones: Int,
+    numBlackCaptures: Int,
+    numWhiteCaptures: Int,
     numBlackTerritory: Int,
     numWhiteTerritory: Int,
     numDame: Int,
@@ -26,30 +28,29 @@ final case class GameResult(
   /**
     * Points black scored
     */
-  val blackPoints: Int = numBlackTerritory + numBlackStones
+  val blackPoints: Int = numBlackTerritory + numBlackStones + numBlackCaptures
 
   /**
     * points white scored
     */
-  val whitePoints: Int = numWhiteTerritory + numWhiteStones
+  val whitePoints: Int = numWhiteTerritory + numWhiteStones + numWhiteCaptures
 
-  val winner: Player = if (blackPoints > whitePoints + komi) BlackPlayer else WhitePlayer
-
-  val winningMargin: Double = Math.abs(blackPoints - (whitePoints + komi))
+  val blackWinningMargin: Double = blackPoints - (whitePoints + komi)
+  val winner: Player = if (blackWinningMargin > 0) BlackPlayer else WhitePlayer
 
   def toDebugString: String = {
-    var s = s"blackTerritory ($numBlackTerritory) + blackStones ($numBlackStones) = $blackPoints\n"
-    s += s"whiteTerritory ($numWhiteTerritory) + blackStones ($numWhiteStones) = $whitePoints\n"
+    var s =
+      s"Black: territory($numBlackTerritory) + stones($numBlackStones) + captures($numBlackCaptures) = $blackPoints\n"
+    s += s"White: territory($numWhiteTerritory) + stones($numWhiteStones) + captures($numWhiteCaptures) = $whitePoints\n"
     s += s"num dame = $numDame,  kome = $komi\n"
     s += toString
     s
   }
 
   override lazy val toString: String = {
-    val white = whitePoints + komi
     winner match {
-      case BlackPlayer => "B+ " + (blackPoints - white)
-      case WhitePlayer => "W+ " + (white - blackPoints)
+      case BlackPlayer => "Black +" + blackWinningMargin
+      case WhitePlayer => "White +" + -blackWinningMargin
     }
   }
 }
@@ -62,7 +63,8 @@ object GameResult {
     * @param goBoard GoBoard instance
     * @return GameResult object
     */
-  def computeGameResult(goBoard: GoBoard): GameResult = {
+  def computeGameResult(goBoard: GoBoard, komi: Double = 7.5): GameResult = {
+
     val territoryCalculator = new TerritoryCalculator(goBoard)
     val territoryMap = territoryCalculator.evaluateTerritory()
 
@@ -85,10 +87,12 @@ object GameResult {
     GameResult(
       numBlackStones = numBlackStones,
       numWhiteStones = numWhiteStones,
+      numBlackCaptures = goBoard.blackCaptures,
+      numWhiteCaptures = goBoard.whiteCaptures,
       numBlackTerritory = numBlackTerritory,
       numWhiteTerritory = numWhiteTerritory,
       numDame = numDame,
-      komi = 7.5
+      komi
     )
   }
 }
