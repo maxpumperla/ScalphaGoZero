@@ -1,5 +1,7 @@
 package org.deeplearning4j.scalphagozero.demo
 
+import java.io.File
+import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.{ HumanAgent, ZeroAgent }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.experience.ZeroExperienceBuffer
@@ -29,7 +31,7 @@ object ScalphaGoZero {
     val size = input.getInteger("What size go board?", 9, 5, 25)
     val numLayers = input.getInteger("How many residual blocks to use?", 5, 1, 40)
     val encoder = ZeroEncoder(size)
-    val model = DualResnetModel(numLayers, encoder.numPlanes, encoder.boardSize)
+    val model = getModel(numLayers, encoder)
 
     // Create two AGZ opponents
     val blackAgent = new ZeroAgent(model, encoder)
@@ -51,7 +53,27 @@ object ScalphaGoZero {
     blackAgent.train(experience)
 
     println(">>> Training phase done! You can use black to play as an AI agent now.\n")
+    optionallySaveModel(blackAgent.model, size, numLayers)
+
     val humanAgent = new HumanAgent()
     ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize)
+  }
+
+  private def getModel(numLayers: Int, encoder: ZeroEncoder): ComputationGraph = {
+    val c: Character =
+      input.charQuery("Do you want to load pre-trained model?", Seq('y', 'n'), Some('y'))
+    if (c.toString.toUpperCase() == "Y") {
+      val fname = input.textQuery("Load from which file?", s"model_size_${encoder.boardSize}_layers_$numLayers.model")
+      ComputationGraph.load(new File(fname), true)
+    } else DualResnetModel(numLayers, encoder.numPlanes, encoder.boardSize)
+  }
+
+  private def optionallySaveModel(model: ComputationGraph, size: Int, numLayers: Int): Unit = {
+    val c: Character =
+      input.charQuery("Do you want to first save the result of this model?", Seq('y', 'n'), Some('y'))
+    if (c.toString.toUpperCase() == "Y") {
+      val fname = input.textQuery("Save to which file?", s"model_size_${size}_layers_$numLayers.model")
+      model.save(new File(fname))
+    }
   }
 }

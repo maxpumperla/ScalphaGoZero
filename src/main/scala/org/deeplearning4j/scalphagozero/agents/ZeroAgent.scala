@@ -6,6 +6,8 @@ import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
+import scala.util.Random
+import ZeroAgent.RND
 
 /**
   * AlphaGo Zero agent, main workhorse of this project. ZeroAgent implements the characteristic combination of
@@ -19,11 +21,19 @@ import org.nd4j.linalg.factory.Nd4j
   *
   * @author Max Pumperla
   */
-class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val roundsPerMove: Int = 10, val c: Double = 2.0)
-    extends Agent {
+class ZeroAgent(
+    val model: ComputationGraph,
+    val encoder: ZeroEncoder,
+    val roundsPerMove: Int = 10,
+    val c: Double = 2.0,
+    val rand: Random = RND
+) extends Agent {
 
   val collector: ZeroExperienceCollector = new ZeroExperienceCollector()
 
+  /**
+    * @return the best move selected by the trained model
+    */
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState, None, None)
     for (_ <- 0 until roundsPerMove) {
@@ -52,7 +62,25 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
     collector.recordDecision(rootStateTensor, visitCounts)
 
     val validMoves = root.moves.filter(m => gameState.isValidMove(m))
-    validMoves.map(m => (m, root.visitCount(m))).toMap.maxBy(_._2)._1
+    selectValidNextMove(validMoves, root)
+  }
+
+  /**
+    * The move is selected randomly, but it is skewed toward selecting a move with high visit count (proportionally).
+    * @return selected move
+    */
+  private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move = {
+    val nonZeroVisitCtMoves = validMoves.filter(m => root.visitCount(m) > 0)
+    val a = nonZeroVisitCtMoves.map(m => root.visitCount(m)).toArray
+    val r = rand.nextInt(root.totalVisitCount) + 1
+
+    var i = 0
+    var ct = 0
+    while (ct < r && i < a.length) {
+      ct += a(i)
+      i += 1
+    }
+    nonZeroVisitCtMoves(i - 1)
   }
 
   /**
@@ -123,10 +151,18 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
 
     val countLength = experience.visitCounts.shape()(1)
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
+    println("visitSums:\n" + visitSums.toDoubleVector.mkString(", "))
     val actionTarget = experience.visitCounts.div(visitSums.repeat(1, countLength))
+    println("\nactionTarget shape = " + actionTarget.shape().mkString(", "))
+    println()
     val valueTarget = experience.rewards
+    println("valueTarget:\n" + valueTarget.toDoubleVector.mkString(", "))
 
     model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
   }
 
+}
+
+object ZeroAgent {
+  private val RND = new Random(1)
 }

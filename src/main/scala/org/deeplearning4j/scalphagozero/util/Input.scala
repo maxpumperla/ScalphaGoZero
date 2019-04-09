@@ -20,7 +20,7 @@ class Input {
     var valid = false
     do {
       text = scanner.nextLine()
-      valid = validMove(text)
+      valid = validMove(text, size)
       if (!valid) {
         println(text + " is not a valid coordinate. Try again.")
       }
@@ -35,33 +35,58 @@ class Input {
     }
   }
 
-  private def validMove(text: String): Boolean = {
+  private def validMove(text: String, size: Int): Boolean = {
     val txt = text.toUpperCase()
     if (txt == "R" || txt == "P")
       return true
     if (text.contains(",")) {
       val a = text.split(',')
       println("first = " + a(0) + " second = " + a(1))
-      return validInt(a(0)) && validChar(a(1))
+      return validInt(a(0), size) && validChar(a(1), size)
     }
     false
   }
 
-  private def validInt(txt: String): Boolean = {
+  private def validInt(txt: String, size: Int): Boolean = {
     val result = txt.trim match {
       case INT_REGEX(str) => str.toInt
       case _              => -1
     }
-    result > 0
+    result > 0 && result <= size
   }
 
-  private def validChar(txt: String): Boolean = letterToInt(txt) >= 0
+  private def validChar(txt: String, size: Int): Boolean = {
+    val i = letterToInt(txt)
+    i > 0 && i <= size
+  }
 
   def getInteger(prompt: String, default: Int = 0, min: Int = 0, max: Int = 10000: Int): Int = {
     println(prompt + s" [$default]")
     val n = getNumber(default.toDouble, min.toDouble, max.toDouble).toInt
     println(n)
     n
+  }
+
+  /** @param queryMsg the prompt
+    * @param default default value
+    * @return line of text
+    */
+  def textQuery(queryMsg: String, default: String = ""): String = {
+    println(queryMsg + s" [$default]:")
+    val answer = scanner.nextLine()
+    if (answer.isEmpty) default else answer
+  }
+
+  /** @param queryMsg the prompt
+    * @param alternatives set of possible responses (lower case)
+    * @return given a prompt return one of several specified upper case characters from the user
+    */
+  def charQuery(queryMsg: String, alternatives: Seq[Character], default: Option[Character] = None): Character = {
+    val theDefault = if (default.isDefined) default.get else alternatives.head
+    println(queryMsg + " " + alternatives.mkString("(", "/", ")"))
+    print(s"[$theDefault]:")
+    val answer = scanner.nextLine()
+    if (answer.isEmpty) theDefault else answer.head.toLower
   }
 
   /**
