@@ -22,6 +22,8 @@ class ZeroTreeNode(
   var totalVisitCount: Int = 1
 
   private var children: Map[Move, ZeroTreeNode] = Map()
+
+  // Add child moves for all valid moves
   private var branches: Map[Move, Branch] =
     priors
       .foldLeft(Map[Move, Branch]()) {

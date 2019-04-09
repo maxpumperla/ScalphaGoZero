@@ -6,7 +6,7 @@ import org.deeplearning4j.scalphagozero.scoring.GameResult
 import org.nd4j.linalg.factory.Nd4j
 
 /**
-  * Simulate a game between two AlphaGo Zero agents.
+  * Simulate a game between two player agents.
   *
   * @author Max Pumperla
   */

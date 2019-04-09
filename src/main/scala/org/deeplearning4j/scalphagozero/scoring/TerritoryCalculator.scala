@@ -4,7 +4,6 @@ import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GoBoard, Player, Po
 import scala.collection.mutable.ListBuffer
 
 /**
-  *
   * @param goBoard the board to evaluate territory for
   * @author Max Pumperla
   * @author Barry Becker

@@ -13,5 +13,5 @@ class HumanAgent() extends Agent {
   val input = new Input()
 
   override def selectMove(gameState: GameState): Move =
-    input.getMoveFromUser
+    input.getMoveFromUser(gameState.board.size)
 }
