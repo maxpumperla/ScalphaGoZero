@@ -23,8 +23,8 @@ object ScalphaGoZero {
   def main(args: Array[String]): Unit = {
 
     // Define board encoder and model
-    val encoder = ZeroEncoder()
-    val model = DualResnetModel(20, encoder.numPlanes)
+    val encoder = ZeroEncoder(19)
+    val model = DualResnetModel(20, encoder.numPlanes, encoder.boardSize)
 
     // Create two AGZ opponents
     val blackAgent = new ZeroAgent(model, encoder)

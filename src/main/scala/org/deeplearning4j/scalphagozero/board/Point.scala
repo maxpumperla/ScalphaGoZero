@@ -10,11 +10,22 @@ package org.deeplearning4j.scalphagozero.board
   */
 final case class Point(row: Int, col: Int) {
 
+  def this(tuple: (Int, Int)) = this(tuple._1, tuple._2)
+
+  /** @return strongly connected neighbors */
   def neighbors: List[Point] = List(
-    Point(this.row - 1, this.col),
-    Point(this.row + 1, this.col),
-    Point(this.row, this.col - 1),
-    Point(this.row, this.col + 1)
+    Point(row - 1, col),
+    Point(row + 1, col),
+    Point(row, col - 1),
+    Point(row, col + 1)
+  )
+
+  /** @return adjacent diagonals from this point */
+  def diagonals: List[Point] = List(
+    Point(row - 1, col - 1),
+    Point(row + 1, col + 1),
+    Point(row - 1, col + 1),
+    Point(row + 1, col - 1)
   )
 
   def toCoords: (Int, Int) = (this.row, this.col)

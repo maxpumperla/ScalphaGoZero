@@ -1,4 +1,5 @@
 package org.deeplearning4j.scalphagozero.agents
+
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
@@ -40,7 +41,7 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       var value = -1 * childNode.value
       while (node.isDefined && move.isDefined) {
         node.get.recordVisit(move.get, value)
-        move = node.get.lastMove
+        move = if (move == node.get.lastMove) None else node.get.lastMove
         value = -1 * value
       }
     }
@@ -72,10 +73,16 @@ class ZeroAgent(val model: ComputationGraph, val encoder: ZeroEncoder, val round
       q + this.c * p * Math.sqrt(totalCount.doubleValue()) / (n + 1)
     }
 
-    node.moves
-      .map(m => (m, scoreBranch(m)))
-      .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
-      ._1
+    if (node.moves.isEmpty) {
+      println("There are no moves from this position.")
+      println(node)
+      Move.Pass
+    } else {
+      node.moves
+        .map(m => (m, scoreBranch(m)))
+        .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
+        ._1
+    }
   }
 
   /**

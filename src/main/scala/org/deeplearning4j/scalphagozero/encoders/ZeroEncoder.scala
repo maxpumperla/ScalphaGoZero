@@ -14,7 +14,7 @@ import org.nd4j.linalg.factory.Nd4j
   *
   * @author Max Pumperla
   */
-final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(boardHeight, boardWidth, 11) {
+final class ZeroEncoder(boardSize: Int) extends Encoder(boardSize, 11) {
 
   override val name: String = "AlphaGoZero"
 
@@ -32,11 +32,11 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
 
     val nextPlayer: Player = gameState.nextPlayer
     nextPlayer match {
-      case WhitePlayer => tensor.putSlice(8, Nd4j.ones(boardHeight, boardWidth));
-      case BlackPlayer => tensor.putSlice(9, Nd4j.ones(boardHeight, boardWidth));
+      case WhitePlayer => tensor.putSlice(8, Nd4j.ones(boardSize, boardSize));
+      case BlackPlayer => tensor.putSlice(9, Nd4j.ones(boardSize, boardSize));
     }
-    for (row <- 0 until this.boardHeight) {
-      for (col <- 0 until this.boardWidth) {
+    for (row <- 0 until boardSize) {
+      for (col <- 0 until boardSize) {
         val p = Point(row + 1, col + 1)
         val goString: Option[GoString] = gameState.board.getGoString(p)
 
@@ -59,7 +59,7 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
 
   override def encodeMove(move: Move): Int =
     move match {
-      case Move.Play(point) => boardHeight * (point.row - 1) + (point.col - 1)
+      case Move.Play(point) => boardSize * (point.row - 1) + (point.col - 1)
       case Move.Pass        => numberOfPoints
       case _                => throw new IllegalArgumentException("Cannot encode resign move")
     }
@@ -68,17 +68,13 @@ final class ZeroEncoder(boardHeight: Int, boardWidth: Int) extends Encoder(board
     if (index == numberOfPoints) {
       Move.Pass
     } else {
-      val row = index / boardHeight
-      val col = index % boardHeight
+      val row = index / boardSize
+      val col = index % boardSize
       Move.Play(Point(row + 1, col + 1))
     }
-
 }
 
 object ZeroEncoder {
-
-  def apply(): ZeroEncoder = new ZeroEncoder(19, 19)
-
-  def apply(boardHeight: Int, boardWidth: Int): ZeroEncoder =
-    new ZeroEncoder(boardHeight, boardWidth)
+  def apply(): ZeroEncoder = new ZeroEncoder(19)
+  def apply(boardSize: Int): ZeroEncoder = new ZeroEncoder(boardSize)
 }

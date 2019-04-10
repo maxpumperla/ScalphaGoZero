@@ -18,8 +18,8 @@ import org.deeplearning4j.nn.graph.ComputationGraph
   */
 object DualResnetModel {
 
-  def apply(blocks: Int, numPlanes: Int): ComputationGraph = {
-    val builder = new DL4JAlphaGoZeroBuilder
+  def apply(blocks: Int, numPlanes: Int, boardSize: Int): ComputationGraph = {
+    val builder = new DL4JAlphaGoZeroBuilder(boardSize)
     val input = "in"
 
     builder.addInputs(input)

@@ -16,12 +16,14 @@ import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.learning.config.Sgd
 import scala.collection.JavaConverters._
 
-class DL4JAlphaGoZeroBuilder {
+class DL4JAlphaGoZeroBuilder(boardSize: Int) {
+
+  val size: Long = boardSize.toLong
 
   val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
       .updater(new Sgd())
       .weightInit(WeightInit.LECUN_NORMAL)
-      .graphBuilder() setInputTypes InputType.convolutional(19, 19, 11)
+      .graphBuilder() setInputTypes InputType.convolutional(size, size, 11)
 
   def addInputs(name: String): Unit = {
     conf.addInputs(name)
@@ -140,9 +142,16 @@ class DL4JAlphaGoZeroBuilder {
     )
     conf.addLayer(bnName, new BatchNormalization.Builder().nOut(2).build(), convName)
     conf.addLayer(actName, new ActivationLayer.Builder().activation(Activation.RELU).build(), bnName)
-    conf.addLayer(denseName, new OutputLayer.Builder().nIn(2 * 19 * 19).nOut(19 * 19 + 1).build(), actName)
+    conf.addLayer(
+      denseName,
+      new OutputLayer.Builder()
+        .nIn(2 * size * size)
+        .nOut(size * size + 1)
+        .build(),
+      actName
+    )
     conf.setInputPreProcessors(
-      Map[String, InputPreProcessor](denseName -> new CnnToFeedForwardPreProcessor(19, 19, 2)).asJava
+      Map[String, InputPreProcessor](denseName -> new CnnToFeedForwardPreProcessor(size, size, 2)).asJava
     )
     denseName
   }
@@ -171,9 +180,16 @@ class DL4JAlphaGoZeroBuilder {
     )
     conf.addLayer(bnName, new BatchNormalization.Builder().nOut(1).build(), convName)
     conf.addLayer(actName, new ActivationLayer.Builder().activation(Activation.RELU).build(), bnName)
-    conf.addLayer(denseName, new DenseLayer.Builder().nIn(19 * 19).nOut(256).build(), actName)
+    conf.addLayer(
+      denseName,
+      new DenseLayer.Builder()
+        .nIn(size * size)
+        .nOut(256)
+        .build(),
+      actName
+    )
     conf.setInputPreProcessors(
-      Map[String, InputPreProcessor](denseName -> new CnnToFeedForwardPreProcessor(19, 19, 1)).asJava
+      Map[String, InputPreProcessor](denseName -> new CnnToFeedForwardPreProcessor(size, size, 1)).asJava
     )
     conf.addLayer(outputName, new OutputLayer.Builder().nIn(256).nOut(1).build(), denseName)
     outputName
