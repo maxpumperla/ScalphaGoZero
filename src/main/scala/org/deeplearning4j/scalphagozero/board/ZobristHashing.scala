@@ -12,6 +12,7 @@ object ZobristHashing {
 
   private final val SEED = 1
   private final val RAND = new Random(SEED)
+  // Need to up this to 25 if we ever want to support boards of size 25.
   private final val MAX_BOARD_SIZE = 19
 
   final val ZOBRIST: Map[(Point, Option[Player]), Long] = {

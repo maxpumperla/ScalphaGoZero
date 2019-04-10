@@ -2,6 +2,7 @@ package org.deeplearning4j.scalphagozero.board
 
 /**
   * Main Go board class, represents the board on which Go moves can be played. Immutable.
+  * Internally, a grid keeps track of the strings at each vertex.
   *
   * @param size the size of the go board. Values of 5, 9, 13, 17, 19, or 25 are reasonable.
   * @param grid manages association of stones with parent strings.
@@ -12,8 +13,6 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
 
   private val serializer = new GoBoardSerializer(this)
   private val neighborMap: Map[Point, List[Point]] = NeighborTables.getNbrTable(size)
-
-  def neighbors(point: Point): List[Point] = neighborMap.getOrElse(point, List.empty)
 
   def placeStone(player: Player, point: Point): GoBoard = {
     assert(isOnGrid(point))

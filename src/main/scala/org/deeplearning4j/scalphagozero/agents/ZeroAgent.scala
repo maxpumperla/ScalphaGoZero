@@ -100,8 +100,7 @@ class ZeroAgent(
     }
 
     if (node.moves.isEmpty) {
-      println("There are no moves from this position.")
-      println(node)
+      println(s"There are no moves for ${node.gameState.nextPlayer} from this position.")
       Move.Pass
     } else {
       node.moves
@@ -132,7 +131,7 @@ class ZeroAgent(
       movePriors += (move -> prior)
     }
 
-    val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)
+    val newNode = ZeroTreeNode(gameState, value, movePriors, parent, move)
     if (parent.isDefined && move.isDefined) {
       parent.get.addChild(move.get, newNode)
     }

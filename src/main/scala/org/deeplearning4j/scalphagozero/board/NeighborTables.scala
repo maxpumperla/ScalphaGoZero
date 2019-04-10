@@ -4,6 +4,10 @@ object NeighborTables {
 
   private var neighborTables: Map[Int, Map[Point, List[Point]]] = Map()
 
+  /**
+    * @param size size of the board to create map for
+    * @return a map from a point on the board to its (up to) 4 neighbors, for specified board size.
+    */
   def getNbrTable(size: Int): Map[Point, List[Point]] = {
     if (!neighborTables.contains(size)) {
       initNeighborTable(size)

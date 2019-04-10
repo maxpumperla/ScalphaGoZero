@@ -11,12 +11,12 @@ import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
   * @param parent optional parent of this node
   * @param lastMove optional last played move
   */
-class ZeroTreeNode(
-    val gameState: GameState,
-    val value: Double,
-    val priors: Map[Move, Double],
-    val parent: Option[ZeroTreeNode],
-    val lastMove: Option[Move]
+case class ZeroTreeNode(
+    gameState: GameState,
+    value: Double,
+    priors: Map[Move, Double],
+    parent: Option[ZeroTreeNode],
+    lastMove: Option[Move]
 ) {
 
   var totalVisitCount: Int = 1

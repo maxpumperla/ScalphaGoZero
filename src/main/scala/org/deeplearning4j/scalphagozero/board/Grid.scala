@@ -42,22 +42,22 @@ case class Grid(grid: Map[Point, GoString] = Map.empty, hash: Long = 0L) {
 
   /**
     * When a string is removed due to capture, also update the liberties of the adjacent strings of opposite color.
-    * @param goString the string to remove
+    * @param removedString the string to remove
     * @return newGrid and newHash value
     */
-  def removeString(goString: GoString, nbrMap: Map[Point, List[Point]]): Grid = {
+  def removeString(removedString: GoString, nbrMap: Map[Point, List[Point]]): Grid = {
     var newGrid = grid
     var newHash = hash
 
     // first remove the stones from the board
-    goString.stones.foreach { point =>
+    removedString.stones.foreach { point =>
       newGrid -= point // the point is now empty
-      newHash ^= ZOBRIST((point, Some(goString.player))) //Remove filled point hash code.
+      newHash ^= ZOBRIST((point, Some(removedString.player))) //Remove filled point hash code.
       newHash ^= ZOBRIST((point, None)) //Add empty point hash code.
     }
 
-    // for each opponent neighbor string add a liberty for each adjacent removed point
-    goString.stones.foreach { point =>
+    // for each opponent neighbor string adjacent to the one removed, add a liberty for each removed point
+    removedString.stones.foreach { point =>
       nbrMap(point).foreach { neighbor =>
         val oppNbrString = newGrid.get(neighbor)
         if (oppNbrString.nonEmpty) {
