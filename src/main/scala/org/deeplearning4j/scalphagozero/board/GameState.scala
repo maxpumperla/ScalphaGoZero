@@ -17,14 +17,9 @@ case class GameState(
     board: GoBoard,
     nextPlayer: Player,
     previousState: Option[GameState] = None,
-    lastMove: Option[Move] = None
+    lastMove: Option[Move] = None,
+    allPreviousStates: Set[(Player, Long)] = Set.empty
 ) {
-
-  private val allPreviousStates: Set[(Player, Long)] =
-    previousState match {
-      case None        => Set.empty
-      case Some(state) => state.allPreviousStates + (nextPlayer -> state.board.zobristHash)
-    }
 
   val isOver: Boolean =
     lastMove match {
@@ -38,17 +33,6 @@ case class GameState(
         }
     }
 
-  override def equals(obj: scala.Any): Boolean = {
-    obj match {
-      case other: GameState =>
-        return board == other.board && previousState == other.previousState &&
-        nextPlayer == other.nextPlayer && lastMove == other.lastMove &&
-        allPreviousStates == other.allPreviousStates
-      case _ =>
-    }
-    false
-  }
-
   def applyMove(move: Move): GameState = {
     val nextBoard: GoBoard =
       move match {
@@ -56,7 +40,8 @@ case class GameState(
         case Move.Pass | Move.Resign => board
       }
 
-    new GameState(nextBoard, nextPlayer.other, Some(this), Some(move))
+    val newAllPrevStates = allPreviousStates + (nextPlayer -> nextBoard.zobristHash)
+    new GameState(nextBoard, nextPlayer.other, Some(this), Some(move), newAllPrevStates)
   }
 
   def isMoveSelfCapture(player: Player, move: Move): Boolean =

@@ -81,10 +81,9 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
 
   /** @return true if player playing at point will capture stones */
   def willCapture(player: Player, point: Point): Boolean =
-    neighborMap(point).exists {
-      grid.getString(_) match {
-        case Some(neighborString) if neighborString.player != player && neighborString.numLiberties == 1 => true
-        case _                                                                                           => false
+    neighborMap(point).exists { pt => {
+        val nbrStr = grid.getString(pt)
+        nbrStr.isDefined && nbrStr.get.player != player && nbrStr.get.numLiberties == 1
       }
     }
 
