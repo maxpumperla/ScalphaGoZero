@@ -8,29 +8,42 @@ import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
   * @param gameState current game state
   * @param value value of this node
   * @param priors Map of moves to prior values (estimated by policy network)
-  * @param parent optional parent of this node
-  * @param lastMove optional last played move
+  * @param parent optional parent of this node. All nodes have parents except the root.
+  * @param lastMove optional last played move that led directly to the game state represented by this node.
   */
-case class ZeroTreeNode(
-    gameState: GameState,
-    value: Double,
+class ZeroTreeNode(
+    val gameState: GameState,
+    val value: Double,
     priors: Map[Move, Double],
     parent: Option[ZeroTreeNode],
-    lastMove: Option[Move]
+    val lastMove: Option[Move]
 ) {
 
   var totalVisitCount: Int = 1
 
   private var children: Map[Move, ZeroTreeNode] = Map()
 
-  // Add child moves for all valid moves
-  private var branches: Map[Move, Branch] =
-    priors
-      .foldLeft(Map[Move, Branch]()) {
+  // Add valid child moves for all valid moves (except for pass)
+  private var branches: Map[Move, Branch] = {
+    priors // there are 26 priors for a 5x5 board (the last is pass)
+      .foldLeft(Map.empty[Move, Branch]) {
         case (acc, (move, prior)) =>
-          if (gameState.isValidMove(move)) acc + (move -> Branch(prior))
+          if (/*move != Move.Pass &&*/ gameState.isValidMove(move))
+            acc + (move -> Branch(prior))
           else acc
       }
+  }
+
+  // print with pre-order traversal
+  def printTree(indent: String = ""): Unit = {
+    println(
+      indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +
+      " val:" + value + " numkids:" + children.size
+    )
+    for (c <- children) {
+      c._2.printTree(indent + "  ")
+    }
+  }
 
   def moves: List[Move] = branches.keys.toList
 
@@ -41,6 +54,11 @@ case class ZeroTreeNode(
   def hasChild(move: Move): Boolean = children.contains(move)
 
   def recordVisit(move: Move, value: Double): Unit = {
+
+    // first update ancestors
+//    if (parent.isDefined)
+//      parent.get.recordVisit(move, value)
+
     totalVisitCount += 1
     if (branches.contains(move)) {
       val b = branches(move)

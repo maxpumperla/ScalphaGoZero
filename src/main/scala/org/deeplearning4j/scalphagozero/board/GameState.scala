@@ -21,6 +21,7 @@ case class GameState(
     allPreviousStates: Set[(Player, Long)] = Set.empty
 ) {
 
+  /** true when the game is over - when someone resigns or there are 2 consecutive passes */
   val isOver: Boolean =
     lastMove match {
       case None | Some(Move.Play(_)) => false

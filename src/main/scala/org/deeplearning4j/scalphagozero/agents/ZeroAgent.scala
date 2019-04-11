@@ -24,7 +24,7 @@ import ZeroAgent.RND
 class ZeroAgent(
     val model: ComputationGraph,
     val encoder: ZeroEncoder,
-    val roundsPerMove: Int = 10,
+    val roundsPerMove: Int = 20,
     val c: Double = 2.0,
     val rand: Random = RND
 ) extends Agent {
@@ -35,10 +35,11 @@ class ZeroAgent(
     * @return the best move selected by the trained model
     */
   override def selectMove(gameState: GameState): Move = {
-    val root = createNode(gameState, None, None)
+    val root = createNode(gameState)
     for (_ <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
       var nextMove = selectBranch(node.get)
+      // identify the branch in the current tree to add a new child to
       while (node.get.hasChild(nextMove)) {
         node = node.get.getChild(nextMove)
         nextMove = selectBranch(node.get)
@@ -53,76 +54,88 @@ class ZeroAgent(
         value = -value
       }
     }
-    val rootStateTensor = encoder.encode(gameState)
+
+    recordVisitCounts(root)
+
+    val validMoves = root.moves.filter(m => gameState.isValidMove(m))
+    val selected = selectValidNextMove(validMoves, root)
+    println("totalVisitCt = " + root.totalVisitCount)
+    println("Selected " + selected + " from these valid moves:  ")
+    println(validMoves.map(m => (m, root.visitCount(m))).mkString(", "))
+    selected
+  }
+
+  private def recordVisitCounts(root: ZeroTreeNode): Unit = {
+    //root.printTree()
+    val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {
       val move: Move = encoder.decodeMoveIndex(index)
       visitCounts.put(1, index, Nd4j.scalar(root.visitCount(move).doubleValue()))
     }
     collector.recordDecision(rootStateTensor, visitCounts)
-
-    val validMoves = root.moves.filter(m => gameState.isValidMove(m))
-    selectValidNextMove(validMoves, root)
   }
 
   /**
-    * The move is selected randomly, but it is skewed toward selecting a move with high visit count (proportionally).
-    * @return selected move
+    * @return selected one of the moves that was visited most often.
     */
-  private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move = {
-    val nonZeroVisitCtMoves = validMoves.filter(m => root.visitCount(m) > 0)
-    val a = nonZeroVisitCtMoves.map(m => root.visitCount(m)).toArray
-    val r = rand.nextInt(root.totalVisitCount) + 1
-
-    var i = 0
-    var ct = 0
-    while (ct < r && i < a.length) {
-      ct += a(i)
-      i += 1
+  private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move =
+    if (validMoves.isEmpty) Move.Pass
+    else {
+      val movesWithVisitCounts = validMoves.map(m => (m, root.visitCount(m)))
+      movesWithVisitCounts.maxBy(_._2)._1
+//      val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
+//      val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
+//      val r = RND.nextInt(maxVisitMoves.length)
+//      maxVisitMoves(r)._1
     }
-    nonZeroVisitCtMoves(i - 1)
-  }
 
   /**
     * Select a move given a node.
     *
     * @param node ZeroTreeNode
-    * @return Move instance
+    * @return Move instance with the highest score (i.e. chance of winning)
     */
   def selectBranch(node: ZeroTreeNode): Move = {
     val totalCount = node.totalVisitCount
 
+    // Utility function to update the summary statistics as described on page 282 of DL for Go book
     def scoreBranch(move: Move): Double = {
-      val q = node.expectedValue(move)
-      val p = node.prior(move)
+      val q = node.expectedValue(move) // ratio of wins to losses for this node
+      val p = node.prior(move) // probability of winning from the model
       val n = node.visitCount(move)
       q + this.c * p * Math.sqrt(totalCount.doubleValue()) / (n + 1)
     }
 
     if (node.moves.isEmpty) {
-      println(s"There are no moves for ${node.gameState.nextPlayer} from this position.")
+      //println(s"There are no moves for ${node.gameState.nextPlayer} from this position.")
       Move.Pass
     } else {
-      node.moves
+      val movesWithScore = node.moves
         .map(m => (m, scoreBranch(m)))
-        .reduce((m1, m2) => if (m1._2 > m2._2) m1 else m2)
-        ._1
+      movesWithScore.maxBy(_._2)._1
     }
   }
 
   /**
-    * Create a new ZeroTreeNode from the current game state.
+    * Create a new ZeroTreeNode from the current game state
+    * and use the model predictions to initialize the movePriors.
     *
     * @param gameState game state
     * @param move optional move
     * @param parent optional parent ZeroTreeNode
     * @return ZeroTreeNode
     */
-  def createNode(gameState: GameState, move: Option[Move], parent: Option[ZeroTreeNode]): ZeroTreeNode = {
+  def createNode(gameState: GameState, move: Option[Move] = None, parent: Option[ZeroTreeNode] = None): ZeroTreeNode = {
     val stateTensor: INDArray = encoder.encode(gameState)
     val outputs = model.output(stateTensor)
     val priors = outputs(0)
+
     val value = outputs(1).getDouble(0L, 0L)
+//    if (parent.isEmpty) {
+//      println("priors = " + priors.toDoubleVector.mkString(", "))
+//      println("value = " + value)
+//    }
 
     var movePriors: Map[Move, Double] = Map[Move, Double]()
     for (i <- 0 until priors.length().toInt) {
@@ -131,7 +144,7 @@ class ZeroAgent(
       movePriors += (move -> prior)
     }
 
-    val newNode = ZeroTreeNode(gameState, value, movePriors, parent, move)
+    val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)
     if (parent.isDefined && move.isDefined) {
       parent.get.addChild(move.get, newNode)
     }
