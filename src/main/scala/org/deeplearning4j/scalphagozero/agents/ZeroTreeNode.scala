@@ -15,7 +15,7 @@ class ZeroTreeNode(
     val gameState: GameState,
     val value: Double,
     priors: Map[Move, Double],
-    parent: Option[ZeroTreeNode],
+    val parent: Option[ZeroTreeNode],
     val lastMove: Option[Move]
 ) {
 
@@ -34,17 +34,6 @@ class ZeroTreeNode(
       }
   }
 
-  // print with pre-order traversal
-  def printTree(indent: String = ""): Unit = {
-    println(
-      indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +
-      " val:" + value + " numkids:" + children.size
-    )
-    for (c <- children) {
-      c._2.printTree(indent + "  ")
-    }
-  }
-
   def moves: List[Move] = branches.keys.toList
 
   def addChild(move: Move, childNode: ZeroTreeNode): Unit = children += (move -> childNode)
@@ -54,18 +43,12 @@ class ZeroTreeNode(
   def hasChild(move: Move): Boolean = children.contains(move)
 
   def recordVisit(move: Move, value: Double): Unit = {
-
-    // first update ancestors
-//    if (parent.isDefined)
-//      parent.get.recordVisit(move, value)
-
     totalVisitCount += 1
     if (branches.contains(move)) {
       val b = branches(move)
       val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
       branches += (move -> updatedBranch)
     }
-    ()
   }
 
   def expectedValue(move: Move): Double = {
@@ -79,4 +62,17 @@ class ZeroTreeNode(
   def prior(move: Move): Double = branches(move).prior
 
   def visitCount(move: Move): Int = if (branches.contains(move)) branches(move).visitCount else 0
+
+  // serialize the tree with pre-order traversal
+  override def toString: String = toString("")
+  def toString(indent: String): String = {
+    var s = indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +
+      " val:" + value + " numkids:" + children.size + "\n"
+
+    s += indent + " (" + branches.mkString(", ") + " )\n"
+    for (c <- children) {
+      s += c._2.toString(indent + "  ")
+    }
+    s
+  }
 }

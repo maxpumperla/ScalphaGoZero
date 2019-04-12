@@ -59,6 +59,7 @@ object ScalphaGoZero {
     ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize)
   }
 
+  /** Either a new DualResnetModel or one that has been pre-trained */
   private def getModel(numLayers: Int, encoder: ZeroEncoder): ComputationGraph = {
     val c: Character =
       input.charQuery("Do you want to load pre-trained model?", Seq('y', 'n'), Some('y'))

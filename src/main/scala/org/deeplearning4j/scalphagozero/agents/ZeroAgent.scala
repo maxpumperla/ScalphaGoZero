@@ -7,7 +7,7 @@ import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroE
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 import scala.util.Random
-import ZeroAgent.RND
+import ZeroAgent.{ DEBUG, RND }
 
 /**
   * AlphaGo Zero agent, main workhorse of this project. ZeroAgent implements the characteristic combination of
@@ -20,6 +20,7 @@ import ZeroAgent.RND
   * @param c constant to multiply score with (defaults to 2.0)
   *
   * @author Max Pumperla
+  * @author Barry Becker
   */
 class ZeroAgent(
     val model: ComputationGraph,
@@ -36,6 +37,7 @@ class ZeroAgent(
     */
   override def selectMove(gameState: GameState): Move = {
     val root = createNode(gameState)
+
     for (_ <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
       var nextMove = selectBranch(node.get)
@@ -48,9 +50,11 @@ class ZeroAgent(
       val childNode = createNode(newState, Some(nextMove), node)
       var move: Option[Move] = Some(nextMove)
       var value = -childNode.value
+      // record for ancestor nodes
       while (node.isDefined && move.isDefined) {
         node.get.recordVisit(move.get, value)
-        move = if (move == node.get.lastMove) None else node.get.lastMove
+        move = node.get.lastMove
+        node = node.get.parent
         value = -value
       }
     }
@@ -59,14 +63,19 @@ class ZeroAgent(
 
     val validMoves = root.moves.filter(m => gameState.isValidMove(m))
     val selected = selectValidNextMove(validMoves, root)
-    println("totalVisitCt = " + root.totalVisitCount)
-    println("Selected " + selected + " from these valid moves:  ")
-    println(validMoves.map(m => (m, root.visitCount(m))).mkString(", "))
+    if (DEBUG) {
+      println("totalVisitCt = " + root.totalVisitCount)
+      println("Selected " + selected + " from these valid moves:  ")
+      println(validMoves.map(m => (m, root.visitCount(m))).mkString(", "))
+    }
+
     selected
   }
 
   private def recordVisitCounts(root: ZeroTreeNode): Unit = {
-    //root.printTree()
+    if (DEBUG) {
+      // println(root) // print the whole MCT
+    }
     val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {
@@ -77,17 +86,16 @@ class ZeroAgent(
   }
 
   /**
-    * @return selected one of the moves that was visited most often.
+    * @return move that is randomly selected from among those that were visitd most visited.
     */
   private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move =
     if (validMoves.isEmpty) Move.Pass
     else {
       val movesWithVisitCounts = validMoves.map(m => (m, root.visitCount(m)))
-      movesWithVisitCounts.maxBy(_._2)._1
-//      val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
-//      val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
-//      val r = RND.nextInt(maxVisitMoves.length)
-//      maxVisitMoves(r)._1
+      val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
+      val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
+      val r = RND.nextInt(maxVisitMoves.length)
+      maxVisitMoves(r)._1
     }
 
   /**
@@ -108,7 +116,7 @@ class ZeroAgent(
     }
 
     if (node.moves.isEmpty) {
-      //println(s"There are no moves for ${node.gameState.nextPlayer} from this position.")
+      //if (DEBUG) println(s"There are no moves for ${node.gameState.nextPlayer} from this position.")
       Move.Pass
     } else {
       val movesWithScore = node.moves
@@ -130,12 +138,7 @@ class ZeroAgent(
     val stateTensor: INDArray = encoder.encode(gameState)
     val outputs = model.output(stateTensor)
     val priors = outputs(0)
-
     val value = outputs(1).getDouble(0L, 0L)
-//    if (parent.isEmpty) {
-//      println("priors = " + priors.toDoubleVector.mkString(", "))
-//      println("value = " + value)
-//    }
 
     var movePriors: Map[Move, Double] = Map[Move, Double]()
     for (i <- 0 until priors.length().toInt) {
@@ -163,18 +166,21 @@ class ZeroAgent(
 
     val countLength = experience.visitCounts.shape()(1)
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
-    println("visitSums:\n" + visitSums.toDoubleVector.mkString(", "))
+
     val actionTarget = experience.visitCounts.div(visitSums.repeat(1, countLength))
-    println("\nactionTarget shape = " + actionTarget.shape().mkString(", "))
-    println()
     val valueTarget = experience.rewards
-    println("valueTarget:\n" + valueTarget.toDoubleVector.mkString(", "))
+    if (DEBUG) {
+      println("visitSums:\n" + visitSums.toDoubleVector.mkString(", "))
+      println("\nactionTarget shape = " + actionTarget.shape().mkString(", "))
+      println()
+      println("valueTarget:\n" + valueTarget.toDoubleVector.mkString(", "))
+    }
 
     model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
   }
-
 }
 
 object ZeroAgent {
+  private val DEBUG = false
   private val RND = new Random(1)
 }

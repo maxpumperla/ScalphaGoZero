@@ -20,14 +20,14 @@ class GameStateTest extends FunSpec {
     var game = GameState.newGame(5)
 
     it("Apply moves, until ko rule is take the first time") {
-      game = game.applyMove(Move.Play(Point(3, 3)))
-      game = game.applyMove(Move.Play(Point(3, 4)))
-      game = game.applyMove(Move.Play(Point(4, 4)))
-      game = game.applyMove(Move.Play(Point(4, 5)))
-      game = game.applyMove(Move.Play(Point(2, 4)))
-      game = game.applyMove(Move.Play(Point(2, 5)))
+      game = game.applyMove(Play(3, 3))
+      game = game.applyMove(Play(3, 4))
+      game = game.applyMove(Play(4, 4))
+      game = game.applyMove(Play(4, 5))
+      game = game.applyMove(Play(2, 4))
+      game = game.applyMove(Play(2, 5))
       val previous = game
-      game = game.applyMove(Move.Play(Point(3, 5))) // initial ko capture
+      game = game.applyMove(Play(Point(3, 5))) // initial ko capture
       println("After initial ko: " + game.board)
 
       assert(previous == game.previousState.get)
@@ -37,7 +37,7 @@ class GameStateTest extends FunSpec {
 
     it("Ko is not allowed to be immediately retaken") {
       println("After initial ko2: " + game.board)
-      assert(game.doesMoveViolateKo(WhitePlayer, Play(Point(3, 4))))
+      assert(game.doesMoveViolateKo(WhitePlayer, Play(3, 4)))
     }
   }
 }

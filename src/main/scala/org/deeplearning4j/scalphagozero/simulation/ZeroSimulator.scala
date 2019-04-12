@@ -12,6 +12,8 @@ import org.nd4j.linalg.factory.Nd4j
   */
 object ZeroSimulator {
 
+  val DEBUG = false
+
   def simulateGame(blackAgent: Agent, whiteAgent: Agent, boardSize: Int): Unit = {
 
     var game = GameState.newGame(boardSize)
