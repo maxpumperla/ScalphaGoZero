@@ -60,10 +60,7 @@ class ZeroEncoderTest extends FunSpec {
 
   describe("Simple 5x5 Board encoding") {
     val encoder = new ZeroEncoder(5)
-
-    val board = createSimple5x5GoBoard()
-    val gameState = new GameState(board, BlackPlayer)
-
+    val gameState = createSimple5x5GameState()
     val a: INDArray = encoder.encode(gameState)
 
     it("encoded shape is") {
@@ -147,13 +144,9 @@ class ZeroEncoderTest extends FunSpec {
     }
   }
 
-  // I don't think that this tets currently gives a correct result for the ko layer
   describe("5x5 Board encoding (with ko)") {
     val encoder = new ZeroEncoder(5)
-
-    val board = create5x5GoBoardWithKo()
-    val gameState = new GameState(board, BlackPlayer)
-
+    val gameState = create5x5GameStateWithKo()
     val a: INDArray = encoder.encode(gameState)
 
     it("encoded shape is") {
@@ -220,9 +213,9 @@ class ZeroEncoderTest extends FunSpec {
           |1, 1, 1, 1, 1""",
         """0, 0, 0, 0, 0
           |0, 0, 0, 0, 0
+          |0, 0, 0, 0, 1
           |0, 0, 0, 0, 0
-          |0, 0, 0, 0, 0
-          |0, 0, 0, 0, 0"""
+          |0, 0, 0, 0, 0""" // there is one here somewhere to indicate the ko
       ).map(s => s.stripMargin)
 
       val b = a.slice(0)
@@ -237,43 +230,41 @@ class ZeroEncoderTest extends FunSpec {
     }
   }
 
-  private def createSimple5x5GoBoard(): GoBoard = {
-    var board = GoBoard(5)
-    board = board.placeStone(BlackPlayer, Point(3, 3))
-    board = board.placeStone(WhitePlayer, Point(2, 3))
-    board = board.placeStone(BlackPlayer, Point(3, 2))
-    board = board.placeStone(WhitePlayer, Point(2, 2))
-    board = board.placeStone(BlackPlayer, Point(4, 2))
-    board = board.placeStone(WhitePlayer, Point(2, 1))
-    board = board.placeStone(BlackPlayer, Point(4, 4))
-    board = board.placeStone(WhitePlayer, Point(5, 3))
-    board = board.placeStone(BlackPlayer, Point(5, 2))
-    board = board.placeStone(WhitePlayer, Point(2, 4))
-    board = board.placeStone(BlackPlayer, Point(3, 5))
-    board = board.placeStone(WhitePlayer, Point(1, 4))
-    board = board.placeStone(BlackPlayer, Point(5, 4))
-    board = board.placeStone(WhitePlayer, Point(1, 2))
-    println(board)
-
-    board
+  private def createSimple5x5GameState(): GameState = {
+    var state = GameState(GoBoard(5), BlackPlayer)
+    state = state.applyMove(Move.Play(Point(3, 3)))
+    state = state.applyMove(Move.Play(Point(2, 3)))
+    state = state.applyMove(Move.Play(Point(3, 2)))
+    state = state.applyMove(Move.Play(Point(2, 2)))
+    state = state.applyMove(Move.Play(Point(4, 2)))
+    state = state.applyMove(Move.Play(Point(2, 1)))
+    state = state.applyMove(Move.Play(Point(4, 4)))
+    state = state.applyMove(Move.Play(Point(5, 3)))
+    state = state.applyMove(Move.Play(Point(5, 2)))
+    state = state.applyMove(Move.Play(Point(2, 4)))
+    state = state.applyMove(Move.Play(Point(3, 5)))
+    state = state.applyMove(Move.Play(Point(1, 4)))
+    state = state.applyMove(Move.Play(Point(5, 4)))
+    state = state.applyMove(Move.Play(Point(1, 2)))
+    println(state.board)
+    state
   }
 
-  private def create5x5GoBoardWithKo(): GoBoard = {
-    var board = GoBoard(5)
-    board = board.placeStone(BlackPlayer, Point(3, 3))
-    board = board.placeStone(WhitePlayer, Point(3, 4))
-    board = board.placeStone(BlackPlayer, Point(2, 4))
-    board = board.placeStone(WhitePlayer, Point(2, 5))
-    board = board.placeStone(BlackPlayer, Point(4, 4))
-    board = board.placeStone(WhitePlayer, Point(1, 5))
-    board = board.placeStone(BlackPlayer, Point(4, 2))
-    board = board.placeStone(WhitePlayer, Point(4, 5))
-    board = board.placeStone(BlackPlayer, Point(3, 5)) // take the ko
-    board = board.placeStone(WhitePlayer, Point(2, 2)) // white threat
-    board = board.placeStone(BlackPlayer, Point(3, 2)) // black responds
-    board = board.placeStone(WhitePlayer, Point(3, 4)) // white retakes the ko
-    println(board)
-
-    board
+  private def create5x5GameStateWithKo(): GameState = {
+    var state = GameState(GoBoard(5), BlackPlayer)
+    state = state.applyMove(Move.Play(Point(3, 3)))
+    state = state.applyMove(Move.Play(Point(3, 4)))
+    state = state.applyMove(Move.Play(Point(2, 4)))
+    state = state.applyMove(Move.Play(Point(2, 5)))
+    state = state.applyMove(Move.Play(Point(4, 4)))
+    state = state.applyMove(Move.Play(Point(1, 5)))
+    state = state.applyMove(Move.Play(Point(4, 2)))
+    state = state.applyMove(Move.Play(Point(4, 5)))
+    state = state.applyMove(Move.Play(Point(3, 5))) // black takes the ko initially
+    state = state.applyMove(Move.Play(Point(2, 2))) // white threat
+    state = state.applyMove(Move.Play(Point(3, 2))) // black responds
+    state = state.applyMove(Move.Play(Point(3, 4))) // white retakes the ko
+    println(state)
+    state
   }
 }
