@@ -38,7 +38,7 @@ object ScalphaGoZero {
     val whiteAgent = new ZeroAgent(model, encoder)
 
     // Run some simulations...
-    val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 10000)
+    val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 1000)
     for (i <- 0 until episodes) {
       println("episode " + i)
       ZeroSimulator.simulateLearningGame(blackAgent, whiteAgent)

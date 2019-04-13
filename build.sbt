@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
 fork in run := true
 javaOptions in run ++= Seq(
   "-Xms4G",
-  "-Xmx16G",
+  "-Xmx22G",
   "-XshowSettings:vm"
 )
 

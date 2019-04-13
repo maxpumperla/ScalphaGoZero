@@ -71,6 +71,48 @@ class BoardTest extends FunSpec {
     println(board)
   }
 
+  describe("Filling your own eye is prohibited") {
+    var board = createBoardWithEyes()
+    it("Filling non-eye allowed") {
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 5)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 4)))
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(2, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(5, 5)))
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(5, 1)))
+    }
+    it("Filling eye not allowed") {
+      assert(board.doesMoveFillEye(WhitePlayer, Point(5, 1)))
+      assert(board.doesMoveFillEye(WhitePlayer, Point(3, 3)))
+    }
+    println(board)
+  }
+
+  /**
+    * 1 .....
+    * 2 .oo.o
+    * 3 xo.o.
+    * 4 ooooo
+    * 5 .o...
+    */
+  def createBoardWithEyes(): GoBoard = {
+    var board = GoBoard(5)
+    board = board.placeStone(WhitePlayer, Point(4, 1))
+    board = board.placeStone(WhitePlayer, Point(4, 2))
+    board = board.placeStone(WhitePlayer, Point(4, 3))
+    board = board.placeStone(WhitePlayer, Point(4, 4))
+    board = board.placeStone(WhitePlayer, Point(4, 5))
+    board = board.placeStone(WhitePlayer, Point(5, 2))
+    board = board.placeStone(WhitePlayer, Point(3, 2))
+    board = board.placeStone(WhitePlayer, Point(3, 4))
+    board = board.placeStone(WhitePlayer, Point(2, 2))
+    board = board.placeStone(WhitePlayer, Point(2, 3))
+    board = board.placeStone(WhitePlayer, Point(2, 5))
+    board = board.placeStone(BlackPlayer, Point(3, 1))
+    board
+  }
+
   describe("Test removing liberties:") {
     it("a stone with four liberties should end up with three if an opponent stone is added") {
       var board = GoBoard(5)

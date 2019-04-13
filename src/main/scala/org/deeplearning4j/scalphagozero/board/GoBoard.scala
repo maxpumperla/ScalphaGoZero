@@ -12,7 +12,8 @@ package org.deeplearning4j.scalphagozero.board
 case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, whiteCaptures: Int = 0) {
 
   private val serializer = new GoBoardSerializer(this)
-  private val neighborMap: Map[Point, List[Point]] = NeighborTables.getNbrTable(size)
+  private val neighborMap = NeighborTables.getNbrTable(size)
+  private val diagonalMap = NeighborTables.getDiagnonalTable(size)
 
   def placeStone(player: Player, point: Point): GoBoard = {
     assert(isOnGrid(point))
@@ -77,6 +78,37 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     }
 
     friendlyStrings.forall(_.numLiberties == 1)
+  }
+
+  def isCorner(point: Point): Boolean =
+    (point.row == 1 && point.col == 1) ||
+    (point.row == size && point.col == 1) ||
+    (point.row == 1 && point.col == size) ||
+    (point.row == size && point.col == size)
+
+  def isEdge(point: Point): Boolean =
+    point.row == 1 || point.col == 1 || point.row == size || point.col == size
+
+  def doesMoveFillEye(player: Player, point: Point): Boolean = {
+    var nbrs = 0
+    var diagNbrs = 0
+    for (neighbor: Point <- neighborMap(point)) {
+      val str = grid.getString(neighbor)
+      if (str.isDefined && str.get.player == player)
+        nbrs += 1
+    }
+    for (neighbor: Point <- diagonalMap(point)) {
+      val str = grid.getString(neighbor)
+      if (str.isDefined && str.get.player == player)
+        diagNbrs += 1
+    }
+    val allNbrs = nbrs + diagNbrs
+
+    point match {
+      case cornerPt if isCorner(cornerPt) => allNbrs == 3
+      case edgePt if isEdge(edgePt)       => allNbrs == 5
+      case _                              => nbrs == 4 && diagNbrs >= 3
+    }
   }
 
   /** @return true if player playing at point will capture stones */

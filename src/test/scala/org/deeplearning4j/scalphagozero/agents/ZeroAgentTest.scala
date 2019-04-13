@@ -31,16 +31,6 @@ class ZeroAgentTest extends FunSpec {
     it("should have selected move") {
       assert(move == Play(2, 5))
     }
-    // check rewards, states, visitCounts
-    it("collector should have these visitCounts") {
-      val a: ListBuffer[INDArray] = zeroAgent.collector.visitCounts
-      assert(a.size == 0)
-    }
-    it("collector should have these rewards") {
-      // check rewards states, visitCounts
-      val a: ListBuffer[INDArray] = zeroAgent.collector.rewards
-      assert(a.size == 0)
-    }
   }
 
   describe("A ZeroAgent selecting and playing 2 moves") {
@@ -57,17 +47,12 @@ class ZeroAgentTest extends FunSpec {
     move = zeroAgent.selectMove(newGameState)
 
     it("should have selected move") {
-      assert(move == Play(1, 1))
+      assert(move === Play(3, 4))
     }
-    // check rewards, states, visitCounts
+    // experience was not accumulates, so rewards, states, visitCounts are empty
     it("collector should have these visitCounts") {
       val a: ListBuffer[INDArray] = zeroAgent.collector.visitCounts
-      assert(a.size == 0)
-    }
-    it("collector should have these rewards") {
-      // check rewards states, visitCounts
-      val a: ListBuffer[INDArray] = zeroAgent.collector.rewards
-      assert(a.size == 0)
+      assert(a.isEmpty)
     }
   }
 

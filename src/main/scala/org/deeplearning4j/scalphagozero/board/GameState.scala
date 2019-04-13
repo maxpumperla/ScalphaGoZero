@@ -45,12 +45,14 @@ case class GameState(
     new GameState(nextBoard, nextPlayer.other, Some(this), Some(move), newAllPrevStates)
   }
 
+  /** @return true if the move commits suicide for the group. Suicide is not allowed */
   def isMoveSelfCapture(player: Player, move: Move): Boolean =
     move match {
       case Move.Pass | Move.Resign => false
       case Move.Play(point)        => board.isSelfCapture(player, point)
     }
 
+  /** @return true if the move would take back a ko that was just taken. That is not allowed */
   def doesMoveViolateKo(player: Player, move: Move): Boolean = {
     var nextBoard = board
     move match {
@@ -62,6 +64,13 @@ case class GameState(
     }
   }
 
+  /** @return true if the move fills a single point eye. Though not strictly illegal, it is never a good idea */
+  def doesMoveFillEye(player: Player, move: Move): Boolean =
+    move match {
+      case Move.Pass | Move.Resign => false
+      case Move.Play(point)        => board.doesMoveFillEye(player, point)
+    }
+
   def isValidMove(move: Move): Boolean =
     if (isOver) false
     else {
@@ -70,7 +79,8 @@ case class GameState(
         case Move.Play(point) =>
           board.getPlayer(point).isEmpty &&
           !isMoveSelfCapture(nextPlayer, move) &&
-          !doesMoveViolateKo(nextPlayer, move)
+          !doesMoveViolateKo(nextPlayer, move) &&
+          !doesMoveFillEye(nextPlayer, move)
       }
     }
 

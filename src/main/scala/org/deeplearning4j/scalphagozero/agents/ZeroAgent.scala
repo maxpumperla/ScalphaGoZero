@@ -17,7 +17,7 @@ import ZeroAgent.{ DEBUG, RND }
   * @param model DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
   * @param roundsPerMove roll-outs per move
-  * @param c constant to multiply score with (defaults to 2.0)
+  * @param c constant to multiply score by (defaults to 2.0)
   *
   * @author Max Pumperla
   * @author Barry Becker
@@ -61,7 +61,7 @@ class ZeroAgent(
 
     recordVisitCounts(root)
 
-    val validMoves = root.moves.filter(m => gameState.isValidMove(m))
+    val validMoves = root.moves.filter(m => m != Move.Pass && gameState.isValidMove(m))
     val selected = selectValidNextMove(validMoves, root)
     if (DEBUG) {
       println("totalVisitCt = " + root.totalVisitCount)
@@ -73,9 +73,7 @@ class ZeroAgent(
   }
 
   private def recordVisitCounts(root: ZeroTreeNode): Unit = {
-    if (DEBUG) {
-      // println(root) // print the whole MCT
-    }
+    //if (DEBUG) println(root)  // print the whole MCT
     val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {
@@ -86,7 +84,7 @@ class ZeroAgent(
   }
 
   /**
-    * @return move that is randomly selected from among those that were visitd most visited.
+    * @return move that is randomly selected from among those that were visited most visited.
     */
   private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move =
     if (validMoves.isEmpty) Move.Pass
@@ -94,15 +92,16 @@ class ZeroAgent(
       val movesWithVisitCounts = validMoves.map(m => (m, root.visitCount(m)))
       val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
       val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
-      val r = RND.nextInt(maxVisitMoves.length)
-      maxVisitMoves(r)._1
+      if (maxVisitMoves.isEmpty) Move.Pass
+      else maxVisitMoves(RND.nextInt(maxVisitMoves.length))._1
     }
 
   /**
     * Select a move given a node.
+    * The branch is based on maximizing the utility function described around page 282 in the ML for Go book.
     *
     * @param node ZeroTreeNode
-    * @return Move instance with the highest score (i.e. chance of winning)
+    * @return Move instance with the highest utility score (i.e. chance of winning)
     */
   def selectBranch(node: ZeroTreeNode): Move = {
     val totalCount = node.totalVisitCount
@@ -110,7 +109,7 @@ class ZeroAgent(
     // Utility function to update the summary statistics as described on page 282 of DL for Go book
     def scoreBranch(move: Move): Double = {
       val q = node.expectedValue(move) // ratio of wins to losses for this node
-      val p = node.prior(move) // probability of winning from the model
+      val p = node.prior(move) // probability of winning from the model. Weighted less as visits increase.
       val n = node.visitCount(move)
       q + this.c * p * Math.sqrt(totalCount.doubleValue()) / (n + 1)
     }
