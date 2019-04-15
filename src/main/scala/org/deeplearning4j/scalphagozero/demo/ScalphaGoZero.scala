@@ -24,6 +24,7 @@ import org.deeplearning4j.scalphagozero.util.Input
 object ScalphaGoZero {
 
   val input = new Input()
+  val BATCH_SIZE = 5
 
   def main(args: Array[String]): Unit = {
 
@@ -39,24 +40,38 @@ object ScalphaGoZero {
 
     // Run some simulations...
     val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 1000)
-    for (i <- 0 until episodes) {
-      println("episode " + i)
-      ZeroSimulator.simulateLearningGame(blackAgent, whiteAgent)
-    }
 
-    // ... and collect the joint experience
-    println(">>> Now combining experience from self-play.")
-    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.collector, whiteAgent.collector))
-
-    // Use experience data to train one of the agents.
-    println(">>> Now using that experience to train the deep neural net.")
-    blackAgent.train(experience)
+    runSimulationsAndTrain(episodes, blackAgent, whiteAgent)
 
     println(">>> Training phase done! You can use black to play as an AI agent now.\n")
     optionallySaveModel(blackAgent.model, size, numLayers)
 
     val humanAgent = new HumanAgent()
     ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize)
+  }
+
+  private def runSimulationsAndTrain(episodes: Int, blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
+
+    for (i <- 1 to episodes) {
+      println("episode " + i)
+      ZeroSimulator.simulateLearningGame(blackAgent, whiteAgent)
+
+      if (i % BATCH_SIZE == 0)
+        train(blackAgent, whiteAgent)
+    }
+
+    if (episodes % BATCH_SIZE != 0)
+      train(blackAgent, whiteAgent) // train based on those leftover at the end
+  }
+
+  private def train(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
+    // ... and collect the joint experience
+    println(">>> Now combining experience from self-play.")
+    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.collector, whiteAgent.collector))
+
+    // Use experience data to train one of the agents.
+    println(">>> Now using that experience to train the deep neural net for black.")
+    blackAgent.train(experience)
   }
 
   /** Either a new DualResnetModel or one that has been pre-trained */

@@ -25,7 +25,7 @@ import ZeroAgent.{ DEBUG, RND }
 class ZeroAgent(
     val model: ComputationGraph,
     val encoder: ZeroEncoder,
-    val roundsPerMove: Int = 20,
+    val roundsPerMove: Int = 100,
     val c: Double = 2.0,
     val rand: Random = RND
 ) extends Agent {
