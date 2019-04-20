@@ -36,7 +36,7 @@ class ZeroAgentTest extends FunSpec {
   describe("A ZeroAgent selecting and playing 2 moves") {
 
     val model: ComputationGraph =
-      ComputationGraph.load(new File("model_size_5_layers_2.model"), true)
+      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
     val encoder = new ZeroEncoder(5)
     val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 100, c = 2.0, rand = RND)
 
