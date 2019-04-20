@@ -9,7 +9,7 @@ import org.nd4j.linalg.io.ClassPathResource
   *
   * @author Max Pumperla
   */
-object KerasModel {
+object KerasModelImporter {
 
   def getDualResidualNet: ComputationGraph = {
     val file = "dual_res.h5"
