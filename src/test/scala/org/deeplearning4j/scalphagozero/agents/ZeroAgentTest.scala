@@ -3,7 +3,6 @@ package org.deeplearning4j.scalphagozero.agents
 import java.io.File
 
 import org.deeplearning4j.nn.graph.ComputationGraph
-import org.deeplearning4j.scalphagozero.agents.ZeroAgentTest.RND
 import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GameState, GoBoard }
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
@@ -23,7 +22,7 @@ class ZeroAgentTest extends FunSpec {
     val model: ComputationGraph =
       ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
     val encoder = new ZeroEncoder(5)
-    val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 20, c = 2.0, rand = RND)
+    val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 20, c = 2.0, rand = new Random(1))
 
     val gameState = createSimple5x5GameState()
     val move = zeroAgent.selectMove(gameState)
@@ -38,7 +37,7 @@ class ZeroAgentTest extends FunSpec {
     val model: ComputationGraph =
       ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
     val encoder = new ZeroEncoder(5)
-    val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 100, c = 2.0, rand = RND)
+    val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 100, c = 2.0, rand = new Random(1))
 
     val gameState = createSimple5x5GameState()
     var move = zeroAgent.selectMove(gameState)
@@ -81,8 +80,4 @@ class ZeroAgentTest extends FunSpec {
     println(state.board)
     state
   }
-}
-
-object ZeroAgentTest {
-  val RND = new Random(1)
 }

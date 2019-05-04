@@ -40,4 +40,51 @@ class GameStateTest extends FunSpec {
       assert(game.doesMoveViolateKo(WhitePlayer, Play(3, 4)))
     }
   }
+
+  describe("No winner at start of the game") {
+    var game = GameState.newGame(5)
+    it("should have no winner yet") {
+      assert(game.winner.isEmpty)
+    }
+
+    game = game.applyMove(Play(3, 3))
+    game = game.applyMove(Play(3, 4))
+    game = game.applyMove(Play(4, 4))
+    game = game.applyMove(Play(4, 5))
+    it("should have no winner after a few moves played") {
+      assert(game.winner.isEmpty)
+    }
+  }
+
+  describe("Won after black player resigns") {
+    var game = GameState.newGame(5)
+    it("should be a white win") {
+      game = game.applyMove(Move.Resign)
+      assert(game.winner.contains(WhitePlayer))
+    }
+  }
+
+  describe("Won after white player resigns") {
+    var game = GameState.newGame(5)
+    game = game.applyMove(Play(3, 3))
+    it("should be a black win") {
+      game = game.applyMove(Move.Resign)
+      assert(game.winner.contains(BlackPlayer))
+    }
+  }
+
+  describe("Won only after both players pass") {
+    var game = GameState.newGame(5)
+    game = game.applyMove(Play(3, 3))
+    game = game.applyMove(Move.Pass)
+    it("should have no winner yet") {
+      assert(game.winner.isEmpty)
+    }
+
+    it("should have winner after the second consecutive pass") {
+      game = game.applyMove(Move.Pass)
+      // plack wins because they have one more stone on the board.
+      assert(game.winner.contains(BlackPlayer))
+    }
+  }
 }

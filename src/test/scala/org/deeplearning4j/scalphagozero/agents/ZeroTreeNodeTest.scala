@@ -76,7 +76,6 @@ class ZeroTreeNodeTest extends FunSpec {
     it("serialized") {
       assertResult(
         """WhitePlayer None totVisits:3 val:0.5 numkids:0
-          | (Play(5,1) -> Br(0.100), Play(3,1) -> Br(0.600, 2, 0.74), Play(5,5) -> Br(0.090), Play(4,5) -> Br(0.210), Play(1,5) -> Br(0.020), Pass -> Br(0.040), Play(2,5) -> Br(0.110), Play(3,4) -> Br(0.290) )
           |""".stripMargin
       ) {
         node.toString()
@@ -161,9 +160,7 @@ class ZeroTreeNodeTest extends FunSpec {
     it("serialized") {
       assertResult(
         """BlackPlayer None totVisits:1 val:0.5 numkids:1
-          | (Play(5,1) -> Br(0.110), Play(5,5) -> Br(0.050), Play(4,1) -> Br(0.100), Play(4,5) -> Br(0.190), Pass -> Br(0.040), Play(2,5) -> Br(0.820), Play(3,4) -> Br(0.210) )
           |  WhitePlayer Some(Play(2,5)) totVisits:4 val:0.6 numkids:0
-          |   (Play(5,1) -> Br(0.110), Play(5,5) -> Br(0.050), Play(4,1) -> Br(0.100), Play(4,5) -> Br(0.190), Pass -> Br(0.040), Play(3,4) -> Br(0.210, 3, 0.90) )
           |""".stripMargin
       ) {
         parentNode.toString()

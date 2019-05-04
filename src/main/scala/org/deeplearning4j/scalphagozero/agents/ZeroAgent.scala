@@ -14,11 +14,17 @@ import ZeroAgent.{ DEBUG, RND }
   * tree search with reinforcement learning that lead to breakthrough results for the game of Go (AlphaGo Zero)
   * and other board games like chess (Alpha Zero).
   *
-  * @param model DL4J computation graph suitable for AGZ predictions
+  * There are 4 main phases to MCTS as described at
+  * https://www.youtube.com/watch?v=Fbs4lnGLS8M or https://www.youtube.com/watch?v=UXW2yZndl7U
+  *  - Select (based on the distribution of move probabilities from the NN called PI)
+  *  - Expansion
+  *  - Simulation - randomly play out games until one side has one
+  *  - Back propagation - update the counts at each ancestor node in the tree
+  *
+  * @param model         DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
   * @param roundsPerMove roll-outs per move
-  * @param c constant to multiply score by (defaults to 2.0)
-  *
+  * @param c             constant to multiply score by (defaults to 2.0)
   * @author Max Pumperla
   * @author Barry Becker
   */
@@ -31,12 +37,16 @@ class ZeroAgent(
 ) extends Agent {
 
   val collector: ZeroExperienceCollector = new ZeroExperienceCollector()
+  // var so it can be mocked in unit test
+  val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
+  val mcPlayer = MonteCarloPlayer(nodeCreator, rand)
 
   /**
+    * Builds out roundsPerMove nodes in the MC search tree
     * @return the best move selected by the trained model
     */
   override def selectMove(gameState: GameState): Move = {
-    val root = createNode(gameState)
+    val root = nodeCreator.createNode(gameState)
 
     for (_ <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
@@ -46,11 +56,18 @@ class ZeroAgent(
         node = node.get.getChild(nextMove)
         nextMove = selectBranch(node.get)
       }
+
       val newState = node.get.gameState.applyMove(nextMove)
-      val childNode = createNode(newState, Some(nextMove), node)
+      val childNode = nodeCreator.createNode(newState, Some(nextMove), node)
       var move: Option[Move] = Some(nextMove)
-      var value = -childNode.value
-      // record for ancestor nodes
+
+      // If 2 passes, the game is over, just use the value instead of a MC playout.
+      var value =
+        if (nextMove != Move.Pass && !node.get.gameState.lastMove.contains(Move.Pass))
+          -childNode.value
+        else -mcPlayer.valueFromMCPlayout(childNode)
+
+      // record for ancestor nodes. This is the back propagation phase.
       while (node.isDefined && move.isDefined) {
         node.get.recordVisit(move.get, value)
         move = node.get.lastMove
@@ -73,7 +90,8 @@ class ZeroAgent(
   }
 
   private def recordVisitCounts(root: ZeroTreeNode): Unit = {
-    //if (DEBUG) println(root)  // print the whole MCT
+    if (DEBUG)
+      println(root) // print the whole MCT
     val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {
@@ -90,6 +108,7 @@ class ZeroAgent(
     if (validMoves.isEmpty) Move.Pass
     else {
       val movesWithVisitCounts = validMoves.map(m => (m, root.visitCount(m)))
+      //println("moves : " + movesWithVisitCounts.mkString(", "))
       val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
       val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
       if (maxVisitMoves.isEmpty) Move.Pass
@@ -97,7 +116,7 @@ class ZeroAgent(
     }
 
   /**
-    * Select a move given a node.
+    * Select a move given a node. This is the "select" phase of MCTS
     * The branch is based on maximizing the utility function described around page 282 in the ML for Go book.
     *
     * @param node ZeroTreeNode
@@ -122,35 +141,6 @@ class ZeroAgent(
         .map(m => (m, scoreBranch(m)))
       movesWithScore.maxBy(_._2)._1
     }
-  }
-
-  /**
-    * Create a new ZeroTreeNode from the current game state
-    * and use the model predictions to initialize the movePriors.
-    *
-    * @param gameState game state
-    * @param move optional move
-    * @param parent optional parent ZeroTreeNode
-    * @return ZeroTreeNode
-    */
-  def createNode(gameState: GameState, move: Option[Move] = None, parent: Option[ZeroTreeNode] = None): ZeroTreeNode = {
-    val stateTensor: INDArray = encoder.encode(gameState)
-    val outputs = model.output(stateTensor)
-    val priors = outputs(0)
-    val value = outputs(1).getDouble(0L, 0L)
-
-    var movePriors: Map[Move, Double] = Map[Move, Double]()
-    for (i <- 0 until priors.length().toInt) {
-      val move = encoder.decodeMoveIndex(i.toInt)
-      val prior = priors.getDouble(i.toLong)
-      movePriors += (move -> prior)
-    }
-
-    val newNode = new ZeroTreeNode(gameState, value, movePriors, parent, move)
-    if (parent.isDefined && move.isDefined) {
-      parent.get.addChild(move.get, newNode)
-    }
-    newNode
   }
 
   /**

@@ -3,7 +3,7 @@ package org.deeplearning4j.scalphagozero.agents
 /**
   * Branch of an AlphaGo Zero tree.
   *
-  * @param prior prior move probability
+  * @param prior move probability determined by the model. i.e. the prior probability.
   * @param visitCount visit count of the node
   * @param totalValue accumulated total value of the node
   */

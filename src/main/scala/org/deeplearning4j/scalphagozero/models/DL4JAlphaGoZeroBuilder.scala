@@ -20,10 +20,10 @@ import org.nd4j.linalg.lossfunctions.LossFunctions
 
 class DL4JAlphaGoZeroBuilder(boardSize: Int) {
 
-  val size: Long = boardSize.toLong
+  private val size: Long = boardSize.toLong
 
-  val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
-      .updater(new Sgd())
+  private val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
+      .updater(new Sgd()) // maybe try RmsProp() or Adam() instead
       .weightInit(WeightInit.LECUN_NORMAL)
       .graphBuilder() setInputTypes InputType.convolutional(size, size, 11)
 
@@ -157,6 +157,7 @@ class DL4JAlphaGoZeroBuilder(boardSize: Int) {
     )
     denseName
   }
+
   def addValueHead(
       inName: String,
       kernelSize: List[Int] = List(1, 1),
@@ -195,7 +196,11 @@ class DL4JAlphaGoZeroBuilder(boardSize: Int) {
     )
     conf.addLayer(
       outputName,
-      new OutputLayer.Builder(LossFunctions.LossFunction.XENT).activation(Activation.SIGMOID).nIn(256).nOut(1).build,
+      new OutputLayer.Builder(LossFunctions.LossFunction.XENT)
+        .activation(Activation.SIGMOID)
+        .nIn(256)
+        .nOut(1)
+        .build,
       denseName
     )
     outputName

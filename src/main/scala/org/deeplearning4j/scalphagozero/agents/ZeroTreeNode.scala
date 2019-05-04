@@ -23,12 +23,16 @@ class ZeroTreeNode(
 
   private var children: Map[Move, ZeroTreeNode] = Map()
 
-  // Add valid child moves for all valid moves (except for pass)
-  private var branches: Map[Move, Branch] = {
-    priors // there are 26 priors for a 5x5 board (the last is pass)
+  /**
+    * Add valid child moves for all valid moves (except for pass).
+    * This is the expansion phase of the MCTS algorithm.
+    * For example, there are 26 priors for a 5x5 board (the last is pass)
+    */
+  var branches: Map[Move, Branch] = {
+    priors
       .foldLeft(Map.empty[Move, Branch]) {
         case (acc, (move, prior)) =>
-          if (/*move != Move.Pass &&*/ gameState.isValidMove(move))
+          if (gameState.isValidMove(move))
             acc + (move -> Branch(prior))
           else acc
       }
@@ -69,7 +73,7 @@ class ZeroTreeNode(
     var s = indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +
       " val:" + value + " numkids:" + children.size + "\n"
 
-    s += indent + " (" + branches.mkString(", ") + " )\n"
+    //s += indent + " (" + branches.mkString(", ") + " )\n"
     for (c <- children) {
       s += c._2.toString(indent + "  ")
     }

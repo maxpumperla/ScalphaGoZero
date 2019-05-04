@@ -85,15 +85,14 @@ case class GameState(
     }
 
   val winner: Option[Player] =
-    if (isOver) None
-    else {
+    if (isOver) {
       lastMove match {
         case Some(Move.Resign) => Some(nextPlayer)
         case None | Some(Move.Play(_)) | Some(Move.Pass) =>
           val gameResult = GameResult.computeGameResult(board)
           Some(gameResult.winner)
       }
-    }
+    } else None
 }
 
 object GameState {
