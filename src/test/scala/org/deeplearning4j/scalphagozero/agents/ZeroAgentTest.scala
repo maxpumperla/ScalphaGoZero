@@ -20,7 +20,7 @@ class ZeroAgentTest extends FunSpec {
   describe("A ZeroAgent selecting a move") {
 
     val model: ComputationGraph =
-      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
+      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2_test.model"), true)
     val encoder = new ZeroEncoder(5)
     val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 20, c = 2.0, rand = new Random(1))
 
@@ -35,7 +35,7 @@ class ZeroAgentTest extends FunSpec {
   describe("A ZeroAgent selecting and playing 2 moves") {
 
     val model: ComputationGraph =
-      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
+      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2_test.model"), true)
     val encoder = new ZeroEncoder(5)
     val zeroAgent = new ZeroAgent(model, encoder, roundsPerMove = 100, c = 2.0, rand = new Random(1))
 
@@ -46,7 +46,7 @@ class ZeroAgentTest extends FunSpec {
     move = zeroAgent.selectMove(newGameState)
 
     it("should have selected move") {
-      assert(move === Play(3, 4))
+      assert(move === Play(4, 5))
     }
     // experience was not accumulates, so rewards, states, visitCounts are empty
     it("collector should have these visitCounts") {

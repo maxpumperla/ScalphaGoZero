@@ -1,4 +1,5 @@
 package org.deeplearning4j.scalphagozero.agents
+
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder

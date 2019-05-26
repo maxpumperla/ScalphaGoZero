@@ -62,7 +62,7 @@ class MonteCarloPlayerTest extends FunSpec {
   describe("A monte carlo playout from the root using actual model and encoder") {
 
     val model: ComputationGraph =
-      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2.model"), true)
+      ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2_test.model"), true)
     val encoder = new ZeroEncoder(5)
     val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
     val mcPlayer = new MonteCarloPlayer(nodeCreator, new Random(1))

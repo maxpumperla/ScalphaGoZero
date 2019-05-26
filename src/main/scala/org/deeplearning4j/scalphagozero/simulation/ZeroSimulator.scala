@@ -28,8 +28,7 @@ object ZeroSimulator {
   def simulateLearningGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
 
     val encoder = blackAgent.encoder
-    val boardHeight = encoder.boardHeight
-    val boardWidth = encoder.boardWidth
+    val boardSize = encoder.boardSize
 
     val blackCollector = blackAgent.collector
     val whiteCollector = whiteAgent.collector
@@ -40,12 +39,7 @@ object ZeroSimulator {
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
 
-    println(">>> Starting a new game.")
-    while (!game.isOver) {
-      val nextMove = agents(game.nextPlayer).selectMove(game)
-      game = if (game.isValidMove(nextMove)) game.applyMove(nextMove) else game.applyMove(Move.Resign)
-    }
-    println(">>> Simulation terminated.")
+    game = doSimulation(game, agents)
 
     val gameResult = GameResult.computeGameResult(game.board)
     gameResult.winner match {
