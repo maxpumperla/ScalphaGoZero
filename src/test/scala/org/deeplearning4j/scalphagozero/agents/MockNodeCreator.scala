@@ -1,7 +1,7 @@
 package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board.Move.Play
-import org.deeplearning4j.scalphagozero.board.{ GameState, Move, Point }
+import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 
 import scala.collection.mutable.ArrayBuffer
 

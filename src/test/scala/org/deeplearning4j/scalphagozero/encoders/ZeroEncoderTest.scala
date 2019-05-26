@@ -104,7 +104,7 @@ class ZeroEncoderTest extends FunSpec {
         //println("layer " + i)
         //println(b.slice(i).toIntMatrix.map(_.mkString(", ")).mkString("\n"))
         assertResult(expLayers(i - 1)) {
-          b.slice(i - 1).toIntMatrix.map(_.mkString(", ")).mkString("\n")
+          b.slice((i - 1).toLong).toIntMatrix.map(_.mkString(", ")).mkString("\n")
         }
       }
     }
@@ -184,7 +184,7 @@ class ZeroEncoderTest extends FunSpec {
         println("layer " + i)
         //println(b.slice(i - 1).toIntMatrix.map(_.mkString(", ")).mkString("\n"))
         assertResult(expLayers(i - 1)) {
-          b.slice(i - 1).toIntMatrix.map(_.mkString(", ")).mkString("\n")
+          b.slice((i - 1).toLong).toIntMatrix.map(_.mkString(", ")).mkString("\n")
         }
       }
     }

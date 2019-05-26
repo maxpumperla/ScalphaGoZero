@@ -2,10 +2,9 @@ package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board.Move
 import scala.util.Random
-import MonteCarloPlayer.RND
 import org.deeplearning4j.scalphagozero.board.Move.Pass
 
-case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random = RND) {
+case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
 
   /**
     * Plays stochastically to the end of the game to determine a winner.
@@ -59,8 +58,4 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random = RND)
       ct - 1
     }
   }
-}
-
-object MonteCarloPlayer {
-  private val RND = Random
 }

@@ -72,7 +72,7 @@ class BoardTest extends FunSpec {
   }
 
   describe("Filling your own eye is prohibited") {
-    var board = createBoardWithEyes()
+    val board = createBoardWithEyes()
     it("Filling non-eye allowed") {
       assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 1)))
       assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 1)))

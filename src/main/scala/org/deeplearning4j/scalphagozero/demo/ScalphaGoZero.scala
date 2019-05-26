@@ -1,6 +1,7 @@
 package org.deeplearning4j.scalphagozero.demo
 
 import java.io.File
+
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.{ HumanAgent, ZeroAgent }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
@@ -8,6 +9,8 @@ import org.deeplearning4j.scalphagozero.experience.ZeroExperienceBuffer
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
 import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
 import org.deeplearning4j.scalphagozero.util.Input
+
+import scala.util.Random
 
 /**
   * Main demo of the project. Creates two opponents, a black and a white
@@ -35,8 +38,9 @@ object ScalphaGoZero {
     val model = getModel(numLayers, encoder)
 
     // Create two AGZ opponents
-    val blackAgent = new ZeroAgent(model, encoder)
-    val whiteAgent = new ZeroAgent(model, encoder)
+    val rnd = new Random(1)
+    val blackAgent = new ZeroAgent(model, encoder, rand = rnd)
+    val whiteAgent = new ZeroAgent(model, encoder, rand = rnd)
 
     // Run some simulations...
     val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 1000)

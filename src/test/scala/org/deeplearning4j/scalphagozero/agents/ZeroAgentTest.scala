@@ -46,7 +46,7 @@ class ZeroAgentTest extends FunSpec {
     move = zeroAgent.selectMove(newGameState)
 
     it("should have selected move") {
-      assert(move === Play(4, 5))
+      assert(move === Play(1, 5))
     }
     // experience was not accumulates, so rewards, states, visitCounts are empty
     it("collector should have these visitCounts") {
