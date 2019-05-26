@@ -82,9 +82,9 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
 
   def isCorner(point: Point): Boolean =
     (point.row == 1 && point.col == 1) ||
-    (point.row == size && point.col == 1) ||
-    (point.row == 1 && point.col == size) ||
-    (point.row == size && point.col == size)
+      (point.row == size && point.col == 1) ||
+      (point.row == 1 && point.col == size) ||
+      (point.row == size && point.col == size)
 
   def isEdge(point: Point): Boolean =
     point.row == 1 || point.col == 1 || point.row == size || point.col == size
@@ -114,10 +114,10 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
   /** @return true if player playing at point will capture stones */
   def willCapture(player: Player, point: Point): Boolean =
     neighborMap(point).exists { pt =>
-      {
-        val nbrStr = grid.getString(pt)
-        nbrStr.isDefined && nbrStr.get.player != player && nbrStr.get.numLiberties == 1
-      }
+    {
+      val nbrStr = grid.getString(pt)
+      nbrStr.isDefined && nbrStr.get.player != player && nbrStr.get.numLiberties == 1
+    }
     }
 
   def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= size && 1 <= point.col && point.col <= size
