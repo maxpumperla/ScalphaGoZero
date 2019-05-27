@@ -71,6 +71,48 @@ class BoardTest extends FunSpec {
     println(board)
   }
 
+  describe("Filling your own eye is prohibited") {
+    val board = createBoardWithEyes()
+    it("Filling non-eye allowed") {
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 5)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 4)))
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(2, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(5, 5)))
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(5, 1)))
+    }
+    it("Filling eye not allowed") {
+      assert(board.doesMoveFillEye(WhitePlayer, Point(5, 1)))
+      assert(board.doesMoveFillEye(WhitePlayer, Point(3, 3)))
+    }
+    println(board)
+  }
+
+  /**
+    * 1 .....
+    * 2 .oo.o
+    * 3 xo.o.
+    * 4 ooooo
+    * 5 .o...
+    */
+  def createBoardWithEyes(): GoBoard = {
+    var board = GoBoard(5)
+    board = board.placeStone(WhitePlayer, Point(4, 1))
+    board = board.placeStone(WhitePlayer, Point(4, 2))
+    board = board.placeStone(WhitePlayer, Point(4, 3))
+    board = board.placeStone(WhitePlayer, Point(4, 4))
+    board = board.placeStone(WhitePlayer, Point(4, 5))
+    board = board.placeStone(WhitePlayer, Point(5, 2))
+    board = board.placeStone(WhitePlayer, Point(3, 2))
+    board = board.placeStone(WhitePlayer, Point(3, 4))
+    board = board.placeStone(WhitePlayer, Point(2, 2))
+    board = board.placeStone(WhitePlayer, Point(2, 3))
+    board = board.placeStone(WhitePlayer, Point(2, 5))
+    board = board.placeStone(BlackPlayer, Point(3, 1))
+    board
+  }
+
   describe("Test removing liberties:") {
     it("a stone with four liberties should end up with three if an opponent stone is added") {
       var board = GoBoard(5)
@@ -98,15 +140,15 @@ class BoardTest extends FunSpec {
       val blackString: GoString = board.getGoString(Point(1, 1)).get
 
       assert(blackString.numLiberties == 3)
-      assert(blackString.liberties.contains((3, 2)))
-      assert(blackString.liberties.contains((2, 3)))
-      assert(blackString.liberties.contains((1, 3)))
+      assert(blackString.liberties.contains(Point(3, 2)))
+      assert(blackString.liberties.contains(Point(2, 3)))
+      assert(blackString.liberties.contains(Point(1, 3)))
       println(board)
     }
   }
 
   describe("Test self capture:") {
-    // o.o..
+    // ooo..
     // x.xo.
     it("black can't take it's own last liberty") {
       var board = GoBoard(5)
@@ -116,7 +158,7 @@ class BoardTest extends FunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 2))
       board = board.placeStone(WhitePlayer, Point(2, 3))
       board = board.placeStone(WhitePlayer, Point(1, 4))
-
+      println(board)
       assert(board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
@@ -136,7 +178,7 @@ class BoardTest extends FunSpec {
     // xx...
     // oox..
     // x.o..
-    it("if we capture a stone in the process, it's not self-play") {
+    it("if we capture a stone in the process, it's not self-atari") {
       var board = GoBoard(5)
       board = board.placeStone(BlackPlayer, Point(3, 1))
       board = board.placeStone(BlackPlayer, Point(3, 2))
@@ -149,5 +191,53 @@ class BoardTest extends FunSpec {
       assert(!board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
+    // xx...
+    // o.x..
+    // xxx..
+    it("Should not be able refill eye after capture") {
+      var board = GoBoard(5)
+      board = board.placeStone(BlackPlayer, Point(3, 1))
+      board = board.placeStone(BlackPlayer, Point(3, 2))
+      board = board.placeStone(BlackPlayer, Point(2, 3))
+      board = board.placeStone(BlackPlayer, Point(1, 1))
+      board = board.placeStone(WhitePlayer, Point(2, 1))
+      board = board.placeStone(WhitePlayer, Point(2, 2))
+      board = board.placeStone(BlackPlayer, Point(1, 3))
+      println(board)
+      board = board.placeStone(BlackPlayer, Point(1, 2)) // captures 2 stones
+      assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
+      println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
+      board = board.placeStone(WhitePlayer, Point(2, 1)) // refill first of 2 spaces in eye
+      println("just played White at 2, 1\n" + board)
+      assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
+
+      assert(board.isSelfCapture(WhitePlayer, Point(2, 2)))
+    }
+
+    // xx...
+    // o.x..
+    // xxo..
+    it("OK to refill eye after capture if doing so captures opponent stones") {
+      var board = GoBoard(5)
+      board = board.placeStone(BlackPlayer, Point(3, 1))
+      board = board.placeStone(BlackPlayer, Point(3, 2))
+      board = board.placeStone(BlackPlayer, Point(2, 3))
+      board = board.placeStone(BlackPlayer, Point(1, 1))
+      board = board.placeStone(WhitePlayer, Point(2, 1))
+      board = board.placeStone(WhitePlayer, Point(2, 2))
+      board = board.placeStone(WhitePlayer, Point(1, 3))
+      println(board)
+      board = board.placeStone(BlackPlayer, Point(1, 2)) // captures 2 stones
+      assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
+      println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
+      board = board.placeStone(WhitePlayer, Point(2, 1)) // refill first of 2 spaces in eye
+      println("just played White at 2, 1\n" + board)
+      assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
+
+      println("White playing at 2,2 is OK because it captures 2 plack stones in doing so")
+      assert(!board.isSelfCapture(WhitePlayer, Point(2, 2)))
+      board = board.placeStone(WhitePlayer, Point(2, 2))
+      println("just played White at 2, 2\n" + board)
+    }
   }
 }

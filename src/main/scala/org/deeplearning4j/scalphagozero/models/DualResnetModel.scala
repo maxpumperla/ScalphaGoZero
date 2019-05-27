@@ -18,14 +18,14 @@ import org.deeplearning4j.nn.graph.ComputationGraph
   */
 object DualResnetModel {
 
-  def apply(blocks: Int, numPlanes: Int, boardSize: Int): ComputationGraph = {
+  def apply(numBlocks: Int, numPlanes: Int, boardSize: Int): ComputationGraph = {
     val builder = new DL4JAlphaGoZeroBuilder(boardSize)
     val input = "in"
 
     builder.addInputs(input)
     val initBlock = "init"
     val convOut = builder.addConvBatchNormBlock(initBlock, input, numPlanes)
-    val towerOut: String = builder.addResidualTower(blocks, convOut)
+    val towerOut: String = builder.addResidualTower(numBlocks, convOut)
     val policyOut = builder.addPolicyHead(towerOut)
     val valueOut = builder.addValueHead(towerOut)
     builder.addOutputs(List(policyOut, valueOut))

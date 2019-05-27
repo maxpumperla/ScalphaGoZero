@@ -1,9 +1,6 @@
 package org.deeplearning4j.scalphagozero.scoring
 
-import org.deeplearning4j.scalphagozero.board.{ GoBoard, Point, _ }
-
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GoBoard, Player, WhitePlayer }
 
 sealed trait VertexType extends Product with Serializable
 case object BlackStone extends VertexType
@@ -14,12 +11,14 @@ case object Dame extends VertexType
 
 /**
   * Compute the result of a game
-  *
+  * numBlackCaptures refers to the number of white stones captured by black.
   * @author Max Pumperla
   */
 final case class GameResult(
     numBlackStones: Int,
     numWhiteStones: Int,
+    numBlackCaptures: Int,
+    numWhiteCaptures: Int,
     numBlackTerritory: Int,
     numWhiteTerritory: Int,
     numDame: Int,
@@ -29,22 +28,29 @@ final case class GameResult(
   /**
     * Points black scored
     */
-  val blackPoints: Int = numBlackTerritory + numBlackStones
+  val blackPoints: Int = numBlackTerritory + numBlackStones + numBlackCaptures
 
   /**
     * points white scored
     */
-  val whitePoints: Int = numWhiteStones + numWhiteStones
+  val whitePoints: Int = numWhiteTerritory + numWhiteStones + numWhiteCaptures
 
-  val winner: Player = if (blackPoints > whitePoints + komi) BlackPlayer else WhitePlayer
+  val blackWinningMargin: Double = blackPoints - (whitePoints + komi)
+  val winner: Player = if (blackWinningMargin > 0) BlackPlayer else WhitePlayer
 
-  val winningMargin: Double = Math.abs(blackPoints - (whitePoints + komi))
+  def toDebugString: String = {
+    var s =
+      s"Black: territory($numBlackTerritory) + stones($numBlackStones) + captures($numBlackCaptures) = $blackPoints\n"
+    s += s"White: territory($numWhiteTerritory) + stones($numWhiteStones) + captures($numWhiteCaptures) = $whitePoints\n"
+    s += s"num dame = $numDame,  kome = $komi\n"
+    s += toString
+    s
+  }
 
   override lazy val toString: String = {
-    val white = whitePoints + komi
     winner match {
-      case BlackPlayer => "B+ " + (blackPoints - white)
-      case WhitePlayer => "W+ " + (white - blackPoints)
+      case BlackPlayer => "Black +" + blackWinningMargin
+      case WhitePlayer => "White +" + -blackWinningMargin
     }
   }
 }
@@ -57,8 +63,10 @@ object GameResult {
     * @param goBoard GoBoard instance
     * @return GameResult object
     */
-  def computeGameResult(goBoard: GoBoard): GameResult = {
-    val territoryMap = evaluateTerritory(goBoard)
+  def computeGameResult(goBoard: GoBoard, komi: Double = 7.5): GameResult = {
+
+    val territoryCalculator = new TerritoryCalculator(goBoard)
+    val territoryMap = territoryCalculator.evaluateTerritory()
 
     var numBlackStones = 0
     var numWhiteStones = 0
@@ -79,65 +87,12 @@ object GameResult {
     GameResult(
       numBlackStones = numBlackStones,
       numWhiteStones = numWhiteStones,
+      numBlackCaptures = goBoard.blackCaptures,
+      numWhiteCaptures = goBoard.whiteCaptures,
       numBlackTerritory = numBlackTerritory,
       numWhiteTerritory = numWhiteTerritory,
       numDame = numDame,
-      komi = 7.5
+      komi
     )
-  }
-
-  /**
-    * Evaluate / estimate the territory currently on
-    * the Go board
-    *
-    * @param goBoard GoBoard instance
-    * @return Territory object
-    */
-  private def evaluateTerritory(goBoard: GoBoard): Map[Point, VertexType] = {
-    val statusMap = mutable.Map.empty[Point, VertexType]
-    for (row <- 1 to goBoard.size; col <- 1 to goBoard.size) {
-      val point = Point(row, col)
-      if (!statusMap.contains(point)) {
-        goBoard.getPlayer(point) match {
-          case Some(color) =>
-            statusMap.put(point, if (color == BlackPlayer) BlackStone else WhiteStone)
-          case None =>
-            val (group, neighbors) = collectRegion(point, goBoard)
-            val fillWith =
-              if (neighbors.size == 1) {
-                val neighborColor: Player = neighbors.head
-                if (neighborColor == BlackPlayer) BlackTerritory else WhiteTerritory
-              } else {
-                Dame
-              }
-            for (position <- group) {
-              statusMap.put(position, fillWith)
-            }
-        }
-      }
-    }
-    statusMap.toMap
-  }
-
-  private def collectRegion(startingPoint: Point, board: GoBoard): (List[Point], Set[Player]) = {
-    val initialPlayer = board.getPlayer(startingPoint)
-
-    val visitedPlayers = mutable.Set[Player]()
-    val visitedPoints = ListBuffer[Point](startingPoint)
-
-    val nextPoints = mutable.Stack[Point](startingPoint)
-    while (nextPoints.nonEmpty) {
-      val point = nextPoints.pop()
-      val player = board.getPlayer(point)
-      player.foreach(visitedPlayers += _)
-
-      if (player == initialPlayer) {
-        val nextVisits = point.neighbors.filter(board.isOnGrid).diff(visitedPoints)
-        nextPoints.pushAll(nextVisits)
-        visitedPoints += point
-      }
-    }
-
-    (visitedPoints.toList, visitedPlayers.toSet)
   }
 }

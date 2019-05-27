@@ -28,6 +28,4 @@ final case class Point(row: Int, col: Int) {
     Point(row + 1, col - 1)
   )
 
-  def toCoords: (Int, Int) = (this.row, this.col)
-
 }

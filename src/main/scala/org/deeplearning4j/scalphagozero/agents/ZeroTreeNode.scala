@@ -2,33 +2,41 @@ package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board.{ GameState, Move }
 
-import scala.collection.mutable
-
 /**
   * Tree node of an AlphaGo Zero game tree.
   *
   * @param gameState current game state
   * @param value value of this node
   * @param priors Map of moves to prior values (estimated by policy network)
-  * @param parent optional parent of this node
-  * @param lastMove optional last played move
+  * @param parent optional parent of this node. All nodes have parents except the root.
+  * @param lastMove optional last played move that led directly to the game state represented by this node.
   */
 class ZeroTreeNode(
     val gameState: GameState,
     val value: Double,
-    val priors: mutable.Map[Move, Double],
+    priors: Map[Move, Double],
     val parent: Option[ZeroTreeNode],
     val lastMove: Option[Move]
 ) {
 
   var totalVisitCount: Int = 1
 
-  private val children: mutable.Map[Move, ZeroTreeNode] = mutable.Map.empty
-  private val branches: mutable.Map[Move, Branch] =
+  private var children: Map[Move, ZeroTreeNode] = Map()
+
+  /**
+    * Add valid child moves for all valid moves (except for pass).
+    * This is the expansion phase of the MCTS algorithm.
+    * For example, there are 26 priors for a 5x5 board (the last is pass)
+    */
+  var branches: Map[Move, Branch] = {
     priors
-      .foldLeft(mutable.Map.empty[Move, Branch]) {
-        case (acc, (move, prior)) => if (gameState.isValidMove(move)) acc += move -> Branch(prior) else acc
+      .foldLeft(Map.empty[Move, Branch]) {
+        case (acc, (move, prior)) =>
+          if (gameState.isValidMove(move))
+            acc + (move -> Branch(prior))
+          else acc
       }
+  }
 
   def moves: List[Move] = branches.keys.toList
 
@@ -43,9 +51,8 @@ class ZeroTreeNode(
     if (branches.contains(move)) {
       val b = branches(move)
       val updatedBranch = Branch(b.prior, b.visitCount + 1, b.totalValue + value)
-      branches.put(move, updatedBranch)
+      branches += (move -> updatedBranch)
     }
-    ()
   }
 
   def expectedValue(move: Move): Double = {
@@ -59,4 +66,17 @@ class ZeroTreeNode(
   def prior(move: Move): Double = branches(move).prior
 
   def visitCount(move: Move): Int = if (branches.contains(move)) branches(move).visitCount else 0
+
+  // serialize the tree with pre-order traversal
+  override def toString: String = toString("")
+  def toString(indent: String): String = {
+    var s = indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +
+      " val:" + value + " numkids:" + children.size + "\n"
+
+    //s += indent + " (" + branches.mkString(", ") + " )\n"
+    for (c <- children) {
+      s += c._2.toString(indent + "  ")
+    }
+    s
+  }
 }

@@ -12,16 +12,18 @@ import org.deeplearning4j.nn.conf.{
   NeuralNetConfiguration
 }
 import org.deeplearning4j.nn.weights.WeightInit
-import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.learning.config.Sgd
 import scala.collection.JavaConverters._
+import org.deeplearning4j.nn.conf.layers.OutputLayer
+import org.nd4j.linalg.activations.Activation
+import org.nd4j.linalg.lossfunctions.LossFunctions
 
 class DL4JAlphaGoZeroBuilder(boardSize: Int) {
 
-  val size: Long = boardSize.toLong
+  private val size: Long = boardSize.toLong
 
-  val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
-      .updater(new Sgd())
+  private val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
+      .updater(new Sgd()) // maybe try RmsProp() or Adam() instead
       .weightInit(WeightInit.LECUN_NORMAL)
       .graphBuilder() setInputTypes InputType.convolutional(size, size, 11)
 
@@ -155,6 +157,7 @@ class DL4JAlphaGoZeroBuilder(boardSize: Int) {
     )
     denseName
   }
+
   def addValueHead(
       inName: String,
       kernelSize: List[Int] = List(1, 1),
@@ -191,7 +194,15 @@ class DL4JAlphaGoZeroBuilder(boardSize: Int) {
     conf.setInputPreProcessors(
       Map[String, InputPreProcessor](denseName -> new CnnToFeedForwardPreProcessor(size, size, 1)).asJava
     )
-    conf.addLayer(outputName, new OutputLayer.Builder().nIn(256).nOut(1).build(), denseName)
+    conf.addLayer(
+      outputName,
+      new OutputLayer.Builder(LossFunctions.LossFunction.XENT)
+        .activation(Activation.SIGMOID)
+        .nIn(256)
+        .nOut(1)
+        .build,
+      denseName
+    )
     outputName
   }
 

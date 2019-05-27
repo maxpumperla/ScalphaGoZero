@@ -45,7 +45,7 @@ final class ZeroEncoder(boardSize: Int) extends Encoder(boardSize, 11) {
             if (gameState.doesMoveViolateKo(nextPlayer, Move.Play(p)))
               tensor.put(Array(10, row, col), Nd4j.scalar(1))
           case Some(string) =>
-            var libertyPlane = Math.max(Math.min(4, string.numLiberties) - 1, 1)
+            var libertyPlane = Math.min(4, string.numLiberties) - 1
             if (string.player == nextPlayer)
               libertyPlane += 4
             tensor.put(Array(libertyPlane, row, col), Nd4j.scalar(1))

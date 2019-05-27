@@ -9,18 +9,18 @@ package org.deeplearning4j.scalphagozero.board
   *
   * @author Max Pumperla
   */
-final case class GoString(player: Player, stones: Set[(Int, Int)], liberties: Set[(Int, Int)]) {
+final case class GoString(player: Player, stones: Set[Point], liberties: Set[Point]) {
 
   val numLiberties: Int = liberties.size
 
   def withoutLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties - point.toCoords
-    GoString(this.player, this.stones, newLiberties)
+    val newLiberties = this.liberties - point
+    GoString(player, stones, newLiberties)
   }
 
   def withLiberty(point: Point): GoString = {
-    val newLiberties = this.liberties + point.toCoords
-    GoString(this.player, this.stones, newLiberties)
+    val newLiberties = this.liberties + point
+    GoString(player, stones, newLiberties)
   }
 
   def mergedWith(goString: GoString): GoString = {
@@ -32,4 +32,5 @@ final case class GoString(player: Player, stones: Set[(Int, Int)], liberties: Se
     GoString(player, combinedStones, commonLiberties)
   }
 
+  def size: Int = stones.size
 }

@@ -5,6 +5,7 @@ description := "An independent implementation of DeepMind's AlphaGoZero in Scala
 licenses += "Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")
 
 scalafmtOnCompile := true
+connectInput in run := true
 
 scalaVersion := "2.12.6"
 
@@ -18,7 +19,7 @@ scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings")
 lazy val dl4j = ((version: String) => Seq(
   "org.nd4j" % "nd4j-native-platform" % version,
   "org.deeplearning4j" % "deeplearning4j-core" % version
-))("1.0.0-beta2")
+))("1.0.0-beta3")
 
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
