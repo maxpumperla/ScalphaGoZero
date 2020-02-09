@@ -30,7 +30,10 @@ class Input {
       case "P" | "p" => Move.Pass
       case "R" | "r" => Move.Resign
       case s: String =>
-        val a = s.split(',')
+        val a =
+          if (s.contains(",")) s.split(',')
+          else if (s.contains(";")) s.split(";")
+          else s.split("")
         Move.Play(Point(size + 1 - a(0).trim.toInt, letterToInt(a(1).trim)))
     }
   }

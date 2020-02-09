@@ -43,7 +43,7 @@ object ScalphaGoZero {
     val whiteAgent = new ZeroAgent(model, encoder, rand = rnd)
 
     // Run some simulations...
-    val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 1000)
+    val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 3000)
 
     runSimulationsAndTrain(episodes, blackAgent, whiteAgent)
 

@@ -11,9 +11,8 @@ scalaVersion := "2.12.6"
 
 // Jules note:
 // -----------
-// I remove the `-Xfatal-warnings` from the scalac options set by the `sbt-tpolecat` plugin because it can be frustating.
-// However, If you feel confident enough, it's better to activate it.
-//
+// I removed the `-Xfatal-warnings` from the scalac options set by the `sbt-tpolecat` plugin
+// because it can be frustrating. However, If you feel confident enough, it's better to activate it.
 scalacOptions := scalacOptions.value.filter(_ != "-Xfatal-warnings")
 
 lazy val dl4j = ((version: String) => Seq(
