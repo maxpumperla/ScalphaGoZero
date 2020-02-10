@@ -21,6 +21,7 @@ case class Grid(grid: Map[Point, GoString] = Map.empty, hash: Long = 0L) {
     */
   def updateStringWhenAddingStone(point: Point, newString: GoString): Grid = {
     var newGrid = grid
+    assert(newString.stones.contains(point))
     for (newStringPoint: Point <- newString.stones)
       newGrid += newStringPoint -> newString
 
@@ -52,8 +53,8 @@ case class Grid(grid: Map[Point, GoString] = Map.empty, hash: Long = 0L) {
     // first remove the stones from the board
     removedString.stones.foreach { point =>
       newGrid -= point // the point is now empty
-      newHash ^= ZOBRIST((point, Some(removedString.player))) //Remove filled point hash code.
-      newHash ^= ZOBRIST((point, None)) //Add empty point hash code.
+      newHash ^= ZOBRIST((point, Some(removedString.player))) // Remove filled point hash code.
+      newHash ^= ZOBRIST((point, None)) // Add empty point hash code.
     }
 
     // for each opponent neighbor string adjacent to the one removed, add a liberty for each removed point
@@ -67,4 +68,5 @@ case class Grid(grid: Map[Point, GoString] = Map.empty, hash: Long = 0L) {
     }
     Grid(newGrid, newHash)
   }
+
 }
