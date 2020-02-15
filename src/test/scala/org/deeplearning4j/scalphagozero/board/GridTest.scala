@@ -5,7 +5,7 @@ import org.scalatest.FunSpec
 class GridTest extends FunSpec {
 
   // instance under test
-  val grid = new Grid()
+  val grid = Grid()
 
   describe("update string when adding black stone at 2,2") {
     val string = simpleBlackString()
@@ -60,14 +60,14 @@ class GridTest extends FunSpec {
     val white2String = GoString(WhitePlayer, Set(Point(3, 2), Point(3, 3)), Set(Point(4, 2), Point(4, 3)))
     var mygrid = grid.updateStringWhenAddingStone(Point(1, 2), white6String)
 
-    it("black string should have 2 liberties initially") {
+    it("should have a black string should with 2 liberties initially") {
       mygrid = mygrid.updateStringWhenAddingStone(Point(2, 2), black2String)
       // the black string is surrounded but not yet captured/removed
       assert(mygrid.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(mygrid.getString(Point(2, 3)).get.numLiberties == 2)
     }
 
-    it("black string will still have liberties even when surrounded") {
+    it("should have a black string with liberties even when surrounded") {
       mygrid = mygrid.updateStringWhenAddingStone(Point(3, 3), white2String)
       println(mygrid)
       // the black string is surrounded but not yet captured/removed. Its liberties are not updated here.
@@ -77,7 +77,7 @@ class GridTest extends FunSpec {
       assert(mygrid.getString(Point(3, 3)).get.numLiberties == 2) // white string
     }
 
-    it("black string should now be captured by surrounding white string ") {
+    it("should have a captured black string that is captured by surrounding white string ") {
       // maps from point to list of neighbors
       val nbrMap = NeighborTables.getNbrTable(5)
       mygrid = mygrid.removeString(black2String, nbrMap)
@@ -87,7 +87,7 @@ class GridTest extends FunSpec {
       assert(mygrid.getString(Point(2, 3)).isEmpty)
     }
 
-    it("surrounding white strings should have more liberties after black's capture") {
+    it("should have surrounding white strings with more liberties after black's capture") {
       assert(mygrid.getString(Point(1, 2)).get.numLiberties == 6)
       assert(mygrid.getString(Point(3, 3)).get.numLiberties == 4)
       assert(mygrid.getString(Point(4, 4)).isEmpty)

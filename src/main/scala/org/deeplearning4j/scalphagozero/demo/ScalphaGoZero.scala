@@ -8,7 +8,7 @@ import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.experience.ZeroExperienceBuffer
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
 import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
-import org.deeplearning4j.scalphagozero.util.Input
+import org.deeplearning4j.scalphagozero.input.Input
 
 import scala.util.Random
 
@@ -44,12 +44,13 @@ object ScalphaGoZero {
     val whiteAgent = new ZeroAgent(model, encoder, rand = rnd)
 
     // Run some simulations...
-    val episodes = input.getInteger("How many episodes should we run for?", 5, 1, 3000)
+    val episodes = input.getInteger("How many episodes should we run for?", 5, 0, 3000)
 
     runSimulationsAndTrain(episodes, blackAgent, whiteAgent)
 
     println(">>> Training phase done! You can use black to play as an AI agent now.\n")
-    optionallySaveModel(blackAgent.model, size, numLayers)
+    if (episodes > 0)
+      optionallySaveModel(blackAgent.model, size, numLayers)
 
     val humanAgent = new HumanAgent()
     ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize)

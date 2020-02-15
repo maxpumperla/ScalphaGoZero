@@ -7,7 +7,7 @@ class GoBoardSerializerTest extends FunSpec {
 
   describe("Serialize a board") {
     var board = GoBoard(9)
-    it("It should have this format") {
+    it("should have this format") {
       board = board.placeStone(BlackPlayer, Point(2, 2))
       board = board.placeStone(WhitePlayer, Point(3, 3))
       board = board.placeStone(BlackPlayer, Point(2, 3))
@@ -30,7 +30,7 @@ class GoBoardSerializerTest extends FunSpec {
 
   describe("Serialize another board") {
     var board = GoBoard(9)
-    it("It should have this format") {
+    it("should have this format") {
       board = board.placeStone(BlackPlayer, Point(1, 1))
       board = board.placeStone(WhitePlayer, Point(3, 3))
       board = board.placeStone(BlackPlayer, Point(2, 3))

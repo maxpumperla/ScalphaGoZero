@@ -1,7 +1,7 @@
 package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board._
-import org.deeplearning4j.scalphagozero.util.Input
+import org.deeplearning4j.scalphagozero.input.Input
 
 /**
   * A human agent allows a real person to select the next move in a go game.
