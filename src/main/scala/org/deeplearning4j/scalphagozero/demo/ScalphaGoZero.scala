@@ -28,6 +28,7 @@ object ScalphaGoZero {
 
   val input = new Input()
   val BATCH_SIZE = 5
+  val MODELS_PATH = "models/"
 
   def main(args: Array[String]): Unit = {
 
@@ -83,7 +84,10 @@ object ScalphaGoZero {
     val c: Character =
       input.charQuery("Do you want to load pre-trained model?", Seq('y', 'n'), Some('y'))
     if (c.toString.toUpperCase() == "Y") {
-      val fname = input.textQuery("Load from which file?", s"model_size_${encoder.boardSize}_layers_$numLayers.model")
+      val fname = input.textQuery(
+        "Load from which file?",
+        s"${MODELS_PATH}model_size_${encoder.boardSize}_layers_$numLayers.model"
+      )
       ComputationGraph.load(new File(fname), true)
     } else DualResnetModel(numLayers, encoder.numPlanes, encoder.boardSize)
   }
@@ -92,7 +96,7 @@ object ScalphaGoZero {
     val c: Character =
       input.charQuery("Do you want to first save the result of this model?", Seq('y', 'n'), Some('y'))
     if (c.toString.toUpperCase() == "Y") {
-      val fname = input.textQuery("Save to which file?", s"model_size_${size}_layers_$numLayers.model")
+      val fname = input.textQuery("Save to which file?", s"${MODELS_PATH}model_size_${size}_layers_$numLayers.model")
       model.save(new File(fname))
     }
   }
