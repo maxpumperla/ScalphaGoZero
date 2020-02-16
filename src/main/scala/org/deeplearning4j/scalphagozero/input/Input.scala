@@ -1,14 +1,14 @@
 package org.deeplearning4j.scalphagozero.input
 
 import java.util.Scanner
-import org.deeplearning4j.scalphagozero.board.{ Move, Point }
+import org.deeplearning4j.scalphagozero.board.Move
 
 /**
   * Some convenience methods for gathering input from the user
   *
   * @author Barry Becker
   */
-class Input {
+case class Input() {
 
   private val scanner: Scanner = new Scanner(System.in)
   private val validator = Validator()

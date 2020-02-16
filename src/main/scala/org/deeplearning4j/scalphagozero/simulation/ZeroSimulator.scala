@@ -25,6 +25,10 @@ object ZeroSimulator {
     println(gameResult.toDebugString)
   }
 
+  /**
+    * Two agents play against each other and the collectors accumulate the knowledge gained
+    * so that it can later be used for training.
+    */
   def simulateLearningGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
 
     val encoder = blackAgent.encoder
@@ -34,7 +38,10 @@ object ZeroSimulator {
     val whiteCollector = whiteAgent.collector
 
     var game = GameState.newGame(boardSize)
-    val agents: Map[Player, Agent] = Map(BlackPlayer -> blackAgent, WhitePlayer -> whiteAgent)
+    val agents: Map[Player, Agent] = Map(
+      BlackPlayer -> blackAgent,
+      WhitePlayer -> whiteAgent
+    )
 
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
@@ -52,6 +59,7 @@ object ZeroSimulator {
     }
   }
 
+  /** The 2 agents play a game against either other */
   private def doSimulation(initialState: GameState, agents: Map[Player, Agent]): GameState = {
     println(">>> Starting a new game.")
     var game = initialState

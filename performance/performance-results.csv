@@ -1,0 +1,12 @@
+date,ScalphaGoVersion,OS,CPU,GPU,numCPUs,numCores,memoryMB,boardSize,numResidualBlocks,numTrials,totalTimeSeconds,secondsSpentTraining,secondsPerEpisode
+02/16/2020,"1.0.0","windows 10","Core i7-6700K","GeForce GTX 1070",1,8,4254,5,2,100,40,16128,561,161
+
+ Consider entering the following information on a new row in /performance/performance-results.csv
+[info] OS: Windows 10
+[info] ProcessorId: Intel64 Family 6 Model 94 Stepping 3, GenuineIntel
+[info] ProcessorArch: AMD64
+[info] Available processors (cores): 8
+[info] Total memory available to JVM (mega-bytes): 4240
+[info] Time (in seconds) spent running simulations: 16128
+[info] Time (in seconds) spent running training: 561
+[info] Average seconds per simulation: 161
