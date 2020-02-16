@@ -12,7 +12,9 @@ case object Dame extends VertexType
 /**
   * Compute the result of a game
   * numBlackCaptures refers to the number of white stones captured by black.
+  * If a player won by resignation, they are the winner regardless of the score statistics.
   * @author Max Pumperla
+  * @author Barry Becker
   */
 final case class GameResult(
     numBlackStones: Int,
@@ -22,7 +24,8 @@ final case class GameResult(
     numBlackTerritory: Int,
     numWhiteTerritory: Int,
     numDame: Int,
-    komi: Double
+    komi: Float,
+    wonByResignation: Option[Player]
 ) {
 
   /**
@@ -42,20 +45,27 @@ final case class GameResult(
     var s =
       s"Black: territory($numBlackTerritory) + stones($numBlackStones) + captures($numBlackCaptures) = $blackPoints\n"
     s += s"White: territory($numWhiteTerritory) + stones($numWhiteStones) + captures($numWhiteCaptures) = $whitePoints\n"
-    s += s"num dame = $numDame,  kome = $komi\n"
+    s += s"num dame = $numDame,  komi = $komi\n"
     s += toString
     s
   }
 
   override lazy val toString: String = {
-    winner match {
-      case BlackPlayer => "Black +" + blackWinningMargin
-      case WhitePlayer => "White +" + -blackWinningMargin
+    if (wonByResignation.isDefined) {
+      val winningPlayer = if (wonByResignation.get == BlackPlayer) "Black" else "White"
+      winningPlayer + " won by resignation"
+    } else {
+      winner match {
+        case BlackPlayer => "Black +" + blackWinningMargin
+        case WhitePlayer => "White +" + -blackWinningMargin
+      }
     }
   }
 }
 
 object GameResult {
+
+  val DEFAULT_KOMI = 6.5f
 
   /**
     * Compute the game result from the current state.
@@ -63,8 +73,7 @@ object GameResult {
     * @param goBoard GoBoard instance
     * @return GameResult object
     */
-  def computeGameResult(goBoard: GoBoard, komi: Double = 7.5): GameResult = {
-
+  def apply(goBoard: GoBoard, komi: Float = DEFAULT_KOMI, wonByResignation: Option[Player] = None): GameResult = {
     val territoryCalculator = new TerritoryCalculator(goBoard)
     val territoryMap = territoryCalculator.evaluateTerritory()
 
@@ -85,14 +94,15 @@ object GameResult {
     }
 
     GameResult(
-      numBlackStones = numBlackStones,
-      numWhiteStones = numWhiteStones,
-      numBlackCaptures = goBoard.blackCaptures,
-      numWhiteCaptures = goBoard.whiteCaptures,
-      numBlackTerritory = numBlackTerritory,
-      numWhiteTerritory = numWhiteTerritory,
-      numDame = numDame,
-      komi
+      numBlackStones,
+      numWhiteStones,
+      goBoard.blackCaptures,
+      goBoard.whiteCaptures,
+      numBlackTerritory,
+      numWhiteTerritory,
+      numDame,
+      komi,
+      wonByResignation
     )
   }
 }

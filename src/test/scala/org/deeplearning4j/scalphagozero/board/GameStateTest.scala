@@ -44,7 +44,7 @@ class GameStateTest extends FunSpec {
   describe("No winner at start of the game") {
     var game = GameState.newGame(5)
     it("should have no winner yet") {
-      assert(game.winner.isEmpty)
+      assert(game.gameResult().isEmpty)
     }
 
     game = game.applyMove(Play(3, 3))
@@ -52,15 +52,20 @@ class GameStateTest extends FunSpec {
     game = game.applyMove(Play(4, 4))
     game = game.applyMove(Play(4, 5))
     it("should have no winner after a few moves played") {
-      assert(game.winner.isEmpty)
+      assert(game.gameResult().isEmpty)
     }
   }
 
   describe("Won after black player resigns") {
     var game = GameState.newGame(5)
-    it("should be a white win") {
+    game = game.applyMove(Play(3, 3)) // black play
+    game = game.applyMove(Play(2, 3)) // white play
+
+    it("should be a white win by resignation") {
       game = game.applyMove(Move.Resign)
-      assert(game.winner.contains(WhitePlayer))
+      val result = game.gameResult().get
+      assert(result.winner == WhitePlayer)
+      assert(result.toString == "White won by resignation")
     }
   }
 
@@ -69,7 +74,9 @@ class GameStateTest extends FunSpec {
     game = game.applyMove(Play(3, 3))
     it("should be a black win") {
       game = game.applyMove(Move.Resign)
-      assert(game.winner.contains(BlackPlayer))
+      val result = game.gameResult().get
+      assert(result.winner == BlackPlayer)
+      assert(result.toString == "Black won by resignation")
     }
   }
 
@@ -78,13 +85,15 @@ class GameStateTest extends FunSpec {
     game = game.applyMove(Play(3, 3))
     game = game.applyMove(Move.Pass)
     it("should have no winner yet") {
-      assert(game.winner.isEmpty)
+      assert(game.gameResult().isEmpty)
     }
 
     it("should have winner after the second consecutive pass") {
       game = game.applyMove(Move.Pass)
-      // plack wins because they have one more stone on the board.
-      assert(game.winner.contains(BlackPlayer))
+      // black wins because they have one more stone on the board.
+      val result = game.gameResult().get
+      assert(result.winner == BlackPlayer)
+      assert(result.toString == "Black +24.5")
     }
   }
 }

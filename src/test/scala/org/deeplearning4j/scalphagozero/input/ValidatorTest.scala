@@ -22,7 +22,6 @@ class ValidatorTest extends FunSpec {
 
   describe("Invalid input") {
 
-    val expectedResult = Some(Play(2, 3))
     it("should give None for invalid input") {
       assertResult(None) { validator.getValidMove("XX", 5) }
       assertResult(None) { validator.getValidMove("X", 5) }

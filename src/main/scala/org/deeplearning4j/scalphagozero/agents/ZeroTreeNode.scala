@@ -67,7 +67,9 @@ class ZeroTreeNode(
 
   def visitCount(move: Move): Int = if (branches.contains(move)) branches(move).visitCount else 0
 
-  // serialize the tree with pre-order traversal
+  /**
+    * @return the tree serialized with pre-order traversal
+    */
   override def toString: String = toString("")
   def toString(indent: String): String = {
     var s = indent + gameState.nextPlayer.other + " " + lastMove + " totVisits:" + totalVisitCount +

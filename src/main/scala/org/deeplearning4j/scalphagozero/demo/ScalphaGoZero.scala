@@ -52,7 +52,8 @@ object ScalphaGoZero {
       optionallySaveModel(blackAgent.model, size, numLayers)
 
     val humanAgent = new HumanAgent()
-    ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize)
+    val komi = input.getInteger("How much komi for white? 0.5 +", 6, 0, 7)
+    ZeroSimulator.simulateGame(blackAgent, humanAgent, blackAgent.encoder.boardSize, komi + 0.5f)
   }
 
   /** Either a new DualResnetModel or one that has been pre-trained */
@@ -72,8 +73,7 @@ object ScalphaGoZero {
     val c: Character =
       input.charQuery("Do you want to first save the result of this model?", Seq('y', 'n'), Some('y'))
     if (c.toString.toUpperCase() == "Y") {
-      val fname = input.textQuery("Save to which file?",
-        s"${MODELS_PATH}model_size_${size}_layers_$numLayers.model")
+      val fname = input.textQuery("Save to which file?", s"${MODELS_PATH}model_size_${size}_layers_$numLayers.model")
       model.save(new File(fname))
     }
   }

@@ -34,7 +34,7 @@ class ScoringTest extends FunSpec {
     board = board.placeStone(WhitePlayer, Point(5, 5))
     //println("final board configuration: \n" + board)
 
-    val result = GameResult.computeGameResult(board, 0.5f)
+    val result = GameResult(board, 0.5f)
     //println("result = \n" + result.toDebugString)
 
     it("should have 9 black and white stones") {
@@ -85,7 +85,7 @@ class ScoringTest extends FunSpec {
     board = board.placeStone(BlackPlayer, Point(1, 2)) // secures 5 points black result
     //println("final board configuration: \n" + board)
 
-    val result = GameResult.computeGameResult(board, 0.5f)
+    val result = GameResult(board, 0.5f)
 
     it("Expected stones on the board") {
       assert(result.numWhiteStones == 10)
@@ -128,7 +128,7 @@ class ScoringTest extends FunSpec {
     board = board.placeStone(WhitePlayer, Point(4, 5)) // capture 3 black stones and make life
     //println("final board configuration: \n" + board)
 
-    val result = GameResult.computeGameResult(board, 0.5f)
+    val result = GameResult(board, 0.5f)
 
     it("Expected stones on the board") {
       assert(result.numWhiteStones == 6)
@@ -169,7 +169,7 @@ class ScoringTest extends FunSpec {
     board = board.placeStone(WhitePlayer, Point(5, 4))
     //println("final board configuration: \n" + board)
 
-    val result = GameResult.computeGameResult(board, 0.5f)
+    val result = GameResult(board, 0.5f)
     //println("result = \n" + result.toDebugString)
 
     it("Expected stones on the board") {

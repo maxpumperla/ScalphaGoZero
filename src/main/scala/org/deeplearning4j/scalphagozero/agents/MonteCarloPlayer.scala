@@ -14,7 +14,7 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
     */
   def valueFromMCPlayout(node: ZeroTreeNode): Double =
     if (node.gameState.isOver) {
-      if (node.gameState.winner.get == node.gameState.nextPlayer) 1.0 else -1.0
+      if (node.gameState.gameResult().get.winner == node.gameState.nextPlayer) 1.0 else -1.0
     } else {
       val move = selectMoveStochastically(node)
       val newState = node.gameState.applyMove(move)
@@ -54,7 +54,7 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
         t += a(ct)
         ct += 1
       }
-      if (ct == 0) println("bad a distr = " + a.mkString(", "))
+      if (ct == 0) println("bad a distribution = " + a.mkString(", "))
       ct - 1
     }
   }
