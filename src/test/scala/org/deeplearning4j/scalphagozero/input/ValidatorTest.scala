@@ -1,10 +1,10 @@
 package org.deeplearning4j.scalphagozero.input
 
 import org.deeplearning4j.scalphagozero.board.Move.Play
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
 
-class ValidatorTest extends FunSpec {
+class ValidatorTest extends AnyFunSpec {
 
   val validator = new Validator()
 

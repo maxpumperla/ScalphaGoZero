@@ -7,9 +7,9 @@ import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.board.{BlackPlayer, GameState, GoBoard, Move}
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.strip
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class ZeroTreeNodeCreatorTest extends FunSpec {
+class ZeroTreeNodeCreatorTest extends AnyFunSpec {
 
   describe("zeroTreeNode creation") {
 
@@ -51,7 +51,7 @@ class ZeroTreeNodeCreatorTest extends FunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(zeroTreeNode.prior(move) == 0.04653020575642586)
+      assert(zeroTreeNode.prior(move) == 0.046530209481716156)
     }
 
     it("should have expected values after move(2, 5)") {
@@ -59,7 +59,7 @@ class ZeroTreeNodeCreatorTest extends FunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(zeroTreeNode.prior(move) == 0.047312136739492416)
+      assert(zeroTreeNode.prior(move) == 0.04731214419007301)
     }
   }
 

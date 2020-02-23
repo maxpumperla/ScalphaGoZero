@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.board
 
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class BoardTest extends FunSpec {
+class BoardTest extends AnyFunSpec {
 
   describe("Capturing a stone on a new 19x19 Board") {
     var board = GoBoard(9)

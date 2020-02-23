@@ -1,9 +1,9 @@
 package org.deeplearning4j.scalphagozero.board
 
 import org.deeplearning4j.scalphagozero.strip
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class GoBoardSerializerTest extends FunSpec {
+class GoBoardSerializerTest extends AnyFunSpec {
 
   describe("Serialize a board") {
     var board = GoBoard(9)

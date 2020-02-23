@@ -1,9 +1,9 @@
 package org.deeplearning4j.scalphagozero.board
 
 import org.deeplearning4j.scalphagozero.board.Move.Play
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class GameStateTest extends FunSpec {
+class GameStateTest extends AnyFunSpec {
 
   describe("Starting a new 19x19 game") {
     val start = GameState.newGame(19)

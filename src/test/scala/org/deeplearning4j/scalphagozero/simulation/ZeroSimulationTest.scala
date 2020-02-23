@@ -4,17 +4,17 @@ import java.io.File
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
-import org.nd4j.linalg.api.ndarray.INDArray
-import org.scalatest.FunSpec
+//import org.nd4j.linalg.api.ndarray.INDArray
+import org.scalatest.funspec.AnyFunSpec
 import ZeroSimulationTest.RND
-import org.deeplearning4j.scalphagozero.{ PATH_PREFIX, strip }
-import scala.collection.mutable.ListBuffer
+import org.deeplearning4j.scalphagozero.PATH_PREFIX
+//import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 /**
   * @author Barry Becker
   */
-class ZeroSimulationTest extends FunSpec {
+class ZeroSimulationTest extends AnyFunSpec {
 
   describe("A ZeroAgent selecting a move") {
 

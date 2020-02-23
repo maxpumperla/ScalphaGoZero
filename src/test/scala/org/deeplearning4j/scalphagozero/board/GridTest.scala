@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.board
 
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class GridTest extends FunSpec {
+class GridTest extends AnyFunSpec {
 
   // instance under test
   val grid = Grid()

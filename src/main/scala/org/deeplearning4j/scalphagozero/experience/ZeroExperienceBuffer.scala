@@ -16,14 +16,16 @@ final case class ZeroExperienceBuffer(states: INDArray, visitCounts: INDArray, r
 
 object ZeroExperienceBuffer {
 
-  def combineExperience(buffers: List[ZeroExperienceCollector]): ZeroExperienceBuffer = {
-    val states = buffers.flatMap(_.states)
-    val rewards = buffers.flatMap(_.rewards)
-    val visitCounts = buffers.flatMap(_.visitCounts)
+  def combineExperience(collectors: List[ZeroExperienceCollector]): ZeroExperienceBuffer = {
+    val myStates = collectors.flatMap(_.states)
+    val myRewards = collectors.flatMap(_.rewards)
+    val myVisitCounts = collectors.flatMap(_.visitCounts)
 
-    val combinedStates = Nd4j.concat(0, states: _*)
-    val combinedRewards = Nd4j.concat(0, rewards: _*)
-    val combinedVisitCounts = Nd4j.concat(0, visitCounts: _*)
+    val combinedStates = Nd4j.concat(0, myStates: _*)
+    val combinedRewards = Nd4j.concat(0, myRewards: _*)
+    val combinedVisitCounts = Nd4j.concat(0, myVisitCounts: _*)
+
+    collectors.foreach(_.clearAllBuffers())
 
     ZeroExperienceBuffer(combinedStates, combinedVisitCounts, combinedRewards)
   }

@@ -8,6 +8,7 @@ import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
 import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
 import org.deeplearning4j.scalphagozero.input.Input
+import org.deeplearning4j.scalphagozero.util.ObjectSizer
 
 import scala.util.Random
 
@@ -27,24 +28,27 @@ import scala.util.Random
 object ScalphaGoZero {
 
   val input = Input()
-  val trainer = Trainer()
   val MODELS_PATH = "models/"
 
   def main(args: Array[String]): Unit = {
 
     // Define board encoder and model
-    val size = input.getInteger("What size go board?", 9, 5, 25)
+    val size = input.getInteger("What size go board?", 9, 3, 25)
     val numLayers = input.getInteger("How many residual blocks to use?", 5, 1, 40)
     val encoder = ZeroEncoder(size)
     val model = getModel(numLayers, encoder)
+    println("The initial size of the model is: " + ObjectSizer.getSizeKB(model))
+    val roundsPerMove = input.getInteger("How many rounds of MC playouts per move?", 100, 1, 1000)
 
     // Create two AGZ opponents based on the same model
     val rnd = new Random(1)
-    val blackAgent = new ZeroAgent(model, encoder, rand = rnd)
-    val whiteAgent = new ZeroAgent(model, encoder, rand = rnd)
+    val blackAgent = new ZeroAgent(model, encoder, roundsPerMove, rand = rnd)
+    val whiteAgent = new ZeroAgent(model, encoder, roundsPerMove, rand = rnd)
 
     // Run some simulations...
     val episodes = input.getInteger("How many episodes should we run for?", 5, 0, 3000)
+    val batchSize = input.getInteger("What batch size?", 5, 2, 100)
+    val trainer = Trainer(batchSize)
     trainer.runSimulationsAndTrain(episodes, blackAgent, whiteAgent)
 
     println(">>> Training phase done! You can use black to play as an AI agent now.\n")

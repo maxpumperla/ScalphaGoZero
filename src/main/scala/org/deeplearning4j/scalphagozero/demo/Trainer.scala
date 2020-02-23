@@ -25,11 +25,12 @@ case class Trainer(batchSize: Int = DEFAULT_BATCH_SIZE) {
       ZeroSimulator.simulateLearningGame(blackAgent, whiteAgent)
       simulationTime += (System.currentTimeMillis() - startSim)
 
-      if (i % DEFAULT_BATCH_SIZE == 0)
+      if (i % batchSize == 0) {
         trainingTime += train(blackAgent, whiteAgent)
+      }
     }
 
-    if (episodes % DEFAULT_BATCH_SIZE != 0) {
+    if (episodes % batchSize != 0) {
       trainingTime += train(blackAgent, whiteAgent) // train based on those leftover at the end
     }
 
@@ -42,7 +43,12 @@ case class Trainer(batchSize: Int = DEFAULT_BATCH_SIZE) {
 
     // ... and collect the joint experience
     println(">>> Now combining experience from self-play.")
-    val experience = ZeroExperienceBuffer.combineExperience(List(blackAgent.collector, whiteAgent.collector))
+    val experience = ZeroExperienceBuffer.combineExperience(
+      List(
+        blackAgent.retrieveAndClearCollector(),
+        whiteAgent.retrieveAndClearCollector()
+      )
+    )
 
     // Use experience data to train one of the agents.
     println(">>> Now using that experience to train the deep neural net for black.")
@@ -52,7 +58,7 @@ case class Trainer(batchSize: Int = DEFAULT_BATCH_SIZE) {
   }
 
   /** Print statistics that can be added to /performance/performance-results.csv */
-  private def printPerformance(simulationTime: Long, trainingTime: Long, episodes: Int): Unit = {
+  private def printPerformance(simulationTime: Long, trainingTime: Long, numEpisodes: Int): Unit = {
     println()
     println("Consider entering the following information on a new row in /performance/performance-results.csv")
 
@@ -63,7 +69,8 @@ case class Trainer(batchSize: Int = DEFAULT_BATCH_SIZE) {
     println("Total memory available to JVM (mega-bytes): " + Runtime.getRuntime.totalMemory / 1000000)
     println("Time (in seconds) spent running simulations: " + (simulationTime / 1000).toInt)
     println("Time (in seconds) spent running training: " + (trainingTime / 1000).toInt)
-    println("Average seconds per episode: " + (simulationTime / episodes / 1000).toInt)
+    if (numEpisodes > 0)
+      println("Average seconds per episode: " + (simulationTime / numEpisodes / 1000).toInt)
     println()
   }
 }

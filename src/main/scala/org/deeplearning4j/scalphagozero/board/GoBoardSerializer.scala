@@ -3,13 +3,15 @@ package org.deeplearning4j.scalphagozero.board
 import GoBoardSerializer.X_COORD
 
 /**
-  *
-  * @param board the go board to serialize
   * @author Barry Becker
   */
-class GoBoardSerializer(board: GoBoard) {
+class GoBoardSerializer() {
 
-  def serialize(): String = {
+  /**
+    * @param board the go board to serialize
+    * @return serialized go board
+    */
+  def serialize(board: GoBoard): String = {
 
     var s = "-" * (board.size + 3) + "\n"
 

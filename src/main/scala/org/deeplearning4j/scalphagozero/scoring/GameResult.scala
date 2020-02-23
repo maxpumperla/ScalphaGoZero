@@ -38,7 +38,7 @@ final case class GameResult(
     */
   val whitePoints: Int = numWhiteTerritory + numWhiteStones + numWhiteCaptures
 
-  val blackWinningMargin: Double = blackPoints - (whitePoints + komi)
+  val blackWinningMargin = blackPoints - (whitePoints + komi)
   val winner: Player = if (blackWinningMargin > 0) BlackPlayer else WhitePlayer
 
   def toDebugString: String = {

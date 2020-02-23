@@ -1,9 +1,9 @@
 package org.deeplearning4j.scalphagozero.models
 
 //import org.deeplearning4j.nn.graph.ComputationGraph
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class KerasModelImporterTest extends FunSpec {
+class KerasModelImporterTest extends AnyFunSpec {
 
   describe("Testing model import") {
     /*

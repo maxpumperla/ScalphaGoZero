@@ -2,12 +2,12 @@ package org.deeplearning4j.scalphagozero.agents
 
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.board._
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
 /**
   * @author Barry Becker
   */
-class ZeroTreeNodeTest extends FunSpec {
+class ZeroTreeNodeTest extends AnyFunSpec {
 
   describe("A root ZeroTreeNode with black to play") {
 

@@ -1,8 +1,8 @@
 package org.deeplearning4j.scalphagozero.board
 
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class GoStringTest extends FunSpec {
+class GoStringTest extends AnyFunSpec {
 
   describe("Create an empty string") {
     it("should create empty string") {

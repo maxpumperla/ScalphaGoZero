@@ -11,7 +11,7 @@ package org.deeplearning4j.scalphagozero.board
   */
 case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, whiteCaptures: Int = 0) {
 
-  private val serializer = new GoBoardSerializer(this)
+  private val serializer = new GoBoardSerializer()
   private val neighborMap = NeighborTables.getNbrTable(size)
   private val diagonalMap = NeighborTables.getDiagnonalTable(size)
 
@@ -128,5 +128,5 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
   def getGoString(point: Point): Option[GoString] = grid.getString(point)
   def zobristHash: Long = grid.hash
 
-  override def toString: String = serializer.serialize()
+  override def toString: String = serializer.serialize(this)
 }

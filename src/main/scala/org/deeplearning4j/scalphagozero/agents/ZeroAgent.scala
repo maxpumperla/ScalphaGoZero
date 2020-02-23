@@ -6,8 +6,10 @@ import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.experience.{ ZeroExperienceBuffer, ZeroExperienceCollector }
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
+
 import scala.util.Random
-import ZeroAgent.{ DEBUG, RND }
+import ZeroAgent.{ DEBUG, RND, getMemMB }
+import org.deeplearning4j.scalphagozero.util.ObjectSizer
 
 /**
   * AlphaGo Zero agent, main workhorse of this project. ZeroAgent implements the characteristic combination of
@@ -17,9 +19,9 @@ import ZeroAgent.{ DEBUG, RND }
   * There are 4 main phases to MCTS as described at
   * https://www.youtube.com/watch?v=Fbs4lnGLS8M or https://www.youtube.com/watch?v=UXW2yZndl7U
   *  - Select (based on the distribution of move probabilities from the NN called PI)
-  *  - Expansion
-  *  - Simulation - randomly play out games until one side has one
-  *  - Back propagation - update the counts at each ancestor node in the tree
+  *  - Expansion - expand tree nodes
+  *  - Simulation - randomly play out games until one side has won.
+  *  - Back propagation - update the counts at each ancestor node in the tree.
   *
   * @param model         DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
@@ -36,28 +38,38 @@ class ZeroAgent(
     val rand: Random = RND
 ) extends Agent {
 
-  val collector: ZeroExperienceCollector = new ZeroExperienceCollector()
-  // var so it can be mocked in unit test
+  var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
   val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
   val mcPlayer = MonteCarloPlayer(nodeCreator, rand)
+
+  def retrieveAndClearCollector(): ZeroExperienceCollector = {
+    val c = collector
+    collector = new ZeroExperienceCollector()
+    c
+  }
 
   /**
     * Builds out roundsPerMove nodes in the MC search tree
     * @return the best move selected by the trained model
     */
   override def selectMove(gameState: GameState): Move = {
+    var startTime: Long = 0
+    if (DEBUG) {
+      println("---> starting selectedMove with free mem(MB) = " + getMemMB)
+      startTime = System.currentTimeMillis()
+    }
     val root = nodeCreator.createNode(gameState)
 
     for (_ <- 0 until roundsPerMove) {
       var node: Option[ZeroTreeNode] = Some(root)
-      var nextMove = selectBranch(node.get)
+      var nextMove: Move = selectBranch(node.get)
       // identify the branch in the current tree to add a new child to
       while (node.get.hasChild(nextMove)) {
         node = node.get.getChild(nextMove)
         nextMove = selectBranch(node.get)
       }
 
-      val newState = node.get.gameState.applyMove(nextMove)
+      val newState: GameState = node.get.gameState.applyMove(nextMove)
       val childNode = nodeCreator.createNode(newState, Some(nextMove), node)
       var move: Option[Move] = Some(nextMove)
 
@@ -84,6 +96,8 @@ class ZeroAgent(
       println("totalVisitCt = " + root.totalVisitCount)
       println("Selected " + selected + " from these valid moves:  ")
       println(validMoves.map(m => (m, root.visitCount(m))).mkString(", "))
+      println("Time to select move (sec): " + (System.currentTimeMillis() - startTime) / 1000)
+      println("<--- ending selectedMove with memMB = " + getMemMB)
     }
 
     selected
@@ -92,6 +106,8 @@ class ZeroAgent(
   private def recordVisitCounts(root: ZeroTreeNode): Unit = {
     if (DEBUG)
       println(root) // print the whole MCT
+
+    // Memory  leak here!
     val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {
@@ -157,19 +173,32 @@ class ZeroAgent(
     val visitSums = Nd4j.sum(experience.visitCounts, 1).reshape(Array[Int](numExamples, 1))
 
     val actionTarget = experience.visitCounts.div(visitSums.repeat(1, countLength))
-    val valueTarget = experience.rewards
+    val valueTarget = experience.rewards.reshape(Array[Int](experience.rewards.shape()(0).toInt, 1))
+
     if (DEBUG) {
+      println("numExamples: " + numExamples)
+      println("The size of the modelInput (experience) is: " + ObjectSizer.getSizeKB(modelInput))
       println("visitSums:\n" + visitSums.toDoubleVector.mkString(", "))
+      println("visitSums shape: " + visitSums.shape().mkString(", "))
       println("\nactionTarget shape = " + actionTarget.shape().mkString(", "))
       println()
       println("valueTarget:\n" + valueTarget.toDoubleVector.mkString(", "))
+      println("valueTarget shape: " + valueTarget.shape().mkString(", "))
+      println()
+      println("modelInput shape: " + modelInput.shape().mkString(", "))
+      println("model size before fit: " + ObjectSizer.getSizeKB(model))
     }
 
     model.fit(Array[INDArray](modelInput), Array[INDArray](actionTarget, valueTarget))
+
+    if (DEBUG) {
+      println("model size after fit: " + ObjectSizer.getSizeKB(model))
+    }
   }
 }
 
 object ZeroAgent {
   private val DEBUG = false
   private val RND = new Random(1)
+  private def getMemMB: Long = Runtime.getRuntime.freeMemory() / 1000000
 }

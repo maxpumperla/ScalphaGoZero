@@ -1,9 +1,9 @@
 package org.deeplearning4j.scalphagozero.scoring
 
 import org.deeplearning4j.scalphagozero.board._
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class ScoringTest extends FunSpec {
+class ScoringTest extends AnyFunSpec {
 
   // .w.ww
   // wwww.
