@@ -38,5 +38,4 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
       movesWithPriors(idx)._1
     }
   }
-
 }

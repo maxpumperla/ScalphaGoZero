@@ -18,15 +18,15 @@ import org.deeplearning4j.scalphagozero.util.ObjectSizer
   *
   * There are 4 main phases to MCTS as described at
   * https://www.youtube.com/watch?v=Fbs4lnGLS8M or https://www.youtube.com/watch?v=UXW2yZndl7U
-  *  - Select (based on the distribution of move probabilities from the NN called PI)
+  *  - Select a move based on the distribution of move probabilities from the NN called PI.
   *  - Expansion - expand tree nodes
   *  - Simulation - randomly play out games until one side has won.
   *  - Back propagation - update the counts at each ancestor node in the tree.
   *
-  * @param model         DL4J computation graph suitable for AGZ predictions
+  * @param model DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
   * @param roundsPerMove roll-outs per move
-  * @param c             constant to multiply score by (defaults to 2.0)
+  * @param c constant to multiply score by (defaults to 2.0)
   * @author Max Pumperla
   * @author Barry Becker
   */
@@ -107,7 +107,6 @@ class ZeroAgent(
     if (DEBUG)
       println(root) // print the whole MCT
 
-    // Memory  leak here!
     val rootStateTensor = encoder.encode(root.gameState)
     val visitCounts: INDArray = Nd4j.create(1, encoder.numMoves)
     for (index <- 0 until encoder.numMoves) {

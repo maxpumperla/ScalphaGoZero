@@ -10,7 +10,7 @@ class ScoringTest extends AnyFunSpec {
   // bbbww
   // .bbbb
   // .b.b.
-  describe("Creating a simple 5x5 game for scoring") {
+  describe("Given a simple 5x5 game for scoring") {
     var board = GoBoard(5)
 
     board = board.placeStone(BlackPlayer, Point(1, 2))
@@ -38,24 +38,24 @@ class ScoringTest extends AnyFunSpec {
     //println("result = \n" + result.toDebugString)
 
     it("should have 9 black and white stones") {
-      assert(9 == result.numBlackStones)
-      assert(9 == result.numWhiteStones)
+      assert( result.numBlackStones == 9)
+      assert( result.numWhiteStones == 9)
     }
     it("should have 4 points for black") {
-      assert(4 == result.numBlackTerritory)
+      assert( result.numBlackTerritory == 4)
     }
     it("should have 3 points for white") {
-      assert(3 == result.numWhiteTerritory)
+      assert(result.numWhiteTerritory == 3)
     }
     it("and no dame points") {
-      assert(0 == result.numDame)
+      assert( result.numDame == 0)
     }
     it("Black wins by") {
       assert(result.blackWinningMargin == 0.5)
     }
   }
 
-  describe("Creating a 5x5 game with captures for scoring") {
+  describe("Given a 5x5 game with captures for scoring") {
     var board = GoBoard(5)
 
     board = board.placeStone(BlackPlayer, Point(1, 4))
@@ -106,7 +106,7 @@ class ScoringTest extends AnyFunSpec {
     }
   }
 
-  describe("Creating a 5x5 game with captures and dame for scoring") {
+  describe("Given a 5x5 game with captures and dame for scoring") {
     var board = GoBoard(5)
 
     board = board.placeStone(BlackPlayer, Point(1, 5))
@@ -148,6 +148,124 @@ class ScoringTest extends AnyFunSpec {
     }
   }
 
+  /*
+   * 5 .O.XO
+   * 4 OOOOO
+   * 3 XXXXO
+   * 2 .XXXX
+   * 1 XX.XX
+   *   ABCDE
+   */
+  describe("Given a 5x5 game with narrow- white victory") {
+    var board = GoBoard(5)
+    board = board.placeStone(BlackPlayer, Point(1, 1))
+    board = board.placeStone(BlackPlayer, Point(1, 2))
+    board = board.placeStone(BlackPlayer, Point(1, 4))
+    board = board.placeStone(BlackPlayer, Point(1, 5))
+    board = board.placeStone(BlackPlayer, Point(2, 2))
+    board = board.placeStone(BlackPlayer, Point(2, 3))
+    board = board.placeStone(BlackPlayer, Point(2, 4))
+    board = board.placeStone(BlackPlayer, Point(2, 5))
+    board = board.placeStone(BlackPlayer, Point(3, 1))
+    board = board.placeStone(BlackPlayer, Point(3, 2))
+    board = board.placeStone(BlackPlayer, Point(3, 3))
+    board = board.placeStone(BlackPlayer, Point(3, 4))
+    board = board.placeStone(BlackPlayer, Point(5, 4))
+
+    board = board.placeStone(WhitePlayer, Point(5, 2))
+    board = board.placeStone(WhitePlayer, Point(5, 5))
+    board = board.placeStone(WhitePlayer, Point(4, 1))
+    board = board.placeStone(WhitePlayer, Point(4, 2))
+    board = board.placeStone(WhitePlayer, Point(4, 3))
+    board = board.placeStone(WhitePlayer, Point(4, 4))
+    board = board.placeStone(WhitePlayer, Point(4, 5))
+    board = board.placeStone(WhitePlayer, Point(3, 5))
+    println("final board configuration: \n" + board)
+
+    val result = GameResult(board, 6.5f)
+    println("result = \n" + result.toDebugString)
+
+    it("should have expected black and white stones") {
+      assert(result.numBlackStones == 12)
+      assert(result.numWhiteStones == 8)
+    }
+    it("should have expected black territory") {
+      assert( result.numBlackTerritory == 2)
+    }
+    it("should have expected white territory") {
+      assert( result.numWhiteTerritory == 3)
+    }
+
+    it("should have expected black points") {
+      assert( result.blackPoints == 14)
+    }
+    it("should have expected white points") {
+      assert( result.whitePoints == 12)
+    }
+
+    it("and no dame points") {
+      assert( result.numDame == 0)
+    }
+    it("Black wins by") {
+      assert(result.blackWinningMargin == -4.5)
+    }
+  }
+
+  /*
+   * 5 .O.XX
+   * 4 OOOOO
+   * 3 .....
+   * 2 .XXXX
+   * 1 .X.X.
+   *   ABCDE
+   */
+  describe("Given a 5x5 game with lots of dames") {
+    var board = GoBoard(5)
+    board = board.placeStone(WhitePlayer, Point(5, 2))
+    board = board.placeStone(BlackPlayer, Point(5, 4))
+    board = board.placeStone(BlackPlayer, Point(5, 5))
+    board = board.placeStone(WhitePlayer, Point(4, 1))
+    board = board.placeStone(WhitePlayer, Point(4, 2))
+    board = board.placeStone(WhitePlayer, Point(4, 3))
+    board = board.placeStone(WhitePlayer, Point(4, 4))
+    board = board.placeStone(WhitePlayer, Point(4, 5))
+    board = board.placeStone(BlackPlayer, Point(2, 2))
+    board = board.placeStone(BlackPlayer, Point(2, 3))
+    board = board.placeStone(BlackPlayer, Point(2, 4))
+    board = board.placeStone(BlackPlayer, Point(2, 5))
+    board = board.placeStone(BlackPlayer, Point(1, 2))
+    board = board.placeStone(BlackPlayer, Point(1, 4))
+
+    val result = GameResult(board, 0.5f)
+    println("result = \n" + result.toDebugString)
+
+    it("should have expected black and white stones") {
+      assert(result.numBlackStones == 6)
+      assert(result.numWhiteStones == 6)
+    }
+    it("should have expected black territory") {
+      assert( result.numBlackTerritory == 2)
+    }
+    it("should have expected white territory") {
+      assert( result.numWhiteTerritory == 4)
+    }
+
+    it("should have expected black points") {
+      assert( result.blackPoints == 8)
+    }
+    it("should have expected white points") {
+      assert( result.whitePoints == 12)
+    }
+
+    it("and no dame points") {
+      assert( result.numDame == 7)
+    }
+    it("Black wins by") {
+      assert(result.blackWinningMargin == -4.5)
+    }
+  }
+
+
   describe("Creating a 5x5 game with big black victory") {
     var board = GoBoard(5)
 
@@ -177,13 +295,13 @@ class ScoringTest extends AnyFunSpec {
       assert(result.numBlackStones == 5)
     }
     it("should have 4 points for black") {
-      assert(10 == result.numBlackTerritory)
+      assert( result.numBlackTerritory == 10)
     }
     it("should have 3 points for white") {
-      assert(2 == result.numWhiteTerritory)
+      assert( result.numWhiteTerritory == 2)
     }
     it("and dame points") {
-      assert(2 == result.numDame)
+      assert( result.numDame == 2)
     }
     it("Black wins by") {
       assert(result.blackWinningMargin == 16.5)

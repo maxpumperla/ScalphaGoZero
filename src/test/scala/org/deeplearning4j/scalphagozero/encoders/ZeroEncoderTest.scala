@@ -97,7 +97,7 @@ class ZeroEncoderTest extends AnyFunSpec {
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0"""
-      ).map(s => strip(s))
+      ).map(strip(_))
 
       val b = a.slice(0)
 
@@ -177,7 +177,7 @@ class ZeroEncoderTest extends AnyFunSpec {
           |0, 0, 0, 0, 1
           |0, 0, 0, 0, 0
           |0, 0, 0, 0, 0""" // there is one here somewhere to indicate the ko
-      ).map(s => strip(s))
+      ).map(strip(_))
 
       val b = a.slice(0)
 
