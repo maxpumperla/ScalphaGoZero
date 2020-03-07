@@ -73,8 +73,11 @@ class TerritoryCalculator(goBoard: GoBoard) {
     *          <players that own stones adjacent to this area>)
     *         If the region is bordered by only one player, then it is considered to be territory for that player.
     */
-  private def collectRegion(startingPoint: Point, board: GoBoard,
-                            statusMap: Map[Point, VertexType]): (List[Point], Set[Player]) = {
+  private def collectRegion(
+      startingPoint: Point,
+      board: GoBoard,
+      statusMap: Map[Point, VertexType]
+  ): (List[Point], Set[Player]) = {
     val initialPlayer = board.getPlayer(startingPoint)
     assert(initialPlayer.isEmpty || statusMap(startingPoint).isTerritory)
 

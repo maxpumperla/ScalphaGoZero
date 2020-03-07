@@ -16,7 +16,7 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
   private val diagonalMap = NeighborTables.getDiagnonalTable(size)
 
   def placeStone(player: Player, point: Point): GoBoard = {
-    assert(isOnGrid(point))
+    assert(isOnGrid(point), point + " was not on the grid!")
 
     if (grid.getString(point).isDefined) {
       println(" Illegal move attempted at: " + point + ". Already occupied: " + grid.getString(point).get)

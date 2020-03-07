@@ -117,7 +117,7 @@ class ZeroAgent(
   }
 
   /**
-    * @return move that is randomly selected from among those that were visited most visited.
+    * @return move that is randomly selected from among those that were most visited.
     */
   private def selectValidNextMove(validMoves: Seq[Move], root: ZeroTreeNode): Move =
     if (validMoves.isEmpty) Move.Pass

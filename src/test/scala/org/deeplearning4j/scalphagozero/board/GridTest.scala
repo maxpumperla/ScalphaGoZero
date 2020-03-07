@@ -45,15 +45,16 @@ class GridTest extends AnyFunSpec {
   }
 
   /**
-   * Suppose we have a grid like this
-   * OOOO
-   * OXXO
-   *  OO  The string of 2 black stones will be removed, and surrounding white string will have its liberties adjusted
-   */
+    * Suppose we have a grid like this
+    * OOOO
+    * OXXO
+    *  OO  The string of 2 black stones will be removed, and surrounding white string will have its liberties adjusted
+    */
   describe("remove string due to capture and update liberties in remaining string") {
 
     val black2String = simpleBlackString()
-    val white6String = GoString(WhitePlayer,
+    val white6String = GoString(
+      WhitePlayer,
       Set((1, 1), (1, 2), (1, 3), (2, 1), (2, 4)).map(new Point(_)),
       Set((2, 2), (2, 3), (2, 5), (1, 5), (3, 1), (3, 4)).map(new Point(_))
     )
@@ -69,7 +70,7 @@ class GridTest extends AnyFunSpec {
 
     it("should have a black string with liberties even when surrounded") {
       mygrid = mygrid.updateStringWhenAddingStone(Point(3, 3), white2String)
-      println(mygrid)
+      //println(mygrid)
       // the black string is surrounded but not yet captured/removed. Its liberties are not updated here.
       assert(mygrid.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(mygrid.getPlayer(Point(2, 3)).contains(BlackPlayer))
@@ -106,7 +107,6 @@ class GridTest extends AnyFunSpec {
     GoString(WhitePlayer, stones, liberties)
   }
 
-  private def createGridWithStringAt22(): Grid = {
+  private def createGridWithStringAt22(): Grid =
     grid.updateStringWhenAddingStone(Point(2, 2), simpleBlackString())
-  }
 }

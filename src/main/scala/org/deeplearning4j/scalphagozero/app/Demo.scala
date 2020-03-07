@@ -1,15 +1,13 @@
-package org.deeplearning4j.scalphagozero.demo
+package org.deeplearning4j.scalphagozero.app
 
 import java.io.File
-
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.{ HumanAgent, ZeroAgent }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
+import org.deeplearning4j.scalphagozero.input.Input
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
 import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
-import org.deeplearning4j.scalphagozero.input.Input
 import org.deeplearning4j.scalphagozero.util.ObjectSizer
-
 import scala.util.Random
 
 /**
@@ -25,12 +23,12 @@ import scala.util.Random
   * @author Max Pumperla
   * @author Barry Becker
   */
-object ScalphaGoZero {
+class Demo() {
 
-  val input = Input()
   val MODELS_PATH = "models/"
+  val input = Input()
 
-  def main(args: Array[String]): Unit = {
+  def run(): Unit = {
 
     // Define board encoder and model
     val size = input.getInteger("What size go board?", 9, 3, 25)

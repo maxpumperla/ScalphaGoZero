@@ -88,12 +88,12 @@ object GameResult {
         case BlackTerritory => numBlackTerritory += 1
         case WhiteTerritory => numWhiteTerritory += 1
         case CapturedBlackStone =>
-          numWhiteTerritory +=1
+          numWhiteTerritory += 1
           numWhiteCaptures += 1
         case CapturedWhiteStone =>
-          numBlackTerritory +=1
+          numBlackTerritory += 1
           numBlackCaptures += 1
-        case Dame           => numDame += 1
+        case Dame => numDame += 1
       }
     }
 

@@ -24,7 +24,7 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(3, 2))
       assert(board.getPlayer(Point(2, 2)).isEmpty)
     }
-    println(board)
+    //println(board)
   }
 
   describe("Capturing two stones on a new 19x19 Board") {
@@ -38,19 +38,19 @@ class BoardTest extends AnyFunSpec {
 
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
-      println(board)
+      //println(board)
     }
     it("if black's liberties go down to two, the stone should still be there") {
       board = board.placeStone(WhitePlayer, Point(3, 2))
       board = board.placeStone(WhitePlayer, Point(3, 3))
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
-      println(board)
+      //println(board)
     }
     it("finally, if all liberties are taken, the stone should be gone") {
       board = board.placeStone(WhitePlayer, Point(2, 1))
       board = board.placeStone(WhitePlayer, Point(2, 4))
-      println(board)
+      //println(board)
       assert(board.getPlayer(Point(2, 2)).isEmpty)
       assert(board.getPlayer(Point(2, 3)).isEmpty)
     }
@@ -68,7 +68,7 @@ class BoardTest extends AnyFunSpec {
       assert(board.getPlayer(Point(2, 1)).contains(WhitePlayer))
       assert(board.getPlayer(Point(1, 2)).contains(WhitePlayer))
     }
-    println(board)
+    //println(board)
   }
 
   describe("Filling your own eye is prohibited") {
@@ -86,7 +86,7 @@ class BoardTest extends AnyFunSpec {
       assert(board.doesMoveFillEye(WhitePlayer, Point(5, 1)))
       assert(board.doesMoveFillEye(WhitePlayer, Point(3, 3)))
     }
-    println(board)
+    //println(board)
   }
 
   /**
@@ -143,7 +143,7 @@ class BoardTest extends AnyFunSpec {
       assert(blackString.liberties.contains(Point(3, 2)))
       assert(blackString.liberties.contains(Point(2, 3)))
       assert(blackString.liberties.contains(Point(1, 3)))
-      println(board)
+      //println(board)
     }
   }
 
@@ -158,7 +158,7 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 2))
       board = board.placeStone(WhitePlayer, Point(2, 3))
       board = board.placeStone(WhitePlayer, Point(1, 4))
-      println(board)
+      //println(board)
       assert(board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
@@ -171,7 +171,7 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 1))
       board = board.placeStone(WhitePlayer, Point(2, 3))
       board = board.placeStone(WhitePlayer, Point(1, 4))
-      println(board)
+      //println(board)
       assert(!board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
@@ -187,7 +187,7 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 1))
       board = board.placeStone(WhitePlayer, Point(2, 2))
       board = board.placeStone(WhitePlayer, Point(1, 3))
-      println(board)
+      //println(board)
       assert(!board.isSelfCapture(BlackPlayer, Point(1, 2)))
     }
 
@@ -203,12 +203,12 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 1))
       board = board.placeStone(WhitePlayer, Point(2, 2))
       board = board.placeStone(BlackPlayer, Point(1, 3))
-      println(board)
+      //println(board)
       board = board.placeStone(BlackPlayer, Point(1, 2)) // captures 2 stones
       assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
-      println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
+      //println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
       board = board.placeStone(WhitePlayer, Point(2, 1)) // refill first of 2 spaces in eye
-      println("just played White at 2, 1\n" + board)
+      //println("just played White at 2, 1\n" + board)
       assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
 
       assert(board.isSelfCapture(WhitePlayer, Point(2, 2)))
@@ -226,18 +226,18 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(2, 1))
       board = board.placeStone(WhitePlayer, Point(2, 2))
       board = board.placeStone(WhitePlayer, Point(1, 3))
-      println(board)
+      //println(board)
       board = board.placeStone(BlackPlayer, Point(1, 2)) // captures 2 stones
       assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
-      println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
+      //println("just played Black at 1, 2 (capturing 2 white stones)\n" + board)
       board = board.placeStone(WhitePlayer, Point(2, 1)) // refill first of 2 spaces in eye
-      println("just played White at 2, 1\n" + board)
+      //println("just played White at 2, 1\n" + board)
       assert(board.getPlayer(Point(1, 2)).contains(BlackPlayer))
 
-      println("White playing at 2,2 is OK because it captures 2 plack stones in doing so")
+      //println("White playing at 2,2 is OK because it captures 2 plack stones in doing so")
       assert(!board.isSelfCapture(WhitePlayer, Point(2, 2)))
       board = board.placeStone(WhitePlayer, Point(2, 2))
-      println("just played White at 2, 2\n" + board)
+      //println("just played White at 2, 2\n" + board)
     }
   }
 }

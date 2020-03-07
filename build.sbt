@@ -9,10 +9,13 @@ connectInput in run := true
 
 scalaVersion := "2.12.6"
 
-// Jules note:
-// -----------
-// If warnings become a problem, this can be uncommented.
-//scalacOptions := scalac= projectOptions.value.filter(_ != "-Xfatal-warnings")
+mainClass in assembly := Some("org.deeplearning4j.scalphagozero.app.GtpClient")
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
+
+resolvers += Resolver.jcenterRepo
 
 // Use this if no GPU
 lazy val dl4j = ((version: String) => Seq(
@@ -32,23 +35,29 @@ lazy val dl4j = ((version: String) => Seq(
 enablePlugins(JavaAgent)
 javaAgents += "org.spire-math" % "clouseau_2.12" % "0.2.2" % "compile;runtime"
 
+val main = Some("org.deeplearning4j.scalphagozero.app.ScalphaGoZero")
+mainClass in (Compile, run) := main
+mainClass in assembly := main
+
+classpathTypes += "maven-plugin"
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+  "org.li-soft.gonector" % "gonector" % "1.0.0", // for GTP support
   "org.spire-math" % "clouseau_2.12" % "0.2.2", // for ObjectSizer
   "org.scalatest" %% "scalatest" % "3.1.0" % Test
 ) ++ dl4j
 
 fork in run := true
 javaOptions in run ++= Seq(
-  "-Xms256M",
-  "-Xmx1G",
+  "-Xms2G",
+  "-Xmx8G",
   "-Dorg.bytedeco.javacpp.maxbytes=1G",
   "-Dorg.bytedeco.javacpp.maxphysicalbytes=3G", // Xmx + maxbytes + eps
   "-XshowSettings:vm",
 )
 
-pomExtra := (
+pomExtra :=
   <url>https://github.com/maxpumperla/ScalphaGoZero</url>
     <scm>
       <url>git@github.com:maxpumperla/ScalphaGoZero.git</url>
@@ -60,4 +69,4 @@ pomExtra := (
         <name>Max Pumperla</name>
       </developer>
     </developers>
-)
+

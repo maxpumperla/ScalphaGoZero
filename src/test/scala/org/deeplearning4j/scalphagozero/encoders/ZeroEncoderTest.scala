@@ -213,7 +213,7 @@ class ZeroEncoderTest extends AnyFunSpec {
     state = state.applyMove(Play(1, 4))
     state = state.applyMove(Play(5, 4))
     state = state.applyMove(Play(1, 2))
-    println(state.board)
+    //println(state.board)
     state
   }
 
@@ -237,7 +237,7 @@ class ZeroEncoderTest extends AnyFunSpec {
     state = state.applyMove(Play(2, 2)) // white threat
     state = state.applyMove(Play(3, 2)) // black responds
     state = state.applyMove(Play(3, 4)) // white retakes the ko
-    println(state)
+    //println(state)
     state
   }
 }

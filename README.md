@@ -1,6 +1,5 @@
 # ScalphaGoZero [![Build Status](https://travis-ci.org/maxpumperla/ScalphaGoZero.svg?branch=master)](https://travis-ci.org/maxpumperla/ScalphaGoZero)
 
-
 ScalphaGoZero is an independent implementation of DeepMind's AlphaGo Zero in Scala, 
 using [Deeplearning4J (DL4J)](https://deeplearning4j.org/) to run neural networks. 
 You can either run experiments with models built in [DL4J directly](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/models/DualResnetModel.scala) 
@@ -16,7 +15,7 @@ This project is a Scala port of the AlphaGo Zero module found in
 
 ## Getting started
 
-Here's how run after cloning:
+To run after cloning, do
 
 ```bash
 cd ScalphaGoZero
@@ -24,9 +23,9 @@ sbt run
 ```
 
 [This application](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/demo/ScalphaGoZero.scala) 
-will set up two opponents, simulate 5 games between them using the
+will set up two opponents, simulate some specified number of games between them using the
 AlphaGo Zero methodology and train one of the opponents with the experience data
-gained from the games. For more extensive experiments you should build out this demo.
+gained from the games. You can also accumulate training experience in a saved model and use that model later.
 
 To use Keras model import you need to generate the resources first:
 
@@ -39,13 +38,32 @@ python generate_h5_resources.py
 The generated, serialized Keras models are put into `src/main/resources` and are picked up
 by the `KerasModel` class, as [demonstrated in our tests](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/test/scala/org/deeplearning4j/scalphagozero/models/TestKerasImport.scala).
  
+### GTP Client
+
+It is possible to build a fat executalbe jar that can be used as a GTP client for Go front ends like [Sabaki](https://sabaki.yichuanshen.de/). First run `sbt assembly` to build the fat jar. The engine can be run as
+```
+java -jar target/scala-2.12/ScalphaGoZero-assembly-1.0.1.jar gtp
+```
+However, you should use the gtpClient.bat (on Windows) when configuring Sabaki. 
+Go to *Engines | Manage Engines* in the top menu, then add a ScalphaGoZero engine as shown here.
+
+![add scalphaGoZero engine to Sabaki](images/sabaki_manage_engines.PNG)
+
+Then, from the menu, do *File | New*. 
+This allows you to configure a new game and have one or both 
+players use the engine that you just added. 
+It will attempt to load the model file from the `models` directory based on the board size specified. Currently, there is only a model file for 5x5 games. It is `models/model_size_5_layers_2.model`.
+
+![Sabaki play with ScalphaGoZero engine](images/sabaki_gtp_game.PNG)
+
+When running, inofrmation and errors are logged to output.log.
 
 ## Core Concepts
 
 Quite a few concepts are needed to build an AlphaGoZero system, ScalphaGoZero is intended
-as a software developer friendly approach with clean abstractions to help users get
+as a software developer friendly approach with clean abstractions to help users get 
 started. Many of the concepts used here can be reused for other games, only the basics are
-really designed for the game of Go.
+really designed for the game of Go. For black, or white, or both, select the ScalphaGoZero engine that you just added and play the game.
 
 - Basics: To let a computer play a game you need to code the basics of the game, including 
 what a [Go board](https://github.com/maxpumperla/ScalphaGoZero/blob/master/src/main/scala/org/deeplearning4j/scalphagozero/board/GoBoard.scala),

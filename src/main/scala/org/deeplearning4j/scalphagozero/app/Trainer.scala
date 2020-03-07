@@ -1,4 +1,4 @@
-package org.deeplearning4j.scalphagozero.demo
+package org.deeplearning4j.scalphagozero.app
 
 import org.deeplearning4j.scalphagozero.agents.ZeroAgent
 import org.deeplearning4j.scalphagozero.experience.ZeroExperienceBuffer
