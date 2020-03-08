@@ -3,6 +3,7 @@ package org.deeplearning4j.scalphagozero.agents
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.board._
 import org.scalatest.funspec.AnyFunSpec
+import org.deeplearning4j.scalphagozero.strip
 
 /**
   * @author Barry Becker
@@ -75,10 +76,11 @@ class ZeroTreeNodeTest extends AnyFunSpec {
     }
     it("serialized") {
       assertResult(
-        """WhitePlayer None totVisits:3 val:0.5 numkids:0
-          |""".stripMargin
+        strip(
+          """WhitePlayer None totVisits:3 val:0.5 numkids:0
+            |""".stripMargin)
       ) {
-        node.toString()
+        strip(node.toString())
       }
     }
   }
@@ -159,11 +161,11 @@ class ZeroTreeNodeTest extends AnyFunSpec {
 
     it("serialized") {
       assertResult(
-        """BlackPlayer None totVisits:1 val:0.5 numkids:1
+        strip("""BlackPlayer None totVisits:1 val:0.5 numkids:1
           |  WhitePlayer Some(Play(2,5)) totVisits:4 val:0.6 numkids:0
-          |""".stripMargin
+          |""")
       ) {
-        parentNode.toString()
+        strip(parentNode.toString())
       }
     }
   }
