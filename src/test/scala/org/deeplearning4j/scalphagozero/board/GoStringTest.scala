@@ -1,8 +1,19 @@
 package org.deeplearning4j.scalphagozero.board
 
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class GoStringTest extends FunSpec {
+class GoStringTest extends AnyFunSpec {
+
+  describe("Create an empty string") {
+    it("should create empty string") {
+      val goString = GoString(BlackPlayer, Set(), Set())
+
+      assertResult(0) { goString.numLiberties }
+      assertResult("GoString(BlackPlayer,Set(),Set())") {
+        goString.toString
+      }
+    }
+  }
 
   describe("Create a simple string") {
 
@@ -16,6 +27,21 @@ class GoStringTest extends FunSpec {
       assertResult("GoString(BlackPlayer,Set(Point(2,2)),Set(Point(1,2), Point(3,2), Point(2,1), Point(2,3)))") {
         goString.toString
       }
+    }
+  }
+
+  // OOO
+  // O O
+  // OO    assume surrounded by black
+  describe("Create a string with one eye") {
+
+    val stones = Set((2, 2), (2, 3), (2, 4), (3, 2), (3, 4), (4, 2), (4, 3)).map(new Point(_))
+    val liberties = Set(Point(3, 3))
+
+    it("should create simple string with one eye and one liberty") {
+      val goString = GoString(BlackPlayer, stones, liberties)
+
+      assertResult(1) { goString.numLiberties }
     }
   }
 

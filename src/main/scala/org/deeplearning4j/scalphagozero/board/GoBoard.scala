@@ -11,7 +11,7 @@ package org.deeplearning4j.scalphagozero.board
   */
 case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, whiteCaptures: Int = 0) {
 
-  private val serializer = new GoBoardSerializer(this)
+  private val serializer = new GoBoardSerializer()
   private val neighborMap = NeighborTables.getNbrTable(size)
   private val diagonalMap = NeighborTables.getDiagnonalTable(size)
 
@@ -22,47 +22,50 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
       println(" Illegal move attempted at: " + point + ". Already occupied: " + grid.getString(point).get)
       this
     } else {
-      // 1. Examine adjacent points
-      var adjacentSameColor = Set[GoString]()
-      var adjacentOppositeColor = Set[GoString]()
-      var liberties = Set[Point]()
-
-      for (neighbor: Point <- neighborMap(point)) {
-        grid.getString(neighbor) match {
-          case None                                        => liberties += neighbor
-          case Some(goString) if goString.player == player => adjacentSameColor += goString
-          case Some(goString)                              => adjacentOppositeColor += goString
-        }
-      }
-
-      // 2. Merge any strings of the same color adjacent to the placed stone
-      adjacentSameColor += GoString(player, Set(point), liberties)
-      val newString: GoString = adjacentSameColor.reduce(_ mergedWith _)
-
-      var newGrid = grid.updateStringWhenAddingStone(point, newString)
-
-      // 3. Reduce liberties of any adjacent strings of the opposite color.
-      // 4. If any opposite color strings now have zero liberties, remove them.
-      var stringsToRemove = Set[GoString]()
-      for (otherColorString: GoString <- adjacentOppositeColor) {
-        val otherString = otherColorString.withoutLiberty(point)
-        if (otherString.numLiberties > 0) {
-          newGrid = newGrid.replaceString(otherString)
-        } else stringsToRemove += otherString
-      }
-
-      var newBlackCaptures = blackCaptures
-      var newWhiteCaptures = whiteCaptures
-      stringsToRemove.foreach(str => {
-        player match {
-          case BlackPlayer => newBlackCaptures += str.size
-          case WhitePlayer => newWhiteCaptures += str.size
-        }
-        newGrid = newGrid.removeString(str, neighborMap)
-      })
-
-      GoBoard(size, newGrid, newBlackCaptures, newWhiteCaptures)
+      makeValidStonePlacement(player, point)
     }
+  }
+
+  private def makeValidStonePlacement(player: Player, point: Point): GoBoard = {
+    // 1. Examine adjacent points
+    var adjacentSameColor = Set[GoString]()
+    var adjacentOppositeColor = Set[GoString]()
+    var liberties = Set[Point]()
+
+    for (neighbor: Point <- neighborMap(point)) {
+      grid.getString(neighbor) match {
+        case None                                        => liberties += neighbor
+        case Some(goString) if goString.player == player => adjacentSameColor += goString
+        case Some(goString)                              => adjacentOppositeColor += goString
+      }
+    }
+
+    // 2. Merge any strings of the same color adjacent to the placed stone
+    adjacentSameColor += GoString(player, Set(point), liberties)
+    val newString: GoString = adjacentSameColor.reduce(_ mergedWith _)
+    var newGrid = grid.updateStringWhenAddingStone(point, newString)
+
+    // 3. Reduce liberties of any adjacent strings of the opposite color.
+    // 4. If any opposite color strings now have zero liberties, remove them.
+    var stringsToRemove = Set[GoString]()
+    for (otherColorString: GoString <- adjacentOppositeColor) {
+      val otherString = otherColorString.withoutLiberty(point)
+      if (otherString.numLiberties > 0) {
+        newGrid = newGrid.replaceString(otherString)
+      } else stringsToRemove += otherString
+    }
+
+    var newBlackCaptures = blackCaptures
+    var newWhiteCaptures = whiteCaptures
+    stringsToRemove.foreach(str => {
+      player match {
+        case BlackPlayer => newBlackCaptures += str.size
+        case WhitePlayer => newWhiteCaptures += str.size
+      }
+      newGrid = newGrid.removeString(str, neighborMap)
+    })
+
+    GoBoard(size, newGrid, newBlackCaptures, newWhiteCaptures)
   }
 
   def isSelfCapture(player: Player, point: Point): Boolean = {
@@ -125,5 +128,5 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
   def getGoString(point: Point): Option[GoString] = grid.getString(point)
   def zobristHash: Long = grid.hash
 
-  override def toString: String = serializer.serialize()
+  override def toString: String = serializer.serialize(this)
 }

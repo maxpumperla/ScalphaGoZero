@@ -6,16 +6,16 @@ import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GameState, GoBoard }
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
-import org.nd4j.linalg.api.ndarray.INDArray
-import org.scalatest.FunSpec
+//import org.nd4j.linalg.api.ndarray.INDArray
+import org.scalatest.funspec.AnyFunSpec
 import org.deeplearning4j.scalphagozero.PATH_PREFIX
-import scala.collection.mutable.ListBuffer
+//import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 /**
   * @author Barry Becker
   */
-class ZeroAgentTest extends FunSpec {
+class ZeroAgentTest extends AnyFunSpec {
 
   describe("A ZeroAgent selecting a move") {
 

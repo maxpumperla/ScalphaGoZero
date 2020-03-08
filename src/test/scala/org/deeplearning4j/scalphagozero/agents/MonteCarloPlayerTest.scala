@@ -7,9 +7,9 @@ import org.deeplearning4j.scalphagozero.PATH_PREFIX
 import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GameState, GoBoard }
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class MonteCarloPlayerTest extends FunSpec {
+class MonteCarloPlayerTest extends AnyFunSpec {
 
   describe("Select from a distribution") {
     val nodeCreator = new MockNodeCreator()
@@ -21,10 +21,28 @@ class MonteCarloPlayerTest extends FunSpec {
       assert(idx == 2)
     }
 
-    it("should be high index if distribution skewed low") {
+    it("should be high index if distribution skewed high") {
       val dist = Array(0.001, 0.01, 0.1, 0.3, 0.8, 0.5, 0.9)
       val idx = mcPlayer.selectIdxFromDistribution(dist)
       assert(idx == 4)
+    }
+
+    it("should be highest index if distribution skewed very high") {
+      val dist = Array(0.001, 0.01, 0.01, 0.01, 0.01, 0.1, 0.9)
+      val idx = mcPlayer.selectIdxFromDistribution(dist)
+      assert(idx == 6)
+    }
+
+    it("should be near middle if gaussian distribution") {
+      val dist = Array(0.001, 0.01, 0.1, 0.3, 0.6, 0.8, 0.9, 0.9, 0.8, 0.55, 0.4, 0.2, 0.05, 0.01 )
+      val idx = mcPlayer.selectIdxFromDistribution(dist)
+      assert(idx == 6)
+    }
+
+    it("random if uniform distribution") {
+      val dist = Array(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)
+      val idx = mcPlayer.selectIdxFromDistribution(dist)
+      assert(idx == 7)
     }
 
     it("should be 0 index if distribution has only 1 0 value") {

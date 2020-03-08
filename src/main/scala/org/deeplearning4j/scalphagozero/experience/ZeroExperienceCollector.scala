@@ -1,7 +1,6 @@
 package org.deeplearning4j.scalphagozero.experience
 
 import org.nd4j.linalg.api.ndarray.INDArray
-
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -16,15 +15,22 @@ class ZeroExperienceCollector extends ExperienceCollector {
   val visitCounts: ListBuffer[INDArray] = ListBuffer.empty
   val rewards: ListBuffer[INDArray] = ListBuffer.empty
 
-  private var currentEpisodeStates: ListBuffer[INDArray] = ListBuffer.empty
-  private var currentEpisodeVisitCounts: ListBuffer[INDArray] = ListBuffer.empty
+  private val currentEpisodeStates: ListBuffer[INDArray] = ListBuffer.empty
+  private val currentEpisodeVisitCounts: ListBuffer[INDArray] = ListBuffer.empty
 
-  private def clearBuffers(): Unit = {
-    currentEpisodeStates = ListBuffer.empty
-    currentEpisodeVisitCounts = ListBuffer.empty
+  def clearAllBuffers(): Unit = {
+    states.clear()
+    visitCounts.clear()
+    rewards.clear()
+    clearEpisodeBuffers()
   }
 
-  override def beginEpisode(): Unit = clearBuffers()
+  private def clearEpisodeBuffers(): Unit = {
+    currentEpisodeStates.clear()
+    currentEpisodeVisitCounts.clear()
+  }
+
+  override def beginEpisode(): Unit = clearEpisodeBuffers()
 
   override def recordDecision(state: INDArray, visitCounts: INDArray): Unit = {
     currentEpisodeStates += state
@@ -38,7 +44,7 @@ class ZeroExperienceCollector extends ExperienceCollector {
     for (_ <- 1 to currentEpisodeStates.size)
       rewards += reward
 
-    clearBuffers()
+    clearEpisodeBuffers()
   }
 
 }

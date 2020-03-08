@@ -4,6 +4,7 @@ import org.deeplearning4j.scalphagozero.agents.{ Agent, ZeroAgent }
 import org.deeplearning4j.scalphagozero.board._
 import org.deeplearning4j.scalphagozero.scoring.GameResult
 import org.nd4j.linalg.factory.Nd4j
+import GameResult.DEFAULT_KOMI
 
 /**
   * Simulate a game between two player agents.
@@ -14,18 +15,20 @@ object ZeroSimulator {
 
   val DEBUG = false
 
-  def simulateGame(blackAgent: Agent, whiteAgent: Agent, boardSize: Int): Unit = {
+  def simulateGame(blackAgent: Agent, whiteAgent: Agent, boardSize: Int, komi: Float = DEFAULT_KOMI): Unit = {
 
-    var game = GameState.newGame(boardSize)
+    val game = GameState.newGame(boardSize)
     val agents: Map[Player, Agent] = Map(BlackPlayer -> blackAgent, WhitePlayer -> whiteAgent)
 
-    game = doSimulation(game, agents)
-
-    val gameResult = GameResult.computeGameResult(game.board)
+    val gameResult = doSimulation(game, agents, komi)
     println(gameResult.toDebugString)
   }
 
-  def simulateLearningGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent): Unit = {
+  /**
+    * Two agents play against each other and the collectors accumulate the knowledge gained
+    * so that it can later be used for training.
+    */
+  def simulateLearningGame(blackAgent: ZeroAgent, whiteAgent: ZeroAgent, komi: Float = DEFAULT_KOMI): Unit = {
 
     val encoder = blackAgent.encoder
     val boardSize = encoder.boardSize
@@ -33,15 +36,17 @@ object ZeroSimulator {
     val blackCollector = blackAgent.collector
     val whiteCollector = whiteAgent.collector
 
-    var game = GameState.newGame(boardSize)
-    val agents: Map[Player, Agent] = Map(BlackPlayer -> blackAgent, WhitePlayer -> whiteAgent)
+    val game = GameState.newGame(boardSize)
+    val agents: Map[Player, Agent] = Map(
+      BlackPlayer -> blackAgent,
+      WhitePlayer -> whiteAgent
+    )
 
     blackCollector.beginEpisode()
     whiteCollector.beginEpisode()
 
-    game = doSimulation(game, agents)
+    val gameResult = doSimulation(game, agents, komi)
 
-    val gameResult = GameResult.computeGameResult(game.board)
     gameResult.winner match {
       case BlackPlayer =>
         blackCollector.completeEpisode(Nd4j.scalar(1))
@@ -52,7 +57,8 @@ object ZeroSimulator {
     }
   }
 
-  private def doSimulation(initialState: GameState, agents: Map[Player, Agent]): GameState = {
+  /** The 2 agents play a game against either other */
+  private def doSimulation(initialState: GameState, agents: Map[Player, Agent], komi: Float): GameResult = {
     println(">>> Starting a new game.")
     var game = initialState
     while (!game.isOver) {
@@ -68,6 +74,6 @@ object ZeroSimulator {
     }
     println(">>> Simulation finished.")
     println()
-    game
+    game.gameResult(komi).get
   }
 }

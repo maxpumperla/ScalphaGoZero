@@ -6,7 +6,7 @@ import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.nd4j.linalg.api.ndarray.INDArray
 
 /**
-  * Creates a MCTS node using the model to calculate priors and defualt value
+  * Creates a MCTS node using the model to calculate priors and default value
   * @param model DL4J computation graph suitable for AGZ predictions
   * @param encoder ZeroEncoder instance to feed data into the model
   */

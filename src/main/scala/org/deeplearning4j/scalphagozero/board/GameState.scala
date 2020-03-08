@@ -84,13 +84,11 @@ case class GameState(
       }
     }
 
-  val winner: Option[Player] =
+  def gameResult(komi: Float = 0.5f): Option[GameResult] =
     if (isOver) {
       lastMove match {
-        case Some(Move.Resign) => Some(nextPlayer)
-        case None | Some(Move.Play(_)) | Some(Move.Pass) =>
-          val gameResult = GameResult.computeGameResult(board)
-          Some(gameResult.winner)
+        case Some(Move.Resign)                           => Some(GameResult(board, komi, Some(nextPlayer)))
+        case None | Some(Move.Play(_)) | Some(Move.Pass) => Some(GameResult(board, komi))
       }
     } else None
 }

@@ -3,9 +3,9 @@ package org.deeplearning4j.scalphagozero.encoders
 import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.board._
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
-class ZeroEncoderTest extends FunSpec {
+class ZeroEncoderTest extends AnyFunSpec {
 
   describe("Agent Encoding") {
 
