@@ -11,50 +11,9 @@ import org.scalatest.funspec.AnyFunSpec
 
 class MonteCarloPlayerTest extends AnyFunSpec {
 
-  describe("Select from a distribution") {
-    val nodeCreator = new MockNodeCreator()
-    val mcPlayer = new MonteCarloPlayer(nodeCreator, new Random(1))
-
-    it("should be low index if distribution skewed low") {
-      val dist = Array(0.9, 0.8, 0.5, 0.3, 0.2, 0.1, 0.01, 0.001)
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 2)
-    }
-
-    it("should be high index if distribution skewed high") {
-      val dist = Array(0.001, 0.01, 0.1, 0.3, 0.8, 0.5, 0.9)
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 4)
-    }
-
-    it("should be highest index if distribution skewed very high") {
-      val dist = Array(0.001, 0.01, 0.01, 0.01, 0.01, 0.1, 0.9)
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 6)
-    }
-
-    it("should be near middle if gaussian distribution") {
-      val dist = Array(0.001, 0.01, 0.1, 0.3, 0.6, 0.8, 0.9, 0.9, 0.8, 0.55, 0.4, 0.2, 0.05, 0.01 )
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 6)
-    }
-
-    it("random if uniform distribution") {
-      val dist = Array(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 7)
-    }
-
-    it("should be 0 index if distribution has only 1 0 value") {
-      val dist = Array(0.0)
-      val idx = mcPlayer.selectIdxFromDistribution(dist)
-      assert(idx == 0)
-    }
-  }
-
   describe("A monte carlo playout from a state given a mock nodeCreator (with random priors)") {
     val nodeCreator = new MockNodeCreator()
-    val mcPlayer = new MonteCarloPlayer(nodeCreator, new Random(1))
+    val mcPlayer = MonteCarloPlayer(nodeCreator, new Random(1))
 
     it("should have playout value of 0 when black winning and white just played") {
       val gameState = createBlackWinning5x5GameState()
@@ -83,7 +42,7 @@ class MonteCarloPlayerTest extends AnyFunSpec {
       ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2_test.model"), true)
     val encoder = new ZeroEncoder(5)
     val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
-    val mcPlayer = new MonteCarloPlayer(nodeCreator, new Random(1))
+    val mcPlayer = MonteCarloPlayer(nodeCreator, new Random(1))
 
     it("should have playout value of -1 when black winning and white just played") {
       val gameState = createBlackWinning5x5GameState()
