@@ -51,7 +51,7 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(zeroTreeNode.prior(move) == 0.046530209481716156)
+      assert(Math.abs(zeroTreeNode.prior(move) - 0.046530209481716156) < 0.000001)
     }
 
     it("should have expected values after move(2, 5)") {
@@ -59,7 +59,7 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(zeroTreeNode.prior(move) == 0.04731214419007301)
+      assert(Math.abs(zeroTreeNode.prior(move) - 0.04731214419007301) < 0.000001)
     }
   }
 
