@@ -67,10 +67,15 @@ case class Trainer(batchSize: Int = DEFAULT_BATCH_SIZE) {
     println("ProcessorArch: " + System.getenv("PROCESSOR_ARCHITECTURE"))
     println("Available processors (cores): " + Runtime.getRuntime.availableProcessors)
     println("Total memory available to JVM (mega-bytes): " + Runtime.getRuntime.totalMemory / 1000000)
+    println("numEpisodes = " + numEpisodes)
+    println("batchSize = " + batchSize)
     println("Time (in seconds) spent running simulations: " + (simulationTime / 1000).toInt)
     println("Time (in seconds) spent running training: " + (trainingTime / 1000).toInt)
-    if (numEpisodes > 0)
+    val numBatches = numEpisodes / batchSize
+    println("Time (in seconds) spent running training per batch: " + (trainingTime / (numBatches * 1000)))
+    if (numEpisodes > 0) {
       println("Average seconds per episode: " + (simulationTime / numEpisodes / 1000).toInt)
+    }
     println()
   }
 }

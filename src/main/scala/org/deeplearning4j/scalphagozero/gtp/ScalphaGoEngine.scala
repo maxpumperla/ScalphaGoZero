@@ -57,7 +57,7 @@ case class ScalphaGoEngine(numLayers: Int = DEFAULT_NUM_LAYERS, rnd: Random = ne
   def getVersion: String = VERSION
 
   /** @return true if this engine is capable of scoring a game. */
-  def canScore = false
+  override def canScore = false
 
   /** @param theKomi The new komi value, any value is allowed.*/
   def setKomi(theKomi: Float): Unit = {

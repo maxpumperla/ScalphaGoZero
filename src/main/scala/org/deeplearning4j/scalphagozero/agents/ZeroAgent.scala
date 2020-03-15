@@ -39,8 +39,8 @@ class ZeroAgent(
 ) extends Agent {
 
   var collector: ZeroExperienceCollector = new ZeroExperienceCollector()
-  val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
-  val mcPlayer = MonteCarloPlayer(nodeCreator, rand)
+  private val nodeCreator = new ZeroTreeNodeCreator(model, encoder)
+  private val mcPlayer = MonteCarloPlayer(nodeCreator, rand)
 
   def retrieveAndClearCollector(): ZeroExperienceCollector = {
     val c = collector
@@ -127,7 +127,7 @@ class ZeroAgent(
       val maxVisits = movesWithVisitCounts.maxBy(_._2)._2
       val maxVisitMoves = movesWithVisitCounts.filter(_._2 == maxVisits)
       if (maxVisitMoves.isEmpty) Move.Pass
-      else maxVisitMoves(RND.nextInt(maxVisitMoves.length))._1
+      else maxVisitMoves(rand.nextInt(maxVisitMoves.length))._1
     }
 
   /**

@@ -13,7 +13,7 @@ case class ProbabilityDistribution(a: Array[Double], rnd: Random) {
     * @return an index selected stochastically from a probability distribution defined by a.
     *         If all the values of a are 0, then the first is returned.
     */
-  def selectRandomIdx(): Int = {
+  def selectRandomIdx(): Int =
     if (sum == 0) 0
     else {
       val r = rnd.nextDouble() * sum
@@ -24,8 +24,7 @@ case class ProbabilityDistribution(a: Array[Double], rnd: Random) {
         t += a(ct)
         ct += 1
       }
-      if (ct == 0) println("bad a distribution = " + a.mkString(", "))
+      if (ct == 0) println("bad distribution = " + a.mkString(", "))
       ct - 1
     }
-  }
 }

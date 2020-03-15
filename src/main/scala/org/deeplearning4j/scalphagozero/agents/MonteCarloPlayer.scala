@@ -12,7 +12,7 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
     * @param node current state to play from
     * @return the value from the point of view of the current player
     */
-  def valueFromMCPlayout(node: ZeroTreeNode): Double = {
+  def valueFromMCPlayout(node: ZeroTreeNode): Double =
     if (node.gameState.isOver) {
       if (node.gameState.gameResult().get.winner == node.gameState.nextPlayer) 1.0 else -1.0
     } else {
@@ -22,13 +22,12 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
       val childNode = nodeCreator.createNode(newState, Some(move), None)
       -valueFromMCPlayout(childNode)
     }
-  }
 
   /**
     * Stochastic selection favoring moves with higher scores.
     * Don't select pass unless its the only option.
     */
-  private def selectMoveStochastically(node: ZeroTreeNode): Move = {
+  private def selectMoveStochastically(node: ZeroTreeNode): Move =
     if (node.branches.size <= 1) {
       Pass
     } else {
@@ -37,5 +36,4 @@ case class MonteCarloPlayer(nodeCreator: ZeroTreeNodeCreator, rnd: Random) {
       val idx = ProbabilityDistribution(priors, rnd).selectRandomIdx()
       movesWithPriors(idx)._1
     }
-  }
 }

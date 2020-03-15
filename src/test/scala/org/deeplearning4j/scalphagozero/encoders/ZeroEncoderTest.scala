@@ -182,7 +182,7 @@ class ZeroEncoderTest extends AnyFunSpec {
       val b = a.slice(0)
 
       for (i <- 1 to 11) {
-        println("layer " + i)
+        //println("layer " + i)
         //println(b.slice(i - 1).toIntMatrix.map(_.mkString(", ")).mkString("\n"))
         assertResult(expLayers(i - 1)) {
           b.slice((i - 1).toLong).toIntMatrix.map(_.mkString(", ")).mkString("\n")

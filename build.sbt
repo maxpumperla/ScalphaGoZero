@@ -43,7 +43,7 @@ classpathTypes += "maven-plugin"
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-  "org.li-soft.gonector" % "gonector" % "1.0.0", // for GTP support
+  "org.li-soft.gonector" % "gonector" % "1.1.1", // for GTP support
   "org.spire-math" % "clouseau_2.12" % "0.2.2", // for ObjectSizer
   "org.scalatest" %% "scalatest" % "3.1.0" % Test
 ) ++ dl4j
@@ -52,8 +52,8 @@ fork in run := true
 javaOptions in run ++= Seq(
   "-Xms2G",
   "-Xmx8G",
-  "-Dorg.bytedeco.javacpp.maxbytes=1G",
-  "-Dorg.bytedeco.javacpp.maxphysicalbytes=3G", // Xmx + maxbytes + eps
+  "-Dorg.bytedeco.javacpp.maxbytes=2G",
+  "-Dorg.bytedeco.javacpp.maxphysicalbytes=11G", // Xmx + maxbytes + eps
   "-XshowSettings:vm",
 )
 

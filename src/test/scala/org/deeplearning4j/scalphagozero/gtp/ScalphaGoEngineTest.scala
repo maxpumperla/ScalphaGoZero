@@ -4,7 +4,6 @@ import org.deeplearning4j.scalphagozero.board.GoBoardSerializer
 import org.deeplearning4j.scalphagozero.strip
 import org.lisoft.gonector.{ Move, Player }
 import org.scalatest.funspec.AnyFunSpec
-
 import scala.util.Random
 
 class ScalphaGoEngineTest extends AnyFunSpec {
@@ -63,15 +62,15 @@ class ScalphaGoEngineTest extends AnyFunSpec {
     engine.nextMove(Player.BLACK)
     engine.nextMove(Player.WHITE)
 
-    println(serializer.serialize(engine.getGameState.board))
+    // println(serializer.serialize(engine.getGameState.board))
 
     it("has expected board state") {
       assert(
         engine.getGameState.board.toString ==
           strip("""--------
-           | 5 .....
+           | 5 ...X.
            | 4 .O...
-           | 3 .OXX.
+           | 3 .OX..
            | 2 .XO..
            | 1 .....
            |   ABCDE

@@ -1,6 +1,8 @@
 package org.deeplearning4j.scalphagozero.app
 
 import java.io.File
+
+import org.deeplearning4j.nn.conf.CacheMode
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.agents.{ HumanAgent, ZeroAgent }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
@@ -8,6 +10,7 @@ import org.deeplearning4j.scalphagozero.input.Input
 import org.deeplearning4j.scalphagozero.models.DualResnetModel
 import org.deeplearning4j.scalphagozero.simulation.ZeroSimulator
 import org.deeplearning4j.scalphagozero.util.ObjectSizer
+
 import scala.util.Random
 
 /**
@@ -67,7 +70,9 @@ class Demo() {
         "Load from which file?",
         s"${MODELS_PATH}model_size_${encoder.boardSize}_layers_$numLayers.model"
       )
-      ComputationGraph.load(new File(fname), true)
+      val graph = ComputationGraph.load(new File(fname), true)
+      graph.setCacheMode(CacheMode.HOST)
+      graph
     } else DualResnetModel(numLayers, encoder.numPlanes, encoder.boardSize)
   }
 
