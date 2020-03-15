@@ -4,6 +4,7 @@ import org.deeplearning4j.scalphagozero.board.Move.Play
 import org.deeplearning4j.scalphagozero.board._
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.scalatest.funspec.AnyFunSpec
+import org.deeplearning4j.scalphagozero.strip
 
 class ZeroEncoderTest extends AnyFunSpec {
 
@@ -96,7 +97,7 @@ class ZeroEncoderTest extends AnyFunSpec {
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0"""
-      ).map(s => s.stripMargin)
+      ).map(s => strip(s))
 
       val b = a.slice(0)
 
@@ -176,7 +177,7 @@ class ZeroEncoderTest extends AnyFunSpec {
           |0, 0, 0, 0, 1
           |0, 0, 0, 0, 0
           |0, 0, 0, 0, 0""" // there is one here somewhere to indicate the ko
-      ).map(s => s.stripMargin)
+      ).map(s => strip(s))
 
       val b = a.slice(0)
 
