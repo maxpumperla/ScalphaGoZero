@@ -78,7 +78,7 @@ class ZeroAgentTest extends AnyFunSpec {
     state = state.applyMove(Play(1, 4)) // white
     state = state.applyMove(Play(5, 4))
     state = state.applyMove(Play(1, 2)) // white
-    println(state.board)
+    //println(state.board)
     state
   }
 }

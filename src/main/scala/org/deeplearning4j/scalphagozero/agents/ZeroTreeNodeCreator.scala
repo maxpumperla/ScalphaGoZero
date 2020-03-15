@@ -29,7 +29,6 @@ class ZeroTreeNodeCreator(val model: ComputationGraph, val encoder: ZeroEncoder)
       throw new IllegalArgumentException("One of the priors was NaN: " + priors.mkString(", "))
     }
     val value = outputs(1).getDouble(0L, 0L)
-    //println("The value is " + value + " when " + move.getOrElse("") + " to play for \n" + gameState.board.toString)
 
     var movePriors: Map[Move, Double] = Map[Move, Double]()
     for (i <- priors.indices) {

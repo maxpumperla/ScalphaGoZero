@@ -25,7 +25,7 @@ class ProbabilityDistributionTest extends AnyFunSpec {
     }
 
     it("should be near middle if gaussian distribution") {
-      val dist = createPDist(Array(0.001, 0.01, 0.1, 0.3, 0.6, 0.8, 0.9, 0.9, 0.8, 0.55, 0.4, 0.2, 0.05, 0.01 ))
+      val dist = createPDist(Array(0.001, 0.01, 0.1, 0.3, 0.6, 0.8, 0.9, 0.9, 0.8, 0.55, 0.4, 0.2, 0.05, 0.01))
       assert(dist.selectRandomIdx() == 8)
     }
 

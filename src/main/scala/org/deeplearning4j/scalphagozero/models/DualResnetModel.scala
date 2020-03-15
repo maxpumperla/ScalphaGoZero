@@ -1,5 +1,6 @@
 package org.deeplearning4j.scalphagozero.models
 
+import org.deeplearning4j.nn.conf.CacheMode
 import org.deeplearning4j.nn.graph.ComputationGraph
 
 /**
@@ -32,7 +33,11 @@ object DualResnetModel {
 
     val model = new ComputationGraph(builder.buildAndReturn())
     model.init()
+    model.setCacheMode(CacheMode.HOST)
 
+    // This can be used to give an indication of model memory usage
+    //val report = model.getConfiguration.getMemoryReport(builder.inputTypes)
+    //println("Memory report for DualResnetModel: \n" + report.toJson)
     model
   }
 

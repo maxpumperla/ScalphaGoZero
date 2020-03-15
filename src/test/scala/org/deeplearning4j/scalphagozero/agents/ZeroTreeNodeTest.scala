@@ -75,12 +75,8 @@ class ZeroTreeNodeTest extends AnyFunSpec {
       assert(node.expectedValue(m) == 0.37) // avg of .25 and .49
     }
     it("serialized") {
-      assertResult(
-        strip(
-          """WhitePlayer None totVisits:3 val:0.5 numkids:0
-            |""".stripMargin)
-      ) {
-        strip(node.toString())
+      assertResult(strip("WhitePlayer None totVisits:3 val:0.5 numkids:0\n")) {
+        node.toString()
       }
     }
   }
@@ -192,7 +188,7 @@ class ZeroTreeNodeTest extends AnyFunSpec {
     state = state.applyMove(Play(1, 4)) // white
     state = state.applyMove(Play(5, 4))
     state = state.applyMove(Play(1, 2)) // white
-    println(state.board)
+    //println(state.board)
     state
   }
 }

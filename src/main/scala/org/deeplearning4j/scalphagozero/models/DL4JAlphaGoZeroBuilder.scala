@@ -22,10 +22,13 @@ class DL4JAlphaGoZeroBuilder(boardSize: Int) {
 
   private val size: Long = boardSize.toLong
 
+  val inputTypes: InputType = InputType.convolutional(size, size, 11)
+
   private val conf: ComputationGraphConfiguration.GraphBuilder = new NeuralNetConfiguration.Builder()
-      .updater(new Sgd()) // maybe try RmsProp() or Adam() instead
-      .weightInit(WeightInit.LECUN_NORMAL)
-      .graphBuilder() setInputTypes InputType.convolutional(size, size, 11)
+    .updater(new Sgd()) // maybe try RmsProp() or Adam() instead
+    .weightInit(WeightInit.LECUN_NORMAL)
+    .graphBuilder()
+    .setInputTypes(inputTypes)
 
   def addInputs(name: String): Unit = {
     conf.addInputs(name)

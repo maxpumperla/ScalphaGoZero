@@ -97,7 +97,7 @@ class ZeroEncoderTest extends AnyFunSpec {
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0
         |0, 0, 0, 0, 0"""
-      ).map(s => strip(s))
+      ).map(strip(_))
 
       val b = a.slice(0)
 
@@ -177,12 +177,12 @@ class ZeroEncoderTest extends AnyFunSpec {
           |0, 0, 0, 0, 1
           |0, 0, 0, 0, 0
           |0, 0, 0, 0, 0""" // there is one here somewhere to indicate the ko
-      ).map(s => strip(s))
+      ).map(strip(_))
 
       val b = a.slice(0)
 
       for (i <- 1 to 11) {
-        println("layer " + i)
+        //println("layer " + i)
         //println(b.slice(i - 1).toIntMatrix.map(_.mkString(", ")).mkString("\n"))
         assertResult(expLayers(i - 1)) {
           b.slice((i - 1).toLong).toIntMatrix.map(_.mkString(", ")).mkString("\n")
@@ -213,7 +213,7 @@ class ZeroEncoderTest extends AnyFunSpec {
     state = state.applyMove(Play(1, 4))
     state = state.applyMove(Play(5, 4))
     state = state.applyMove(Play(1, 2))
-    println(state.board)
+    //println(state.board)
     state
   }
 
@@ -237,7 +237,7 @@ class ZeroEncoderTest extends AnyFunSpec {
     state = state.applyMove(Play(2, 2)) // white threat
     state = state.applyMove(Play(3, 2)) // black responds
     state = state.applyMove(Play(3, 4)) // white retakes the ko
-    println(state)
+    //println(state)
     state
   }
 }

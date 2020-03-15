@@ -4,7 +4,7 @@ import java.io.File
 import org.deeplearning4j.nn.graph.ComputationGraph
 import org.deeplearning4j.scalphagozero.PATH_PREFIX
 import org.deeplearning4j.scalphagozero.board.Move.Play
-import org.deeplearning4j.scalphagozero.board.{BlackPlayer, GameState, GoBoard, Move}
+import org.deeplearning4j.scalphagozero.board.{ BlackPlayer, GameState, GoBoard, Move }
 import org.deeplearning4j.scalphagozero.encoders.ZeroEncoder
 import org.deeplearning4j.scalphagozero.strip
 import org.scalatest.funspec.AnyFunSpec
@@ -16,28 +16,37 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
     val model: ComputationGraph =
       ComputationGraph.load(new File(PATH_PREFIX + "model_size_5_layers_2_test.model"), true)
     val encoder = new ZeroEncoder(5)
-    val creator = new ZeroTreeNodeCreator(model, encoder);
+    val creator = new ZeroTreeNodeCreator(model, encoder)
 
     val gameState = createSimple5x5GameState()
 
     val zeroTreeNode = creator.createNode(gameState: GameState)
     it("should create expected zero tree node given gameState") {
       assert(zeroTreeNode.lastMove.isEmpty)
-      assert(zeroTreeNode.gameState.board.toString ==
-        strip(
-          """--------
+      assert(
+        zeroTreeNode.gameState.board.toString ==
+          strip("""--------
             | 5 .O.O.
             | 4 OOOO.
             | 3 .XX.X
             | 2 .X.X.
             | 1 .XOX.
             |   ABCDE
-            |--------"""))
+            |--------""")
+      )
       assert(zeroTreeNode.totalVisitCount == 1)
 
       val validNextMoves = List(
-        Play(5, 1), Play(3, 1), Play(5, 5), Play(4, 1), Play(4, 5), Play(4, 3), Play(1, 5),
-        Move.Pass, Play(2, 5), Play(3, 4)
+        Play(5, 1),
+        Play(3, 1),
+        Play(5, 5),
+        Play(4, 1),
+        Play(4, 5),
+        Play(4, 3),
+        Play(1, 5),
+        Move.Pass,
+        Play(2, 5),
+        Play(3, 4)
       )
       assert(zeroTreeNode.moves == validNextMoves)
     }
@@ -51,7 +60,7 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(Math.abs(zeroTreeNode.prior(move) - 0.046530209481716156) < 0.000001)
+      assert(Math.abs(zeroTreeNode.prior(move) - 0.0465302057564) < 0.000001)
     }
 
     it("should have expected values after move(2, 5)") {
@@ -59,7 +68,7 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
       assert(zeroTreeNode.branches.keySet.contains(move))
       assert(zeroTreeNode.expectedValue(move) == 0)
       assert(zeroTreeNode.visitCount(move) == 0)
-      assert(Math.abs(zeroTreeNode.prior(move) - 0.04731214419007301) < 0.000001)
+      assert(Math.abs(zeroTreeNode.prior(move) - 0.04731213673949) < 0.000001)
     }
   }
 
@@ -85,7 +94,7 @@ class ZeroTreeNodeCreatorTest extends AnyFunSpec {
     state = state.applyMove(Play(1, 4)) // white
     state = state.applyMove(Play(5, 4))
     state = state.applyMove(Play(1, 2)) // white
-    println(state.board)
+    //println(state.board)
     state
   }
 }

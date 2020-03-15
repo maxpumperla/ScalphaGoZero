@@ -1,7 +1,11 @@
-date,ScalphaGoVersion,scalaVersion,OS,CPU,GPU,CUDA-version,numCPUs,numCores,maxHeapGB,boardSize,numResidualBlocks,batchSize,mcPlayoutsPerEpisode,numEpisodes,totalTimeSeconds,secondsSpentTraining,secondsPerEpisode
-02/16/2020,"1.0.0",2.12.6,"windows 10","Core i7-6700K","GeForce GTX 1070",N/A,1,8,16,5,2,5,100,100,16128,561,161
-02/16/2020,"1.0.1",2.13.1,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,16,5,2,5,100,100,16128,561,161
-02/23/2020,"1.0.1",2.13.1,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,2,5,2,5,100,100,15572,54,155
-02/24/2020,"1.0.1",2.13.1,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,1,5,2,5,100,200,30519,108,152
-02/28/2020,"1.0.1",2.13.1,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,1,5,2,10,100,200,29044,100,145
+date,ScalphaGoVersion,scalaVersion,nd4jVersion,OS,CPU,GPU,CUDA-version,numCPUs,numCores,maxHeapGB,boardSize,numResidualBlocks,batchSize,mcPlayoutsPerEpisode,numEpisodes,cacheMode,totalTimeSeconds,secondsSpentTraining,secondsTrainingPerBatch,secondsPerEpisode
+02/16/2020,"1.0.0",2.12.6,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",N/A,1,8,16,5,2,5,100,100,NONE,16128,561,28,161
+02/16/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,16,5,2,5,100,100,NONE,16128,561,28,161
+02/23/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,2,5,2,5,100,100,NONE,15572,54,2.5,155
+02/24/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,1,5,2,5,100,200,NONE,30519,108,2.7,152
+02/28/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,1,5,2,10,100,200,NONE,29044,100,5,145
+03/08/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,5,2,10,100,400,HOST,62332,203,5,155
+03/08/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,2,5,100,5,HOST,8455,35,35,1691
+03/08/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,3,5,100,5,HOST,8455,35,351691
+03/14/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,3,5,100,100,HOST,146944,595,30,1469
 
