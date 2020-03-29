@@ -111,16 +111,18 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     }
   }
 
-  private def findNumNeighbors(player: Player, point: Point, nbrMap: Map[Point, List[Point]]): Int = {
+  /**
+    * @return the number of neighbors that are either the same color stone or an eye for that group
+    */
+  private def findNumNeighbors(player: Player, point: Point, nbrMap: NeighborMap): Int =
     nbrMap(point).count(neighbor => {
       val str = grid.getString(neighbor)
       (str.isDefined && str.get.player == player) || (str.isEmpty && isAncillaryEye(player, neighbor))
     })
-  }
 
   private def isAncillaryEye(player: Player, point: Point): Boolean = {
-    val nbrs = findNumTrueNeighbors(player, point, neighborMap)
-    val diagNbrs = findNumTrueNeighbors(player, point, diagonalMap)
+    val nbrs = neighborMap.findNumTrueNeighbors(player, point, grid)
+    val diagNbrs = diagonalMap.findNumTrueNeighbors(player, point, grid)
     val allNbrs = nbrs + diagNbrs
 
     point match {
@@ -128,13 +130,6 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
       case edgePt if isEdge(edgePt)       => allNbrs == 4
       case _                              => nbrs == 4 && diagNbrs >= 2
     }
-  }
-
-  private def findNumTrueNeighbors(player: Player, point: Point, nbrMap: Map[Point, List[Point]]): Int = {
-    nbrMap(point).count(neighbor => {
-      val str = grid.getString(neighbor)
-      str.isDefined && str.get.player == player
-    })
   }
 
   /** @return true if player playing at point will capture stones */
