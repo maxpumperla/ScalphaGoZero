@@ -117,8 +117,6 @@ class ZeroTreeNodeTest extends AnyFunSpec {
     it("has these expected values for moves") {
       val visitCounts = Map(
         Play(3, 4) -> 0,
-        Play(4, 1) -> 0,
-        Play(5, 1) -> 0,
         Play(5, 5) -> 0,
         Play(4, 5) -> 0,
         Move.Pass -> 0
@@ -130,9 +128,7 @@ class ZeroTreeNodeTest extends AnyFunSpec {
     it("has moves") {
       val expMoves =
         List(
-          Play(Point(5, 1)),
           Play(Point(5, 5)),
-          Play(Point(4, 1)),
           Play(Point(4, 5)),
           Move.Pass,
           Play(Point(3, 4))

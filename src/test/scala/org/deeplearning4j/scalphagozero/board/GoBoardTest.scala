@@ -2,7 +2,7 @@ package org.deeplearning4j.scalphagozero.board
 
 import org.scalatest.funspec.AnyFunSpec
 
-class BoardTest extends AnyFunSpec {
+class GoBoardTest extends AnyFunSpec {
 
   describe("Capturing a stone on a new 19x19 Board") {
     var board = GoBoard(9)
@@ -24,7 +24,6 @@ class BoardTest extends AnyFunSpec {
       board = board.placeStone(WhitePlayer, Point(3, 2))
       assert(board.getPlayer(Point(2, 2)).isEmpty)
     }
-    //println(board)
   }
 
   describe("Capturing two stones on a new 19x19 Board") {
@@ -38,14 +37,12 @@ class BoardTest extends AnyFunSpec {
 
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
-      //println(board)
     }
     it("if black's liberties go down to two, the stone should still be there") {
       board = board.placeStone(WhitePlayer, Point(3, 2))
       board = board.placeStone(WhitePlayer, Point(3, 3))
       assert(board.getPlayer(Point(2, 2)).contains(BlackPlayer))
       assert(board.getPlayer(Point(2, 3)).contains(BlackPlayer))
-      //println(board)
     }
     it("finally, if all liberties are taken, the stone should be gone") {
       board = board.placeStone(WhitePlayer, Point(2, 1))
@@ -68,7 +65,6 @@ class BoardTest extends AnyFunSpec {
       assert(board.getPlayer(Point(2, 1)).contains(WhitePlayer))
       assert(board.getPlayer(Point(1, 2)).contains(WhitePlayer))
     }
-    //println(board)
   }
 
   describe("Filling your own eye is prohibited") {
@@ -79,14 +75,35 @@ class BoardTest extends AnyFunSpec {
       assert(!board.doesMoveFillEye(WhitePlayer, Point(1, 5)))
       assert(!board.doesMoveFillEye(WhitePlayer, Point(2, 4)))
       assert(!board.doesMoveFillEye(BlackPlayer, Point(2, 1)))
-      assert(!board.doesMoveFillEye(WhitePlayer, Point(5, 5)))
       assert(!board.doesMoveFillEye(BlackPlayer, Point(5, 1)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(5, 5)))
     }
     it("Filling eye not allowed") {
+
       assert(board.doesMoveFillEye(WhitePlayer, Point(5, 1)))
       assert(board.doesMoveFillEye(WhitePlayer, Point(3, 3)))
     }
-    //println(board)
+  }
+
+  /**
+    * Sometimes it's hard to tell if its one of the 2 remaining eyes
+    */
+  describe("Filling your own eye is should be prohibited in these edge cases") {
+    val board = createBoardWithEdgeCaseEyes()
+    println(board)
+    it("Filling non-eye allowed") {
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(2, 2)))
+      assert(!board.doesMoveFillEye(WhitePlayer, Point(7, 3)))
+      assert(!board.doesMoveFillEye(BlackPlayer, Point(1, 1)))
+    }
+    it("Filling eye not allowed") {
+      assert(board.doesMoveFillEye(WhitePlayer, Point(4, 6)))
+      assert(board.doesMoveFillEye(WhitePlayer, Point(8, 2)))
+      assert(board.doesMoveFillEye(WhitePlayer, Point(9, 1)))
+      assert(board.doesMoveFillEye(BlackPlayer, Point(7, 9)))
+      assert(board.doesMoveFillEye(BlackPlayer, Point(6, 8)))
+      assert(board.doesMoveFillEye(WhitePlayer, Point(3, 5)))
+    }
   }
 
   /**
@@ -110,6 +127,50 @@ class BoardTest extends AnyFunSpec {
     board = board.placeStone(WhitePlayer, Point(2, 3))
     board = board.placeStone(WhitePlayer, Point(2, 5))
     board = board.placeStone(BlackPlayer, Point(3, 1))
+    board
+  }
+
+  /**
+    * There are eyes in this board that may be hard to recognize using a strict approach.
+    * 1 .X.......  // no eye
+    * 2 X.X.OO...  // no eyes
+    * 3 ...O.OO..  // white eye 3,5
+    * 4 ...OO.O..  // white eye 4,6
+    * 5 ....OOXXX
+    * 6 ......X.X  // black eye 6,8
+    * 7 OO.....X.  // black eye 6,9
+    * 8 O.O....XX  // white eye 8,2
+    * 9 .OO......  // white eye 9,1
+    */
+  def createBoardWithEdgeCaseEyes(): GoBoard = {
+    var board = GoBoard(9)
+    board = board.placeStone(BlackPlayer, Point(1, 2))
+    board = board.placeStone(BlackPlayer, Point(2, 1))
+    board = board.placeStone(BlackPlayer, Point(2, 3))
+    board = board.placeStone(WhitePlayer, Point(2, 5))
+    board = board.placeStone(WhitePlayer, Point(2, 6))
+    board = board.placeStone(WhitePlayer, Point(3, 4))
+    board = board.placeStone(WhitePlayer, Point(3, 6))
+    board = board.placeStone(WhitePlayer, Point(3, 7))
+    board = board.placeStone(WhitePlayer, Point(4, 4))
+    board = board.placeStone(WhitePlayer, Point(4, 5))
+    board = board.placeStone(WhitePlayer, Point(4, 7))
+    board = board.placeStone(WhitePlayer, Point(5, 5))
+    board = board.placeStone(WhitePlayer, Point(5, 6))
+    board = board.placeStone(BlackPlayer, Point(5, 7))
+    board = board.placeStone(BlackPlayer, Point(5, 8))
+    board = board.placeStone(BlackPlayer, Point(5, 9))
+    board = board.placeStone(BlackPlayer, Point(6, 7))
+    board = board.placeStone(BlackPlayer, Point(6, 9))
+    board = board.placeStone(WhitePlayer, Point(7, 1))
+    board = board.placeStone(WhitePlayer, Point(7, 2))
+    board = board.placeStone(BlackPlayer, Point(7, 8))
+    board = board.placeStone(WhitePlayer, Point(8, 1))
+    board = board.placeStone(WhitePlayer, Point(8, 3))
+    board = board.placeStone(BlackPlayer, Point(8, 8))
+    board = board.placeStone(BlackPlayer, Point(8, 9))
+    board = board.placeStone(WhitePlayer, Point(9, 2))
+    board = board.placeStone(WhitePlayer, Point(9, 3))
     board
   }
 
