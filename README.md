@@ -40,7 +40,7 @@ by the `KerasModel` class, as [demonstrated in our tests](https://github.com/max
  
 ### GTP Client
 
-It is possible to build a fat executalbe jar that can be used as a GTP client for Go front ends like [Sabaki](https://sabaki.yichuanshen.de/). First run `sbt assembly` to build the fat jar. The engine can be run as
+It is possible to build a fat executable jar that can be used as a GTP client for Go front ends like [Sabaki](https://sabaki.yichuanshen.de/). First run `sbt assembly` to build the fat jar. The engine can be run as
 ```
 java -jar target/scala-2.12/ScalphaGoZero-assembly-1.0.1.jar gtp
 ```

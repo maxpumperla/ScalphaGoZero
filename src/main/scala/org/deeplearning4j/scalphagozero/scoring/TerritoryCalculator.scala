@@ -95,7 +95,7 @@ class TerritoryCalculator(goBoard: GoBoard) {
         visitedPlayers += player.get
 
       if (player.isEmpty || statusMap(point).isTerritory) {
-        val nextVisits = point.neighbors.filter(board.isOnGrid).diff(visitedPoints)
+        val nextVisits = point.neighbors.filter(board.inBounds).diff(visitedPoints)
         nextPoints = nextVisits ++ nextPoints
         visitedPoints += point
       }

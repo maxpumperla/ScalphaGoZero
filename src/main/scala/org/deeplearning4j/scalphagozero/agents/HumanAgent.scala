@@ -10,7 +10,7 @@ import org.deeplearning4j.scalphagozero.input.Input
   */
 class HumanAgent() extends Agent {
 
-  val input = Input()
+  private val input = Input()
 
   override def selectMove(gameState: GameState): Move =
     input.getMoveFromUser(gameState.board.size)

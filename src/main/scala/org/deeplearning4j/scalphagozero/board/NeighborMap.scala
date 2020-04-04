@@ -7,7 +7,7 @@ package org.deeplearning4j.scalphagozero.board
   */
 class NeighborMap(var map: Map[Point, List[Point]] = Map()) {
 
-  def + (pair: (Point, List[Point])): NeighborMap = new NeighborMap(map + pair)
+  def +(pair: (Point, List[Point])): NeighborMap = new NeighborMap(map + pair)
   def apply(point: Point): List[Point] = map(point)
 
   def findNumTrueNeighbors(player: Player, point: Point, grid: Grid): Int =
