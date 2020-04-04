@@ -1,7 +1,7 @@
 package org.deeplearning4j.scalphagozero.board
 
 /**
-  * Main Go board class, represents the board on which Go moves can be played. Immutable.
+  * Main Go board class. Represents the board on which Go moves can be played. Immutable.
   * Internally, a grid keeps track of the strings at each vertex.
   *
   * @param size the size of the go board. Values of 5, 9, 13, 17, 19, or 25 are reasonable.
@@ -21,39 +21,11 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     if (grid.getString(point).isDefined) {
       println(" Illegal move attempted at: " + point + ". Already occupied: " + grid.getString(point).get)
       this
-    } else {
-      makeValidStonePlacement(player, point)
-    }
+    } else makeValidStonePlacement(player, point)
   }
 
   private def makeValidStonePlacement(player: Player, point: Point): GoBoard = {
-    // 1. Examine adjacent points
-    var adjacentSameColor = Set[GoString]()
-    var adjacentOppositeColor = Set[GoString]()
-    var liberties = Set[Point]()
-
-    for (neighbor: Point <- neighborMap(point)) {
-      grid.getString(neighbor) match {
-        case None                                        => liberties += neighbor
-        case Some(goString) if goString.player == player => adjacentSameColor += goString
-        case Some(goString)                              => adjacentOppositeColor += goString
-      }
-    }
-
-    // 2. Merge any strings of the same color adjacent to the placed stone
-    adjacentSameColor += GoString(player, Set(point), liberties)
-    val newString: GoString = adjacentSameColor.reduce(_ mergedWith _)
-    var newGrid = grid.updateStringWhenAddingStone(point, newString)
-
-    // 3. Reduce liberties of any adjacent strings of the opposite color.
-    // 4. If any opposite color strings now have zero liberties, remove them.
-    var stringsToRemove = Set[GoString]()
-    for (otherColorString: GoString <- adjacentOppositeColor) {
-      val otherString = otherColorString.withoutLiberty(point)
-      if (otherString.numLiberties > 0) {
-        newGrid = newGrid.replaceString(otherString)
-      } else stringsToRemove += otherString
-    }
+    var (newGrid, stringsToRemove) = determineStringsToRemove(player, point)
 
     var newBlackCaptures = blackCaptures
     var newWhiteCaptures = whiteCaptures
@@ -83,6 +55,37 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     friendlyStrings.forall(_.numLiberties == 1)
   }
 
+  private def determineStringsToRemove(player: Player, point: Point): (Grid, Set[GoString]) = {
+    // 1. Examine adjacent points
+    var adjacentSameColor = Set[GoString]()
+    var adjacentOppositeColor = Set[GoString]()
+    var liberties = Set[Point]()
+
+    for (neighbor: Point <- neighborMap(point)) {
+      grid.getString(neighbor) match {
+        case None                                        => liberties += neighbor
+        case Some(goString) if goString.player == player => adjacentSameColor += goString
+        case Some(goString)                              => adjacentOppositeColor += goString
+      }
+    }
+
+    // 2. Merge any strings of the same color adjacent to the placed stone
+    adjacentSameColor += GoString(player, Set(point), liberties)
+    val newString: GoString = adjacentSameColor.reduce(_ mergedWith _)
+    var newGrid = grid.updateStringWhenAddingStone(point, newString)
+
+    // 3. Reduce liberties of any adjacent strings of the opposite color.
+    // 4. If any opposite color strings now have zero liberties, remove them.
+    var stringsToRemove = Set[GoString]()
+    for (otherColorString: GoString <- adjacentOppositeColor) {
+      val otherString = otherColorString.withoutLiberty(point)
+      if (otherString.numLiberties > 0) {
+        newGrid = newGrid.replaceString(otherString)
+      } else stringsToRemove += otherString
+    }
+    (newGrid, stringsToRemove)
+  }
+
   def isCorner(point: Point): Boolean =
     (point.row == 1 && point.col == 1) ||
     (point.row == size && point.col == 1) ||
@@ -92,19 +95,13 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
   def isEdge(point: Point): Boolean =
     point.row == 1 || point.col == 1 || point.row == size || point.col == size
 
+  /**
+    * A player should never fill her own eye, but determining a true eye is not that easy.
+    * @return true if the specified play fills that player's eye
+    */
   def doesMoveFillEye(player: Player, point: Point): Boolean = {
-    var nbrs = 0
-    var diagNbrs = 0
-    for (neighbor: Point <- neighborMap(point)) {
-      val str = grid.getString(neighbor)
-      if (str.isDefined && str.get.player == player)
-        nbrs += 1
-    }
-    for (neighbor: Point <- diagonalMap(point)) {
-      val str = grid.getString(neighbor)
-      if (str.isDefined && str.get.player == player)
-        diagNbrs += 1
-    }
+    val nbrs = findNumNeighbors(player, point, neighborMap)
+    val diagNbrs = findNumNeighbors(player, point, diagonalMap)
     val allNbrs = nbrs + diagNbrs
 
     point match {
@@ -114,10 +111,30 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     }
   }
 
+  /**
+    * @return the number of neighbors that are either the same color stone or an eye for that group
+    */
+  private def findNumNeighbors(player: Player, point: Point, nbrMap: NeighborMap): Int =
+    nbrMap(point).count(neighbor => {
+      val str = grid.getString(neighbor)
+      (str.isDefined && str.get.player == player) || (str.isEmpty && isAncillaryEye(player, neighbor))
+    })
+
+  private def isAncillaryEye(player: Player, point: Point): Boolean = {
+    val nbrs = neighborMap.findNumTrueNeighbors(player, point, grid)
+    val diagNbrs = diagonalMap.findNumTrueNeighbors(player, point, grid)
+    val allNbrs = nbrs + diagNbrs
+
+    point match {
+      case cornerPt if isCorner(cornerPt) => allNbrs == 2
+      case edgePt if isEdge(edgePt)       => allNbrs == 4
+      case _                              => nbrs == 4 && diagNbrs >= 2
+    }
+  }
+
   /** @return true if player playing at point will capture stones */
   def willCapture(player: Player, point: Point): Boolean =
-    neighborMap(point).exists { pt =>
-      {
+    neighborMap(point).exists { pt => {
         val nbrStr = grid.getString(pt)
         nbrStr.isDefined && nbrStr.get.player != player && nbrStr.get.numLiberties == 1
       }

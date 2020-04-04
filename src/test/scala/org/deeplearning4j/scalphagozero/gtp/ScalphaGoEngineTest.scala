@@ -31,7 +31,7 @@ class ScalphaGoEngineTest extends AnyFunSpec {
     println(serializer.serialize(engine.getGameState.board))
 
     it("has valid next white move") {
-      assert(engine.nextMove(Player.WHITE) == new Move(4, 2))
+      assert(engine.nextMove(Player.WHITE) == new Move(1, 1))
     }
   }
 
@@ -68,11 +68,11 @@ class ScalphaGoEngineTest extends AnyFunSpec {
       assert(
         engine.getGameState.board.toString ==
           strip("""--------
-           | 5 ...X.
-           | 4 .O...
-           | 3 .OX..
-           | 2 .XO..
-           | 1 .....
+           | 5 .....
+           | 4 .....
+           | 3 .OXX.
+           | 2 OO...
+           | 1 ...X.
            |   ABCDE
            |--------""")
       )

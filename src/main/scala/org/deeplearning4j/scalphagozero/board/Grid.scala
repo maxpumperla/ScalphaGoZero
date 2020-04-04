@@ -46,7 +46,7 @@ case class Grid(grid: Map[Point, GoString] = Map.empty, hash: Long = 0L) {
     * @param removedString the string to remove
     * @return newGrid and newHash value
     */
-  def removeString(removedString: GoString, nbrMap: Map[Point, List[Point]]): Grid = {
+  def removeString(removedString: GoString, nbrMap: NeighborMap): Grid = {
     var newGrid = grid
     var newHash = hash
 
