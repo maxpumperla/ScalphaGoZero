@@ -11,19 +11,19 @@ object NeighborTables {
     */
   def getNbrTable(size: Int): NeighborMap = {
     if (!neighborTables.contains(size)) {
-      initNeighborTable(size)
+      neighborTables += size -> createNeighborMap(size)
     }
     neighborTables(size)
   }
 
   def getDiagnonalTable(size: Int): NeighborMap = {
     if (!diagonalTables.contains(size)) {
-      initDiagonalTable(size)
+      diagonalTables += size -> createDiagonalNeighborMap(size)
     }
     diagonalTables(size)
   }
 
-  private def initNeighborTable(size: Int): Unit = {
+  private def createNeighborMap(size: Int): NeighborMap = {
     var neighborMap = new NeighborMap()
     for (r <- 1 to size; c <- 1 to size) {
       val point = Point(r, c)
@@ -31,11 +31,11 @@ object NeighborTables {
       val trueNeighbors = inRange(size, allNeighbors)
       neighborMap += (Point(r, c) -> trueNeighbors)
     }
-    neighborTables += (size -> neighborMap)
+    neighborMap
   }
 
   /** For each point in the grid, the map has the diagonals from that point */
-  private def initDiagonalTable(size: Int): Unit = {
+  private def createDiagonalNeighborMap(size: Int): NeighborMap = {
     var diagonalMap = new NeighborMap()
     for (r <- 1 to size; c <- 1 to size) {
       val point = Point(r, c)
@@ -43,9 +43,9 @@ object NeighborTables {
       val trueDiagonals = inRange(size, allDiagonals)
       diagonalMap += (Point(r, c) -> trueDiagonals)
     }
-    diagonalTables += (size -> diagonalMap)
+    diagonalMap
   }
 
   private def inRange(size: Int, points: List[Point]): List[Point] =
-    for (nb <- points if 1 <= nb.row && nb.row <= size && 1 <= nb.col && nb.col <= size) yield nb
+    for (nbr <- points if 1 <= nbr.row && nbr.row <= size && 1 <= nbr.col && nbr.col <= size) yield nbr
 }

@@ -12,11 +12,12 @@ package org.deeplearning4j.scalphagozero.board
 case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, whiteCaptures: Int = 0) {
 
   private val serializer = new GoBoardSerializer()
+  private val boundsChecker = GoBoardBoundsChecker.get(size)
   private val neighborMap = NeighborTables.getNbrTable(size)
   private val diagonalMap = NeighborTables.getDiagnonalTable(size)
 
   def placeStone(player: Player, point: Point): GoBoard = {
-    assert(isOnGrid(point), point + " was not on the grid!")
+    assert(boundsChecker.inBounds(point), point + " was not on the grid!")
 
     if (grid.getString(point).isDefined) {
       println(" Illegal move attempted at: " + point + ". Already occupied: " + grid.getString(point).get)
@@ -86,28 +87,19 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     (newGrid, stringsToRemove)
   }
 
-  def isCorner(point: Point): Boolean =
-    (point.row == 1 && point.col == 1) ||
-    (point.row == size && point.col == 1) ||
-    (point.row == 1 && point.col == size) ||
-    (point.row == size && point.col == size)
-
-  def isEdge(point: Point): Boolean =
-    point.row == 1 || point.col == 1 || point.row == size || point.col == size
-
   /**
     * A player should never fill her own eye, but determining a true eye is not that easy.
     * @return true if the specified play fills that player's eye
     */
   def doesMoveFillEye(player: Player, point: Point): Boolean = {
-    val nbrs = findNumNeighbors(player, point, neighborMap)
-    val diagNbrs = findNumNeighbors(player, point, diagonalMap)
-    val allNbrs = nbrs + diagNbrs
+    val neighbors = findNumNeighbors(player, point, neighborMap)
+    val diagNeighbors = findNumNeighbors(player, point, diagonalMap)
+    val allNbrs = neighbors + diagNeighbors
 
     point match {
-      case cornerPt if isCorner(cornerPt) => allNbrs == 3
-      case edgePt if isEdge(edgePt)       => allNbrs == 5
-      case _                              => nbrs == 4 && diagNbrs >= 3
+      case cornerPt if boundsChecker.isCorner(cornerPt) => allNbrs == 3
+      case edgePt if boundsChecker.isEdge(edgePt) => allNbrs == 5
+      case _ => neighbors == 4 && diagNeighbors >= 3
     }
   }
 
@@ -121,26 +113,27 @@ case class GoBoard(size: Int, grid: Grid = Grid(), blackCaptures: Int = 0, white
     })
 
   private def isAncillaryEye(player: Player, point: Point): Boolean = {
-    val nbrs = neighborMap.findNumTrueNeighbors(player, point, grid)
-    val diagNbrs = diagonalMap.findNumTrueNeighbors(player, point, grid)
-    val allNbrs = nbrs + diagNbrs
+    val neighbors = neighborMap.findNumTrueNeighbors(player, point, grid)
+    val diagNeighbors = diagonalMap.findNumTrueNeighbors(player, point, grid)
+    val allNbrs = neighbors + diagNeighbors
 
     point match {
-      case cornerPt if isCorner(cornerPt) => allNbrs == 2
-      case edgePt if isEdge(edgePt)       => allNbrs == 4
-      case _                              => nbrs == 4 && diagNbrs >= 2
+      case cornerPt if boundsChecker.isCorner(cornerPt) => allNbrs == 2
+      case edgePt if boundsChecker.isEdge(edgePt) => allNbrs == 4
+      case _ => neighbors == 4 && diagNeighbors >= 2
     }
   }
 
   /** @return true if player playing at point will capture stones */
   def willCapture(player: Player, point: Point): Boolean =
-    neighborMap(point).exists { pt => {
+    neighborMap(point).exists { pt =>
+      {
         val nbrStr = grid.getString(pt)
         nbrStr.isDefined && nbrStr.get.player != player && nbrStr.get.numLiberties == 1
       }
     }
 
-  def isOnGrid(point: Point): Boolean = 1 <= point.row && point.row <= size && 1 <= point.col && point.col <= size
+  def inBounds(point: Point): Boolean = boundsChecker.inBounds(point)
   def getPlayer(point: Point): Option[Player] = grid.getPlayer(point)
   def getGoString(point: Point): Option[GoString] = grid.getString(point)
   def zobristHash: Long = grid.hash

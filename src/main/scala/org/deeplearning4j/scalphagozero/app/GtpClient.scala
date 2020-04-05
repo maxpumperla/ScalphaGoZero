@@ -7,13 +7,13 @@ import org.deeplearning4j.scalphagozero.gtp.ScalphaGoEngine
 
 class GtpClient {
 
-  val engine = ScalphaGoEngine()
+  private val engine = ScalphaGoEngine()
 
-  val reader: BufferedReader = new BufferedReader(new InputStreamReader(System.in))
-  val writer: Writer = new BufferedWriter(new OutputStreamWriter(System.out))
+  private val reader: BufferedReader = new BufferedReader(new InputStreamReader(System.in))
+  private val writer: Writer = new BufferedWriter(new OutputStreamWriter(System.out))
 
   // Run the protocol parsing loop
-  val gtp: GoTextProtocol = new GoTextProtocol(reader, writer, engine)
+  private val gtp: GoTextProtocol = new GoTextProtocol(reader, writer, engine)
 
   def run(): Unit = {
     val result = gtp.call()

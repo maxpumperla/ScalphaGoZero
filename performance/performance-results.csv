@@ -8,4 +8,4 @@ date,ScalphaGoVersion,scalaVersion,nd4jVersion,OS,CPU,GPU,CUDA-version,numCPUs,n
 03/08/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,2,5,100,5,HOST,8455,35,35,1691
 03/08/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,3,5,100,5,HOST,8455,35,351691
 03/14/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,3,5,100,100,HOST,146944,595,30,1469
-
+03/14/2020,"1.0.1",2.13.1,1.0.0b3,"windows 10","Core i7-6700K","GeForce GTX 1070",10.2,1,8,8,9,2,5,100,200,HOST,49031,104,5,245
